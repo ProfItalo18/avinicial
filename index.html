@@ -24,7 +24,7 @@
     <div id="toast">Operação realizada com sucesso!</div>
 
     <div class="fab-container no-print">
-        <button onclick="imprimirRelatorio()" class="fab-btn btn-print" title="Imprimir"><i class="fas fa-print"></i></button>
+        <button onclick="modoImpressao()" class="fab-btn btn-print" title="Imprimir"><i class="fas fa-print"></i></button>
         <button onclick="salvarNovoRelatorioNoBanco()" class="fab-btn btn-save" title="Salvar na Nuvem"><i class="fas fa-save"></i></button>
         <button onclick="abrirModalBusca()" class="fab-btn btn-search" title="Buscar Relatórios"><i class="fas fa-search"></i></button>
         <button onclick="limparTudo()" class="fab-btn btn-reset" title="Novo / Limpar"><i class="fas fa-file"></i></button>
@@ -34,11 +34,9 @@
         <thead>
             <tr><td><div class="header-space">&nbsp;</div></td></tr>
         </thead>
-
         <tfoot>
             <tr><td><div class="footer-space">&nbsp;</div></td></tr>
         </tfoot>
-
         <tbody>
             <tr>
                 <td>
@@ -175,7 +173,6 @@
 
                             </div>
                         </section>
-
                     </main>
                 </td>
             </tr>
@@ -234,6 +231,24 @@
             </footer>
         </div>
     </div>
+
+    <script>
+        function modoImpressao() {
+            // 1. Pega todas as caixas de texto
+            const textareas = document.querySelectorAll('textarea');
+            
+            // 2. Reseta a altura para medir corretamente
+            textareas.forEach(el => {
+                el.style.height = 'auto'; 
+                el.style.height = (el.scrollHeight) + 'px';
+            });
+
+            // 3. Aguarda 200ms para garantir que o visual atualizou e chama a impressão
+            setTimeout(() => {
+                window.print();
+            }, 200);
+        }
+    </script>
 
     <script type="module" src="script.js"></script>
 </body>
