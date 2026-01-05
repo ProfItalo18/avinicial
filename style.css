@@ -1,212 +1,204 @@
+/* RESET E VARIÁVEIS */
 :root {
-    --primary: #1a237e; /* Azul mais institucional */
-    --secondary: #0277bd;
-    --accent: #00bfa5;
-    --bg: #f5f7fa;
-    --paper: #ffffff;
-    --text: #263238;
-    --danger: #c62828;
+    --azul: #2c3e50;
+    --azul-claro: #3498db;
+    --cinza: #ecf0f1;
+    --borda: #bdc3c7;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
 
 body {
-    background-color: var(--bg);
-    color: var(--text);
-    padding-bottom: 60px;
+    background-color: #dcdde1;
+    padding-bottom: 80px; /* Espaço para botão flutuante */
 }
 
-/* --- Layout Papel na Tela --- */
-.main-content {
-    background: var(--paper);
-    width: 210mm; /* A4 */
+/* --- CABEÇALHO --- */
+.header-oficial {
+    background: white;
+    padding: 10px 0;
+    border-bottom: 2px solid var(--azul);
+    text-align: center;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    max-width: 210mm;
+    margin: 0 auto;
+}
+
+.logo-topo { height: 80px; width: auto; }
+
+.header-texto h1 { font-size: 14pt; color: var(--azul); font-weight: bold; margin-bottom: 5px; }
+.header-texto p { font-size: 10pt; color: #333; }
+.header-texto .sub-texto { font-size: 9pt; font-style: italic; }
+
+/* --- CONTEÚDO (FOLHA A4) --- */
+.folha-a4 {
+    background: white;
+    width: 210mm;
     min-height: 297mm;
-    margin: 30px auto;
-    padding: 20mm 15mm; /* Margens internas ajustadas */
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    position: relative;
+    margin: 20px auto;
+    padding: 20mm;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.titulo-documento {
+    text-align: center;
+    font-size: 14pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    text-decoration: underline;
+}
+
+/* --- FORMULÁRIOS --- */
+.secao { margin-bottom: 25px; }
+.titulo-secao {
+    font-size: 11pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid #000;
+    margin-bottom: 10px;
+    padding-bottom: 2px;
+}
+
+.linha-form {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.campo { display: flex; flex-direction: column; }
+.campo label { font-size: 9pt; font-weight: bold; margin-bottom: 2px; }
+.campo input { 
+    padding: 5px; 
+    border: 1px solid var(--borda); 
+    border-radius: 4px; 
+    font-size: 10pt; 
+}
+
+.pequeno { width: 20%; }
+.medio { width: 48%; }
+.grande { width: 60%; }
+.total { width: 100%; }
+
+.input-fixo { border: none; background: transparent; font-weight: bold; color: #000; }
+.input-editavel { border: 1px solid var(--borda); }
+
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--borda);
     border-radius: 4px;
+    font-family: 'Times New Roman', serif; /* Fonte formal no texto */
+    font-size: 11pt;
+    resize: vertical;
+    text-align: justify;
+    line-height: 1.5;
 }
 
-/* Títulos */
-.doc-title {
-    text-align: center; font-size: 18pt; font-weight: 900; margin-bottom: 35px;
-    text-transform: uppercase; color: var(--primary); letter-spacing: 0.5px;
-    border-bottom: 3px solid var(--primary); padding-bottom: 15px;
+/* --- ÁREAS DE AVALIAÇÃO --- */
+.area-box { margin-bottom: 15px; }
+.area-titulo-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.area-titulo-row h4 { font-size: 10pt; color: var(--azul); }
+
+.btn-check {
+    background: var(--azul-claro); color: white; border: none; padding: 4px 10px;
+    border-radius: 4px; cursor: pointer; font-size: 9pt;
 }
 
-.section-box { margin-bottom: 30px; }
-.section-title {
-    display: flex; justify-content: space-between; align-items: flex-end;
-    border-bottom: 2px solid #eceff1; margin-bottom: 15px; padding-bottom: 5px;
+.instrucao { font-size: 9pt; color: #7f8c8d; margin-bottom: 10px; font-style: italic; }
+
+.texto-legal { font-size: 8pt; margin-top: 10px; text-align: justify; }
+
+/* --- ASSINATURAS --- */
+.assinaturas-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    page-break-inside: avoid;
 }
-.section-title h2 {
-    font-size: 13pt; text-transform: uppercase; color: var(--primary); font-weight: 700;
-    border-left: 6px solid var(--secondary); padding-left: 10px;
+
+.box-assinatura {
+    width: 30%;
+    text-align: center;
 }
-.hint { font-size: 9pt; color: #78909c; font-weight: normal; }
 
-/* Formulários */
-.form-grid { display: flex; flex-direction: column; gap: 12px; }
-.row-duo { display: flex; gap: 25px; }
-.row-full { width: 100%; }
-.input-group { flex: 1; }
+.img-wrapper { height: 60px; display: flex; align-items: flex-end; justify-content: center; }
+.img-wrapper img { max-height: 100%; max-width: 100%; }
 
-label { font-weight: 700; font-size: 10pt; display: block; margin-bottom: 4px; color: var(--primary); }
+.linha-ass { border-top: 1px solid #000; margin: 5px 0; }
+.box-assinatura p { font-size: 9pt; font-weight: bold; }
+.sel-ass { font-size: 8pt; margin-bottom: 2px; }
 
-input, textarea, select {
-    width: 100%; padding: 8px 10px; border: 1px solid #cfd8dc; border-radius: 4px;
-    font-size: 11pt; background: #fff; transition: border 0.3s; color: var(--text);
+/* --- RODAPÉ --- */
+.footer-oficial {
+    background: white;
+    border-top: 1px solid #ccc;
+    padding: 10px 0;
+    text-align: center;
+    margin-top: 20px;
 }
-input:focus, textarea:focus, select:focus { outline: none; border-color: var(--secondary); }
+.footer-texto p { font-size: 8pt; margin: 2px 0; }
 
-textarea { resize: vertical; text-align: justify; line-height: 1.5; font-family: 'Roboto', sans-serif; }
-.auto-text { background-color: #fcfdfd; }
-
-.input-clean { border: none; background: transparent; padding: 0; color: var(--text); }
-.bold { font-weight: 900; }
-
-/* Áreas Avaliadas */
-.area-block { margin-bottom: 25px; background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #eee; }
-.area-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.area-header h3 { font-size: 11.5pt; color: var(--secondary); font-weight: 700; }
-
-.btn-open-modal {
-    background: var(--secondary); color: white; border: none; padding: 8px 15px;
-    border-radius: 4px; cursor: pointer; font-size: 9.5pt; transition: 0.2s; display: flex; align-items: center; gap: 8px;
+/* --- BOTÕES FLUTUANTES --- */
+.fab-menu { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; }
+.fab-menu button {
+    width: 50px; height: 50px; border-radius: 50%; border: none; color: white;
+    background: var(--azul); font-size: 18px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
-.btn-open-modal:hover { background: #01579b; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.fab-menu .btn-print { background: #e67e22; }
 
-/* Assinaturas */
-.signatures-container {
-    display: flex; justify-content: space-between; margin-top: 60px; page-break-inside: avoid;
-}
-.sig-box { width: 30%; text-align: center; display: flex; flex-direction: column; align-items: center; }
-.sig-img-wrapper { height: 80px; display: flex; align-items: flex-end; justify-content: center; width: 100%; margin-bottom: 5px; }
-.sig-img-wrapper img { max-height: 100%; max-width: 100%; object-fit: contain; }
-.sig-line { width: 90%; height: 1px; background: var(--primary); margin: 5px 0; }
-.sig-select { margin-bottom: 5px; font-size: 8.5pt; width: auto; padding: 4px; }
-.sig-box p { font-size: 10pt; font-weight: 700; color: var(--primary); }
-
-/* Texto Legal */
-.legal-text-box { border: 1px solid #b0bec5; background: #eceff1; padding: 12px; font-size: 9.5pt; text-align: justify; border-left: 4px solid var(--primary); }
-
-/* Header/Footer Overlays (Escondidos na tela) */
-.print-header-overlay, .print-footer-overlay { display: none; }
-
-/* --- MODAIS (Geral) --- */
+/* --- MODAL --- */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 2000;
-    backdrop-filter: blur(3px);
+    background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000;
 }
-.modal-content {
-    background: white; border-radius: 8px; display: flex; flex-direction: column;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.25); max-height: 90vh;
+.modal-card {
+    background: white; width: 90%; max-width: 700px; max-height: 90vh;
+    border-radius: 8px; display: flex; flex-direction: column; padding: 20px;
 }
-.modal-large { width: 90%; max-width: 900px; }
-.modal-medium { width: 90%; max-width: 600px; }
+.modal-body { overflow-y: auto; flex: 1; margin: 15px 0; }
+.check-grupo { margin-bottom: 15px; }
+.check-grupo h5 { background: #f1f2f6; padding: 5px; margin-bottom: 5px; }
+.check-item { display: flex; gap: 10px; margin-bottom: 5px; font-size: 10pt; }
 
-.modal-header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; border-radius: 8px 8px 0 0; }
-.close-modal { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
-.modal-body { padding: 20px; overflow-y: auto; }
-.modal-footer { padding: 15px 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #f5f5f5; border-radius: 0 0 8px 8px;}
-
-/* Modal Checklist Específico */
-.checklist-group { margin-bottom: 20px; break-inside: avoid; }
-.checklist-group h4 { background: #e3f2fd; padding: 8px 12px; border-left: 4px solid var(--secondary); margin-bottom: 10px; color: var(--primary); }
-.check-item { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 10.5pt; padding: 5px; border-radius: 4px; transition: background 0.2s; }
-.check-item:hover { background: #f0f4f8; }
-.check-item input { width: auto; margin-right: 12px; margin-top: 4px; transform: scale(1.1); cursor: pointer; }
-.check-item label { font-weight: normal; color: var(--text); cursor: pointer; }
-.hint-text { font-size: 9pt; color: #666; font-style: italic; }
-.btn-confirm { background: var(--accent); color: white; border: none; padding: 10px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-.btn-confirm:hover { background: #009688; }
-
-/* Modal Busca Específico */
-.search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-.btn-search-action { background: var(--secondary); color: white; border: none; padding: 0 20px; border-radius: 4px; cursor: pointer; }
-.results-list { max-height: 400px; overflow-y: auto; }
-.result-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px; border: 1px solid #eee; margin-bottom: 8px; border-radius: 6px;
-    background: #fff;
-}
-.result-info strong { display: block; color: var(--primary); font-size: 11pt; }
-.result-info span { font-size: 9pt; color: #888; }
-.result-actions { display: flex; gap: 8px; }
-.btn-load { background: var(--secondary); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 9pt; }
-.btn-delete { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 9pt; }
-.loading-text { text-align: center; color: #999; padding: 20px; }
-
-/* BOTOES FLUTUANTES */
-.fab-actions { position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column-reverse; gap: 15px; z-index: 1500; }
-.fab { width: 55px; height: 55px; border-radius: 50%; border: none; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 6px 10px rgba(0,0,0,0.3); transition: transform 0.2s; display: flex; justify-content: center; align-items: center; }
-.fab:hover { transform: scale(1.05); }
-.btn-print { background: #ff9800; }
-.btn-save { background: #2ecc71; }
-.btn-search { background: #3f51b5; }
-
-/* ================== IMPRESSÃO (A4) ================== */
+/* ================= IMPRESSÃO (A MÁGICA) ================= */
 @media print {
     @page { margin: 0; size: A4; }
     
-    body { 
-        background: white; 
-        /* Margens para o conteúdo não bater no header/footer fixos */
-        margin-top: 150px;  /* Ajuste conforme a altura do seu cabeçalho */
-        margin-bottom: 100px; /* Ajuste conforme a altura do seu rodapé */
-    }
-
-    .main-content {
-        width: 100%; margin: 0; padding: 0 20mm; 
-        box-shadow: none; min-height: auto; border-radius: 0;
-    }
+    body { background: white; margin: 0; padding: 0; }
 
     .no-print { display: none !important; }
 
-    /* Cabeçalho Fixo (Texto + Logo) */
-    .print-header-overlay {
-        display: block; position: fixed; top: 0; left: 0; width: 100%; 
-        background: white; z-index: 200; border-bottom: 3px solid var(--primary);
-        padding: 15px 20mm;
-        height: 130px; /* Altura fixa para reservar espaço */
+    /* Fixar Cabeçalho */
+    .header-oficial {
+        position: fixed; top: 0; left: 0; width: 100%; height: 120px;
+        z-index: 1000; border-bottom: 2px solid #000; padding: 5px 0;
     }
-    .header-content { display: flex; align-items: center; justify-content: flex-start; height: 100%; }
-    .header-logo { height: 90px; width: auto; margin-right: 20px; object-fit: contain; }
-    .header-text h1 { margin: 0; color: var(--primary); font-size: 18pt; font-weight: 900; }
-    .header-text p { margin: 2px 0; font-size: 10pt; color: var(--text); }
-    .header-text .small-text { font-size: 9pt; color: #666; }
 
-    /* Rodapé Fixo (Texto) */
-    .print-footer-overlay {
-        display: block; position: fixed; bottom: 0; left: 0; width: 100%;
-        background: white; z-index: 200; border-top: 1px solid #ccc;
-        padding: 10px 20mm;
-        height: 80px; /* Altura fixa para reservar espaço */
-        text-align: center;
+    /* Fixar Rodapé */
+    .footer-oficial {
+        position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
+        z-index: 1000; border-top: 1px solid #000; padding: 5px 0;
     }
-    .footer-content p { margin: 3px 0; font-size: 9pt; color: #555; }
-    .footer-content .small-text { font-size: 8pt; font-style: italic; margin-top: 5px; }
 
-    /* Estilos de impressão para inputs */
-    input, textarea, select {
-        border: none; background: transparent; padding: 0; resize: none;
-        font-family: 'Times New Roman', serif; color: black; font-size: 12pt;
-        line-height: 1.4;
+    /* Ajustar conteúdo para não bater no cabeçalho/rodapé fixos */
+    .folha-a4 {
+        width: 100%; box-shadow: none; margin: 0; padding: 0 15mm;
+        margin-top: 130px; /* Espaço do header */
+        margin-bottom: 70px; /* Espaço do footer */
     }
-    textarea { overflow: hidden; } /* Evita barras de rolagem na impressão */
+
+    input, textarea {
+        border: none; padding: 0; background: transparent;
+        font-family: 'Times New Roman', serif; color: black;
+    }
     
-    /* Títulos na impressão */
-    .doc-title { font-size: 20pt; border-bottom-width: 4px; margin-bottom: 40px; }
-    .section-title h2 { background: none; padding-left: 0; border-left: none; color: #000; border-bottom: 2px solid #000; }
-    .section-box { margin-bottom: 20px; }
-    .area-block { background: none; border: none; padding: 0; margin-bottom: 20px; }
-    .area-header h3 { color: #000; text-decoration: underline; }
-    label { color: #000; }
-    .sig-box p, .sig-line { color: #000; background: #000; }
-    .legal-text-box { background: none; border: none; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 10px 0; color: #000; }
-    
-    /* Forçar quebras de página corretas */
-    section { page-break-inside: avoid; }
+    /* Previne quebras feias */
+    .secao, .assinaturas-container { page-break-inside: avoid; }
 }

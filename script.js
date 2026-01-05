@@ -19,401 +19,221 @@ const tabelaRelatorios = collection(db, "relatorios");
 
 let idRelatorioAtual = null;
 
-/* =========================================================
-   2. DADOS DO CHECKLIST DIAGNÓSTICO (APROFUNDADO)
-   Baseado em pré-requisitos e análise funcional (Anexo 2)
-   ========================================================= */
+/* --- CHECKLIST BASEADO NO ANEXO 2 (DIAGNÓSTICO) --- */
 const DADOS_CHECKLIST = {
     pedagogica: {
-        titulo: "Avaliação Diagnóstica Pedagógica",
-        subsecoes: [
-            { 
-                nome: "1. Pré-requisitos para Aprendizagem (Funções Executivas Básicas)", 
+        titulo: "1.2 Avaliação Pedagógica",
+        grupos: [
+            {
+                nome: "Habilidades Conceituais (Cognitivo e Acadêmico)",
                 itens: [
-                    { label: "Atenção Seletiva e Sustentada", texto: "Demonstra capacidade de focar a atenção em estímulos relevantes e sustentá-la durante a execução de tarefas curtas, com mediação.", ind: "Atividades de curta duração com aumento gradual de tempo; uso de pistas visuais para manter o foco.", enc: "" },
-                    { label: "Controle Inibitório Inicial", texto: "Apresenta controle inibitório em desenvolvimento, conseguindo aguardar sua vez em situações estruturadas na maior parte do tempo.", ind: "Jogos de regras simples que exijam esperar a vez; reforço positivo para comportamentos de espera.", enc: "" },
-                    { label: "Memória de Trabalho (Comandos)", texto: "Compreende e executa sequências de até dois comandos verbais simples sem suporte visual imediato.", ind: "Solicitar execução de tarefas em etapas, aumentando a complexidade gradualmente.", enc: "" }
+                    { label: "Atenção e Concentração", txt: "O aluno demonstra períodos curtos de atenção.", ind: "Atividades de foco visual.", enc: "" },
+                    { label: "Leitura (Vogais/Alfabeto)", txt: "Reconhece as vogais mas ainda não alfabetizado.", ind: "Jogos de letramento.", enc: "" },
+                    { label: "Raciocínio Lógico (Números)", txt: "Realiza contagem mecânica até 10.", ind: "Material dourado.", enc: "" }
                 ]
             },
-            { 
-                nome: "2. Habilidades Acadêmicas Iniciais (Letramento e Numeramento)", 
+            {
+                nome: "Habilidades Sociais e Práticas",
                 itens: [
-                    { label: "Consciência Fonológica (Rimas/Aliterações)", texto: "Identifica sons iniciais e finais semelhantes em palavras (rimas e aliterações) com apoio oral.", ind: "Explorar parlendas, músicas e jogos de rimas.", enc: "" },
-                    { label: "Hipótese de Escrita (Pré-silábica/Silábica)", texto: "Encontra-se em transição da hipótese pré-silábica para silábica, começando a relacionar a pauta sonora à quantidade de grafias.", ind: "Atividades de escrita espontânea com intervenção pontual; uso de letras móveis.", enc: "" },
-                    { label: "Contagem e Quantificação (até 10)", texto: "Realiza contagem termo a termo e relaciona número à quantidade em conjuntos de até 10 elementos.", ind: "Jogos concretos de contagem, pareamento de número e quantidade.", enc: "" }
+                    { label: "Interação com Pares", txt: "Interage bem com outras crianças.", ind: "Trabalho em grupo.", enc: "" },
+                    { label: "Autonomia (Higiene/Alimentação)", txt: "Necessita de apoio para higiene pessoal.", ind: "Treino de AVDs.", enc: "" }
                 ]
-            },
-            // ... CONTINUE EXPANDINDO: Coordenação Visomotora, Raciocínio Lógico, etc.
+            }
         ]
     },
     clinica: {
-        titulo: "Avaliação Diagnóstica Clínica",
-        subsecoes: [
-            { 
-                nome: "1. Desenvolvimento Neuropsicomotor e Sensorial", 
+        titulo: "1.3 Avaliação Clínica",
+        grupos: [
+            {
+                nome: "Saúde e Desenvolvimento",
                 itens: [
-                    { label: "Coordenação Motora Global", texto: "Apresenta padrão de marcha estável e bom equilíbrio estático e dinâmico para a idade.", ind: "Circuitos motores e atividades ao ar livre.", enc: "" },
-                    { label: "Processamento Sensorial (Hipersensibilidade)", texto: "Demonstra sinais de hipersensibilidade auditiva a ruídos intensos do ambiente escolar.", ind: "Uso de abafadores em momentos de pico de ruído; dessensibilização gradual.", enc: "Avaliação de Terapia Ocupacional (Integração Sensorial)." }
-                ]
-            },
-            { 
-                nome: "2. Comunicação e Linguagem (Aspectos Funcionais)", 
-                itens: [
-                    { label: "Linguagem Expressiva (Vocabulário)", texto: "Utiliza vocabulário funcional para expressar necessidades básicas e desejos.", ind: "Estimular a ampliação do vocabulário através de nomeação e narrativas.", enc: "" },
-                    { label: "Intenção Comunicativa", texto: "Demonstra clara intenção comunicativa, buscando interação com pares e adultos através de gestos ou fala.", ind: "Criar situações que exijam comunicação para obter itens desejados.", enc: "" }
+                    { label: "Saúde Geral", txt: "Apresenta bom estado geral de saúde.", ind: "", enc: "" },
+                    { label: "Coordenação Motora", txt: "Coordenação motora ampla preservada.", ind: "Circuito psicomotor.", enc: "Avaliação T.O." }
                 ]
             }
-            // ... CONTINUE EXPANDINDO: Saúde Geral, Sono, Alimentação, Autonomia nas AVDs.
         ]
     },
     social: {
-        titulo: "Avaliação Diagnóstica Serviço Social",
-        subsecoes: [
-            { 
-                nome: "1. Dinâmica e Estrutura Familiar", 
+        titulo: "1.4 Serviço Social",
+        grupos: [
+            {
+                nome: "Contexto Familiar",
                 itens: [
-                    { label: "Rede de Apoio Familiar", texto: "O estudante conta com uma rede de apoio familiar estruturada e presente no acompanhamento escolar.", ind: "Manter comunicação constante via agenda/reuniões.", enc: "" },
-                    { label: "Compreensão do Diagnóstico pela Família", texto: "A família demonstra compreensão adequada sobre as necessidades específicas do estudante.", ind: "Oferecer escuta ativa e orientações pontuais sobre o desenvolvimento.", enc: "" }
-                ]
-            },
-            { 
-                nome: "2. Acesso a Direitos e Rede Socioassistencial", 
-                itens: [
-                    { label: "Benefício de Prestação Continuada (BPC)", texto: "A família é beneficiária do BPC.", ind: "", enc: "Orientar sobre a atualização do CadÚnico se necessário." },
-                    { label: "Acompanhamento na Rede de Saúde", texto: "Realiza acompanhamentos regulares na UBS e serviços especializados (ex: CAPSij, CER).", ind: "Solicitar cópia dos relatórios médicos atualizados.", enc: "" }
+                    { label: "Estrutura Familiar", txt: "Família nuclear, pais presentes.", ind: "Manter vínculo.", enc: "" },
+                    { label: "Vulnerabilidade Social", txt: "Não apresenta sinais de vulnerabilidade aparente.", ind: "", enc: "" }
                 ]
             }
-             // ... CONTINUE EXPANDINDO: Habitação, Vulnerabilidades, Transporte.
         ]
     }
 };
 
-/* =========================================================
-   3. FUNÇÕES DE LÓGICA E INTERFACE (UI)
-   ========================================================= */
+/* --- FUNÇÕES GERAIS --- */
 
-// Cálculo de Idade
+// Calcular Idade
 window.calcularIdade = function() {
-    const dataNascStr = document.getElementById("dataNascimento").value;
-    if (!dataNascStr) return;
-
-    const nasc = new Date(dataNascStr);
+    const dataNasc = document.getElementById("dataNascimento").value;
+    if (!dataNasc) return;
+    const nasc = new Date(dataNasc);
     const hoje = new Date();
     let idade = hoje.getFullYear() - nasc.getFullYear();
-    const m = hoje.getMonth() - nasc.getMonth();
-
-    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
-        idade--;
-    }
-    document.getElementById("idadeCalculada").value = `${idade} anos`;
+    if (hoje < new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate())) idade--;
+    document.getElementById("idade").value = `${idade} anos`;
 };
 
-// Controle de Modais (Genérico)
-window.abrirModal = function(modalId) {
-    document.getElementById(modalId).style.display = "flex";
-}
+// Trocar Imagem de Assinatura
+window.trocarImagem = function(tipo, valor) {
+    const idImg = tipo === 'pedagoga' ? 'imgPedagoga' : 'imgSocial';
+    const nomeBase = tipo === 'pedagoga' ? 'asspedagoga' : 'asssocial';
+    // Se valor for "2", imagem é asspedagoga2.png, senão asspedagoga.png
+    const sufixo = valor === "2" ? "2" : "";
+    document.getElementById(idImg).src = `${nomeBase}${sufixo}.png`;
+};
 
-window.fecharModal = function(modalId) {
-    document.getElementById(modalId).style.display = "none";
-    if (modalId === 'modalAvaliacaoOverlay') areaAtualAberta = null;
-}
+/* --- MODAIS E CHECKLIST --- */
+window.abrirModal = function(tipo) {
+    areaAtual = tipo;
+    const dados = DADOS_CHECKLIST[tipo];
+    document.getElementById('modalTitulo').innerText = dados.titulo;
+    
+    const divConteudo = document.getElementById('modalConteudo');
+    divConteudo.innerHTML = "";
 
-// Modal de Avaliação (Checklist)
-window.abrirModalAvaliacao = function(area) {
-    areaAtualAberta = area;
-    const dados = DADOS_CHECKLIST[area];
-    const modalTitle = document.getElementById("modalAvaliacaoTitle");
-    const modalBody = document.getElementById("modalChecklistBody");
-
-    modalTitle.textContent = dados.titulo;
-    modalBody.innerHTML = ""; // Limpa conteúdo anterior
-
-    // Gera o HTML do checklist
-    dados.subsecoes.forEach((sub, idxSub) => {
-        const divSub = document.createElement("div");
-        divSub.className = "checklist-group";
-        divSub.innerHTML = `<h4>${sub.nome}</h4>`;
-
-        sub.itens.forEach((item, idxItem) => {
-            const uniqueId = `chk_${area}_${idxSub}_${idxItem}`;
-            divSub.innerHTML += `
+    dados.grupos.forEach((grupo, idxG) => {
+        let html = `<div class="check-grupo"><h5>${grupo.nome}</h5>`;
+        grupo.itens.forEach((item, idxI) => {
+            html += `
                 <div class="check-item">
-                    <input type="checkbox" id="${uniqueId}" 
-                           data-texto="${item.texto}" 
-                           data-ind="${item.ind}" 
-                           data-enc="${item.enc}">
-                    <label for="${uniqueId}">${item.label}</label>
+                    <input type="checkbox" id="chk_${idxG}_${idxI}" 
+                        data-txt="${item.txt}" data-ind="${item.ind}" data-enc="${item.enc}">
+                    <label for="chk_${idxG}_${idxI}">${item.label}</label>
                 </div>
             `;
         });
-        modalBody.appendChild(divSub);
+        html += `</div>`;
+        divConteudo.innerHTML += html;
     });
 
-    abrirModal('modalAvaliacaoOverlay');
+    document.getElementById('modalChecklist').style.display = 'flex';
 };
 
-// Processa o Checklist e Gera Textos
+window.fecharModal = function(id) {
+    document.getElementById(id).style.display = 'none';
+};
+
 window.processarChecklist = function() {
-    if (!areaAtualAberta) return;
+    const checks = document.querySelectorAll('#modalConteudo input:checked');
+    let texto = "";
+    let indicacoes = "";
+    let encaminhamentos = "";
 
-    const checks = document.querySelectorAll("#modalChecklistBody input:checked");
-    
-    let textoSintese = [];
-    let textoInd = [];
-    let textoEnc = [];
-
-    checks.forEach(chk => {
-        if (chk.dataset.texto && chk.dataset.texto.trim() !== "") textoSintese.push(chk.dataset.texto);
-        if (chk.dataset.ind && chk.dataset.ind.trim() !== "") textoInd.push(chk.dataset.ind);
-        if (chk.dataset.enc && chk.dataset.enc.trim() !== "") textoEnc.push(chk.dataset.enc);
+    checks.forEach(c => {
+        if(c.dataset.txt) texto += c.dataset.txt + " ";
+        if(c.dataset.ind) indicacoes += "• " + c.dataset.ind + "\n";
+        if(c.dataset.enc) encaminhamentos += "• " + c.dataset.enc + "\n";
     });
 
-    // 1. Preenche a área específica (Substitui o texto existente para facilitar correções)
-    const idCampoTextoArea = areaAtualAberta === 'pedagogica' ? 'textoPedagogico' :
-                             areaAtualAberta === 'clinica' ? 'textoClinico' : 'textoSocial';
-    
-    // Junta os textos com espaço e adiciona um ponto final se não tiver.
-    let textoFinalArea = textoSintese.join(" ");
-    if (textoFinalArea && !textoFinalArea.endsWith('.')) textoFinalArea += '.';
-    document.getElementById(idCampoTextoArea).value = textoFinalArea;
+    // Preenche campo específico
+    const idCampo = areaAtual === 'pedagogica' ? 'txtPedagogica' : 
+                    areaAtual === 'clinica' ? 'txtClinica' : 'txtSocial';
+    document.getElementById(idCampo).value = texto;
 
+    // Adiciona aos globais
+    if(texto) document.getElementById('txtConclusao').value += texto + "\n";
+    if(indicacoes) document.getElementById('txtIndicacoes').value += indicacoes;
+    if(encaminhamentos) document.getElementById('txtEncaminhamentos').value += encaminhamentos;
 
-    // 2. Adiciona aos campos Globais (Indicações e Encaminhamentos) - Usando Append com marcador
-    if (textoInd.length > 0) {
-        adicionarTextoComMarcador('indicacoesPedagogicas', textoInd);
-    }
-    
-    if (textoEnc.length > 0) {
-        adicionarTextoComMarcador('encaminhamentosGerais', textoEnc);
-    }
-
-    fecharModal('modalAvaliacaoOverlay');
-    alert("Textos gerados com sucesso! Revise e edite conforme necessário.");
+    fecharModal('modalChecklist');
 };
 
-// Função auxiliar para adicionar listas com marcador "•"
-function adicionarTextoComMarcador(idCampo, arrayTextos) {
-    const campo = document.getElementById(idCampo);
-    let textoAtual = campo.value;
-    
-    // Se já tem texto e não termina com quebra de linha, adiciona uma.
-    if (textoAtual && !textoAtual.endsWith('\n')) {
-        textoAtual += '\n';
-    }
-
-    // Adiciona os novos itens com marcador, evitando duplicatas exatas
-    arrayTextos.forEach(item => {
-        if (!textoAtual.includes(item)) {
-             textoAtual += `• ${item}\n`;
-        }
-    });
-
-    campo.value = textoAtual;
-}
-
-// Troca de Assinaturas
-window.mudarAssinatura = function(tipo, valor) {
-    let imgId = tipo === 'pedagogica' ? 'sigImgPedagogica' : 'sigImgSocial';
-    let nomeBase = tipo === 'pedagogica' ? 'asspedagoga' : 'asssocial';
-    
-    // Se valor for "1", usa o nome base. Se for "2", usa base + "2".
-    let sulfixo = (valor === "2") ? "2" : "";
-    
-    document.getElementById(imgId).src = `${nomeBase}${sulfixo}.png`;
-};
-
-
-/* =========================================================
-   4. INTEGRAÇÃO COM FIREBASE (SALVAR, BUSCAR, CARREGAR, EXCLUIR)
-   ========================================================= */
-
-// --- SALVAR ---
-window.salvarRelatorioFirebase = async function() {
-    const btnSave = document.querySelector('.btn-save');
-    btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    btnSave.disabled = true;
-
-    const relatorioId = document.getElementById('relatorioId').value;
-    const nomeEstudante = document.getElementById('nomeEstudante').value;
-
-    if (!nomeEstudante) {
-        alert("Por favor, preencha o nome do estudante antes de salvar.");
-        resetBtnSave(btnSave);
-        return;
-    }
-
-    // Coleta todos os dados do formulário
-    const dadosRelatorio = {
-        municipio: document.getElementById('municipio').value,
-        nre: document.getElementById('nre').value,
+/* --- FIREBASE (SALVAR E BUSCAR) --- */
+window.salvarRelatorio = async function() {
+    const id = document.getElementById('docId').value;
+    const dados = {
         escola: document.getElementById('escola').value,
-        nomeEstudante: nomeEstudante,
-        dataNascimento: document.getElementById('dataNascimento').value,
-        idadeCalculada: document.getElementById('idadeCalculada').value,
+        estudante: document.getElementById('nomeEstudante').value,
+        nascimento: document.getElementById('dataNascimento').value,
+        idade: document.getElementById('idade').value,
         filiacao: document.getElementById('filiacao').value,
         dataAvaliacao: document.getElementById('dataAvaliacao').value,
-        
-        textoPedagogico: document.getElementById('textoPedagogico').value,
-        textoClinico: document.getElementById('textoClinico').value,
-        textoSocial: document.getElementById('textoSocial').value,
-        
-        conclusaoDiagnostica: document.getElementById('conclusaoDiagnostica').value,
-        indicacoesPedagogicas: document.getElementById('indicacoesPedagogicas').value,
-        encaminhamentosGerais: document.getElementById('encaminhamentosGerais').value,
-        
-        selPedagogica: document.getElementById('selPedagogica').value,
-        selSocial: document.getElementById('selSocial').value,
-
-        ultimaAtualizacao: new Date() // Timestamp para ordenação
+        txtPedagogica: document.getElementById('txtPedagogica').value,
+        txtClinica: document.getElementById('txtClinica').value,
+        txtSocial: document.getElementById('txtSocial').value,
+        txtConclusao: document.getElementById('txtConclusao').value,
+        txtIndicacoes: document.getElementById('txtIndicacoes').value,
+        txtEncaminhamentos: document.getElementById('txtEncaminhamentos').value,
+        txtObservacoes: document.getElementById('txtObservacoes').value,
+        timestamp: new Date()
     };
 
     try {
-        if (relatorioId) {
-            // Atualizar existente
-            await updateDoc(doc(db, "relatorios_diagnosticos", relatorioId), dadosRelatorio);
-            alert("Relatório atualizado com sucesso!");
+        if (id) {
+            await updateDoc(doc(tabelaRelatorios, id), dados);
+            alert("Relatório atualizado!");
         } else {
-            // Criar novo
-            const docRef = await addDoc(relatoriosRef, dadosRelatorio);
-            document.getElementById('relatorioId').value = docRef.id; // Salva o ID no hidden input
-            alert("Novo relatório salvo com sucesso!");
+            const docRef = await addDoc(tabelaRelatorios, dados);
+            document.getElementById('docId').value = docRef.id;
+            alert("Salvo com sucesso!");
         }
     } catch (e) {
-        console.error("Erro ao salvar documento: ", e);
-        alert("Erro ao salvar o relatório. Verifique o console.");
-    } finally {
-        resetBtnSave(btnSave);
+        console.error(e);
+        alert("Erro ao salvar (Verifique o console/Firebase Config).");
     }
 };
 
-function resetBtnSave(btn) {
-    btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i>';
-    btn.disabled = false;
-}
-
-// --- BUSCAR (Abrir Modal e Listar) ---
-window.abrirModalBusca = function() {
-    abrirModal('modalBuscaOverlay');
-    buscarRelatorios(); // Carrega a lista inicial (todos ou os últimos)
+window.abrirBusca = function() {
+    document.getElementById('modalBusca').style.display = 'flex';
 };
 
-window.buscarRelatorios = async function() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const resultsList = document.getElementById('searchResultsList');
-    resultsList.innerHTML = '<p class="loading-text"><i class="fas fa-spinner fa-spin"></i> Carregando...</p>';
+window.executarBusca = async function() {
+    const termo = document.getElementById('termoBusca').value.toLowerCase();
+    const lista = document.getElementById('listaResultados');
+    lista.innerHTML = "Carregando...";
 
-    try {
-        // Busca simples: pega tudo e filtra no cliente (ideal para poucos registros).
-        // Para muitos registros, usar "where" do Firestore (mas requer índice composto para 'nome' + 'data').
-        const q = query(relatoriosRef, orderBy("ultimaAtualizacao", "desc"));
-        const querySnapshot = await getDocs(q);
-        
-        resultsList.innerHTML = ''; // Limpa loading
-
-        if (querySnapshot.empty) {
-            resultsList.innerHTML = '<p class="loading-text">Nenhum relatório encontrado.</p>';
-            return;
+    const q = query(tabelaRelatorios, orderBy("timestamp", "desc"));
+    const snapshot = await getDocs(q);
+    
+    lista.innerHTML = "";
+    snapshot.forEach(docSnap => {
+        const d = docSnap.data();
+        if (d.estudante.toLowerCase().includes(termo)) {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${d.estudante} (${d.dataAvaliacao})</span>
+                <button onclick="carregar('${docSnap.id}')">Carregar</button>
+                <button onclick="excluir('${docSnap.id}')" style="background:red">X</button>
+            `;
+            li.className = "item-resultado"; // Adicione estilo se quiser
+            lista.appendChild(li);
         }
+    });
+};
 
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            // Filtro no cliente (case-insensitive)
-            if (searchTerm === "" || data.nomeEstudante.toLowerCase().includes(searchTerm)) {
-                
-                const dataFormatada = data.ultimaAtualizacao ? new Date(data.ultimaAtualizacao.seconds * 1000).toLocaleDateString('pt-BR') : 'Data desc.';
-
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'result-item';
-                itemDiv.innerHTML = `
-                    <div class="result-info">
-                        <strong>${data.nomeEstudante}</strong>
-                        <span>Atualizado em: ${dataFormatada}</span>
-                    </div>
-                    <div class="result-actions">
-                        <button class="btn-load" onclick="carregarRelatorio('${doc.id}')"><i class="fas fa-edit"></i> Carregar</button>
-                        <button class="btn-delete" onclick="excluirRelatorio('${doc.id}', '${data.nomeEstudante}')"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                `;
-                resultsList.appendChild(itemDiv);
-            }
-        });
-
-        if (resultsList.children.length === 0) {
-             resultsList.innerHTML = '<p class="loading-text">Nenhum relatório encontrado para essa busca.</p>';
-        }
-
-    } catch (e) {
-        console.error("Erro ao buscar: ", e);
-        resultsList.innerHTML = '<p class="loading-text error">Erro ao buscar relatórios.</p>';
+// Funções globais para botões dinâmicos
+window.carregar = async function(id) {
+    const docSnap = await getDoc(doc(tabelaRelatorios, id));
+    if (docSnap.exists()) {
+        const d = docSnap.data();
+        document.getElementById('docId').value = id;
+        document.getElementById('escola').value = d.escola;
+        document.getElementById('nomeEstudante').value = d.estudante;
+        document.getElementById('dataNascimento').value = d.nascimento;
+        document.getElementById('idade').value = d.idade;
+        document.getElementById('filiacao').value = d.filiacao;
+        document.getElementById('dataAvaliacao').value = d.dataAvaliacao;
+        document.getElementById('txtPedagogica').value = d.txtPedagogica;
+        document.getElementById('txtClinica').value = d.txtClinica;
+        document.getElementById('txtSocial').value = d.txtSocial;
+        document.getElementById('txtConclusao').value = d.txtConclusao;
+        document.getElementById('txtIndicacoes').value = d.txtIndicacoes;
+        document.getElementById('txtEncaminhamentos').value = d.txtEncaminhamentos;
+        document.getElementById('txtObservacoes').value = d.txtObservacoes;
+        fecharModal('modalBusca');
     }
 };
 
-
-// --- CARREGAR ---
-window.carregarRelatorio = async function(id) {
-    try {
-        const docRef = doc(db, "relatorios_diagnosticos", id);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            
-            // Preenche os campos do formulário com os dados do banco
-            document.getElementById('relatorioId').value = id;
-            document.getElementById('municipio').value = data.municipio;
-            document.getElementById('nre').value = data.nre;
-            document.getElementById('escola').value = data.escola;
-            document.getElementById('nomeEstudante').value = data.nomeEstudante;
-            document.getElementById('dataNascimento').value = data.dataNascimento;
-            document.getElementById('idadeCalculada').value = data.idadeCalculada;
-            document.getElementById('filiacao').value = data.filiacao;
-            document.getElementById('dataAvaliacao').value = data.dataAvaliacao;
-            
-            document.getElementById('textoPedagogico').value = data.textoPedagogico;
-            document.getElementById('textoClinico').value = data.textoClinico;
-            document.getElementById('textoSocial').value = data.textoSocial;
-            
-            document.getElementById('conclusaoDiagnostica').value = data.conclusaoDiagnostica;
-            document.getElementById('indicacoesPedagogicas').value = data.indicacoesPedagogicas;
-            document.getElementById('encaminhamentosGerais').value = data.encaminhamentosGerais;
-
-            // Define os selects das assinaturas e dispara o evento para mudar a imagem
-            const selPed = document.getElementById('selPedagogica');
-            selPed.value = data.selPedagogica || "1";
-            selPed.dispatchEvent(new Event('change'));
-
-            const selSoc = document.getElementById('selSocial');
-            selSoc.value = data.selSocial || "1";
-            selSoc.dispatchEvent(new Event('change'));
-            
-            fecharModal('modalBuscaOverlay');
-            alert(`Relatório de "${data.nomeEstudante}" carregado.`);
-
-        } else {
-            alert("Relatório não encontrado!");
-        }
-    } catch (e) {
-        console.error("Erro ao carregar: ", e);
-        alert("Erro ao carregar o relatório.");
-    }
-};
-
-
-// --- EXCLUIR ---
-window.excluirRelatorio = async function(id, nome) {
-    if (confirm(`Tem certeza que deseja excluir o relatório de "${nome}"? Esta ação não pode ser desfeita.`)) {
-        try {
-            await deleteDoc(doc(db, "relatorios_diagnosticos", id));
-            // Se o relatório excluído era o que estava na tela, limpa o ID oculto
-            if (document.getElementById('relatorioId').value === id) {
-                document.getElementById('relatorioId').value = "";
-                // Opcional: Limpar todo o formulário também
-            }
-            alert("Relatório excluído com sucesso.");
-            buscarRelatorios(); // Atualiza a lista
-        } catch (e) {
-            console.error("Erro ao excluir: ", e);
-            alert("Erro ao excluir o relatório.");
-        }
+window.excluir = async function(id) {
+    if(confirm("Excluir este relatório?")) {
+        await deleteDoc(doc(tabelaRelatorios, id));
+        executarBusca(); // Recarrega lista
     }
 };
