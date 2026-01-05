@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatório Diagnóstico - Escola Manain</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Times+New+Roman&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Times+New+Roman&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="stylesheet" href="style.css">
@@ -69,7 +69,7 @@
                 <div class="linha">
                     <div class="campo-full">
                         <span class="label">Filiação:</span>
-                        <input type="text" id="filiacao" class="input-linha">
+                        <input type="text" id="filiacao" placeholder="Mãe e Pai" class="input-linha">
                     </div>
                 </div>
 
@@ -88,25 +88,25 @@
             <div class="area-box">
                 <div class="titulo-area">
                     <h4>1.2 Avaliação Pedagógica</h4>
-                    <button class="btn-acao no-print" onclick="window.abrirModal('pedagogica')"><i class="fas fa-list"></i> Checklist</button>
+                    <button class="btn-acao no-print" onclick="window.abrirModal('pedagogica')"><i class="fas fa-list-check"></i> Abrir Checklist</button>
                 </div>
-                <textarea id="txtPedagogica" class="auto-expand" rows="4" placeholder="Habilidades conceituais, sociais e práticas..."></textarea>
+                <textarea id="txtPedagogica" class="auto-expand" rows="4" placeholder="Clique no botão acima para preencher..."></textarea>
             </div>
 
             <div class="area-box">
                 <div class="titulo-area">
                     <h4>1.3 Avaliação Clínica</h4>
-                    <button class="btn-acao no-print" onclick="window.abrirModal('clinica')"><i class="fas fa-user-md"></i> Checklist</button>
+                    <button class="btn-acao no-print" onclick="window.abrirModal('clinica')"><i class="fas fa-user-md"></i> Abrir Checklist</button>
                 </div>
-                <textarea id="txtClinica" class="auto-expand" rows="4" placeholder="Desempenho clínico, saúde..."></textarea>
+                <textarea id="txtClinica" class="auto-expand" rows="4" placeholder="Clique no botão acima para preencher..."></textarea>
             </div>
 
             <div class="area-box">
                 <div class="titulo-area">
                     <h4>1.4 Avaliação Serviço Social</h4>
-                    <button class="btn-acao no-print" onclick="window.abrirModal('social')"><i class="fas fa-users"></i> Checklist</button>
+                    <button class="btn-acao no-print" onclick="window.abrirModal('social')"><i class="fas fa-users"></i> Abrir Checklist</button>
                 </div>
-                <textarea id="txtSocial" class="auto-expand" rows="4" placeholder="Entrevistas e observações..."></textarea>
+                <textarea id="txtSocial" class="auto-expand" rows="4" placeholder="Clique no botão acima para preencher..."></textarea>
             </div>
         </section>
 
@@ -135,48 +135,35 @@
         </div>
 
         <div class="assinaturas-wrapper">
-            
             <div class="assinatura-item">
-                <div class="img-ass">
-                    <img id="imgPedagogica" src="" alt="Assinatura Pedagoga">
-                </div>
+                <div class="img-ass"><img id="imgPedagogica" src="" alt="Assinatura Pedagoga"></div>
                 <div class="linha-ass"></div>
-                
                 <p id="nomePedagogica" class="nome-assinatura">Nome</p>
                 <p id="cargoPedagogica" class="cargo-assinatura">Cargo</p>
                 <p id="regPedagogica" class="reg-assinatura">Registro</p>
-                
                 <select id="selPedagogica" class="sel-ass no-print" onchange="window.trocarAssinatura('pedagogia', this.value)"></select>
             </div>
 
             <div class="assinatura-item">
-                <div class="img-ass">
-                    <img id="imgPsicologia" src="" alt="Assinatura Psicóloga">
-                </div>
+                <div class="img-ass"><img id="imgPsicologia" src="" alt="Assinatura Psicóloga"></div>
                 <div class="linha-ass"></div>
-                
                 <p id="nomePsicologia" class="nome-assinatura">Nome</p>
                 <p id="cargoPsicologia" class="cargo-assinatura">Cargo</p>
                 <p id="regPsicologia" class="reg-assinatura">Registro</p>
-
                 <select id="selPsicologia" class="sel-ass no-print" onchange="window.trocarAssinatura('psicologia', this.value)"></select>
             </div>
 
             <div class="assinatura-item">
-                <div class="img-ass">
-                    <img id="imgSocial" src="" alt="Assinatura Social">
-                </div>
+                <div class="img-ass"><img id="imgSocial" src="" alt="Assinatura Social"></div>
                 <div class="linha-ass"></div>
-                
                 <p id="nomeSocial" class="nome-assinatura">Nome</p>
                 <p id="cargoSocial" class="cargo-assinatura">Cargo</p>
                 <p id="regSocial" class="reg-assinatura">Registro</p>
-
                 <select id="selSocial" class="sel-ass no-print" onchange="window.trocarAssinatura('social', this.value)"></select>
             </div>
         </div>
-
     </main>
+
     <footer class="footer-oficial">
         <div class="footer-content">
             <p>Endereço: Rua das Açucenas nº 100, Jardim Colina Verde - Londrina/PR</p>
@@ -185,36 +172,66 @@
         </div>
     </footer>
 
-    
     <div class="fab-menu no-print">
-        <button onclick="window.abrirBusca()" class="btn-fab azul" title="Buscar"><i class="fas fa-search"></i></button>
+        <button onclick="window.abrirBusca()" class="btn-fab azul" title="Gestão de Dados"><i class="fas fa-database"></i></button>
         <button onclick="window.salvarRelatorio()" class="btn-fab verde" title="Salvar"><i class="fas fa-save"></i></button>
         <button onclick="window.print()" class="btn-fab laranja" title="Imprimir"><i class="fas fa-print"></i></button>
     </div>
 
     <div id="modalChecklist" class="modal-overlay">
-        <div class="modal-card">
+        <div class="modal-card modal-split">
             <div class="modal-header">
                 <h3 id="tituloModal">Avaliação</h3>
                 <button onclick="window.fecharModal('modalChecklist')">&times;</button>
             </div>
-            <div class="modal-body" id="corpoChecklist"></div>
+            
+            <div class="modal-split-body">
+                <div class="split-left">
+                    <h4 class="split-title">Itens de Avaliação</h4>
+                    <div id="corpoChecklist"></div>
+                </div>
+
+                <div class="split-right">
+                    <h4 class="split-title">Pré-visualização do Relatório</h4>
+                    <p class="hint">O texto abaixo é gerado automaticamente conforme você marca os itens. Você pode editá-lo antes de confirmar.</p>
+                    <textarea id="textoAoVivo" class="textarea-preview"></textarea>
+                </div>
+            </div>
+
             <div class="modal-footer">
-                <button onclick="window.processarChecklist()" class="btn-confirmar">Confirmar e Gerar Texto</button>
+                <button onclick="window.confirmarChecklist()" class="btn-confirmar">Confirmar e Inserir no Relatório</button>
             </div>
         </div>
     </div>
 
     <div id="modalBusca" class="modal-overlay">
-        <div class="modal-card">
+        <div class="modal-card modal-large">
             <div class="modal-header">
-                <h3>Buscar Relatórios</h3>
+                <h3><i class="fas fa-server"></i> Central de Dados e Relatórios</h3>
                 <button onclick="window.fecharModal('modalBusca')">&times;</button>
             </div>
+            
             <div class="modal-body">
-                <input type="text" id="buscaInput" placeholder="Digite o nome do aluno..." class="input-full">
-                <button onclick="window.executarBusca()" class="btn-buscar">Pesquisar</button>
-                <div id="listaResultados" class="lista-res"></div>
+                <div class="toolbar-dados">
+                    <div class="search-group">
+                        <input type="text" id="buscaInput" placeholder="Buscar por Estudante ou Filiação..." class="input-full">
+                        <button onclick="window.executarBusca()" class="btn-buscar"><i class="fas fa-search"></i></button>
+                    </div>
+                    
+                    <div class="actions-group">
+                        <button onclick="window.gerarRelatorioLista()" class="btn-action btn-report"><i class="fas fa-list-ol"></i> Lista Alfabética</button>
+                        <button onclick="window.exportarDados()" class="btn-action btn-export"><i class="fas fa-file-export"></i> Exportar Backup</button>
+                        <label for="importFile" class="btn-action btn-import"><i class="fas fa-file-import"></i> Importar Backup</label>
+                        <input type="file" id="importFile" style="display:none" onchange="window.importarDados(this)">
+                    </div>
+                </div>
+
+                <div id="listaResultados" class="lista-res-moderna">
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>Utilize a busca ou as ferramentas acima.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

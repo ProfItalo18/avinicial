@@ -16,7 +16,7 @@ const tabelaRelatorios = collection(db, "relatorios");
 
 let idRelatorioAtual = null;
 
-// --- 2. DADOS DA EQUIPE (NOVA LÓGICA) ---
+// --- 2. DADOS DA EQUIPE ---
 const EQUIPE = {
     pedagogia: {
         'ped1': { nome: "Jheniffer Cavalheiro André", cargo: "Coord. Pedagógica", registro: "RG 9.727.432-0 / Ata nº 15/2018", img: "asspedagoda.png" },
@@ -24,15 +24,15 @@ const EQUIPE = {
     },
     psicologia: {
         'psi1': { nome: "Jaqueline Gonçalves Malaquim", cargo: "Psicóloga Escolar", registro: "CRP 08/30548", img: "asspsicologa.png" },
-        'psi2': { nome: "", cargo: "Psicóloga", registro: "", img: "" } // Opção vazia
+        'psi2': { nome: "", cargo: "Psicóloga", registro: "", img: "" }
     },
     social: {
         'soc1': { nome: "Andrea Cristina Santos", cargo: "Assistente Social", registro: "CRESS/PR 9794", img: "asssocial.png" },
-        'soc2': { nome: "", cargo: "Assistente Social", registro: "", img: "" } // Opção vazia
+        'soc2': { nome: "", cargo: "Assistente Social", registro: "", img: "" }
     }
 };
 
-// --- 3. DADOS DO CHECKLIST (DIAGNÓSTICO) ---
+// --- 3. DADOS DO CHECKLIST ---
 const DADOS_CHECKLIST = {
     pedagogica: {
         titulo: "1.2 Avaliação Pedagógica e Funcional (Educação Especial)",
@@ -305,7 +305,8 @@ const DADOS_CHECKLIST = {
         ]
     }
 };
-// --- 4. FUNÇÕES GLOBAIS ---
+
+// --- 4. FUNÇÕES GLOBAIS (AO WINDOW) ---
 
 function autoResize(el) {
     el.style.height = 'auto';
@@ -313,21 +314,17 @@ function autoResize(el) {
 }
 
 window.addEventListener('load', () => {
-    // Textareas dinâmicos
     document.querySelectorAll('textarea').forEach(tx => {
         tx.addEventListener('input', function() { autoResize(this); });
     });
 
-    // Inicializa Selects
     preencherSelect('selPedagogica', EQUIPE.pedagogia);
     preencherSelect('selPsicologia', EQUIPE.psicologia);
     preencherSelect('selSocial', EQUIPE.social);
 
-    // Valores padrão
     window.trocarAssinatura('pedagogia', 'ped1');
     window.trocarAssinatura('psicologia', 'psi1');
     window.trocarAssinatura('social', 'soc1');
-    
     window.atualizarDataAssinatura();
 });
 
@@ -335,7 +332,6 @@ function preencherSelect(id, objetoCategoria) {
     const sel = document.getElementById(id);
     if(!sel) return;
     sel.innerHTML = "";
-    
     for (const [key, dados] of Object.entries(objetoCategoria)) {
         const txt = dados.nome ? dados.nome : `Opção Vazia (${key})`;
         const opt = document.createElement('option');
@@ -345,34 +341,7 @@ function preencherSelect(id, objetoCategoria) {
     }
 }
 
-// *** LÓGICA DE ASSINATURA ***
-window.trocarAssinatura = function(categoria, key) {
-    const dados = EQUIPE[categoria][key];
-    if(dados) {
-        // Mapeia categoria para o sufixo do ID (pedagogia -> Pedagogica, etc)
-        let sufixo = "";
-        if(categoria === 'pedagogia') sufixo = 'Pedagogica';
-        else if(categoria === 'psicologia') sufixo = 'Psicologia';
-        else if(categoria === 'social') sufixo = 'Social';
-        
-        const imgEl = document.getElementById(`img${sufixo}`);
-        const nomeEl = document.getElementById(`nome${sufixo}`);
-        const cargoEl = document.getElementById(`cargo${sufixo}`);
-        const regEl = document.getElementById(`reg${sufixo}`);
-        const selEl = document.getElementById(`sel${sufixo}`);
-
-        if(imgEl) {
-            imgEl.src = dados.img;
-            imgEl.style.display = dados.img ? 'block' : 'none'; // Esconde se vazio
-        }
-        if(nomeEl) nomeEl.innerText = dados.nome;
-        if(cargoEl) cargoEl.innerText = dados.cargo;
-        if(regEl) regEl.innerText = dados.registro;
-        
-        // Sincroniza select se chamado via código
-        if(selEl) selEl.value = key;
-    }
-};
+// *** EXPOSIÇÃO DE FUNÇÕES (CORREÇÃO DE ERRO DOS MODAIS) ***
 
 window.calcularIdade = function() {
     const d = document.getElementById('dataNascimento').value;
@@ -380,8 +349,7 @@ window.calcularIdade = function() {
     const nasc = new Date(d);
     const hoje = new Date();
     let idade = hoje.getFullYear() - nasc.getFullYear();
-    const m = hoje.getMonth() - nasc.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+    if (hoje < new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate())) idade--;
     document.getElementById('idade').value = `${idade} anos`;
 };
 
@@ -397,21 +365,49 @@ window.atualizarDataAssinatura = function() {
     p.innerText = `Londrina/PR, ${d.toLocaleDateString('pt-BR', options)}.`;
 };
 
-// --- MODAIS ---
+window.trocarAssinatura = function(categoria, key) {
+    const dados = EQUIPE[categoria][key];
+    if(dados) {
+        let sufixo = "";
+        if(categoria === 'pedagogia') sufixo = 'Pedagogica';
+        else if(categoria === 'psicologia') sufixo = 'Psicologia';
+        else if(categoria === 'social') sufixo = 'Social';
+        
+        const imgEl = document.getElementById(`img${sufixo}`);
+        const nomeEl = document.getElementById(`nome${sufixo}`);
+        const cargoEl = document.getElementById(`cargo${sufixo}`);
+        const regEl = document.getElementById(`reg${sufixo}`);
+        const selEl = document.getElementById(`sel${sufixo}`);
+
+        if(imgEl) { imgEl.src = dados.img; imgEl.style.display = dados.img ? 'block' : 'none'; }
+        if(nomeEl) nomeEl.innerText = dados.nome;
+        if(cargoEl) cargoEl.innerText = dados.cargo;
+        if(regEl) regEl.innerText = dados.registro;
+        if(selEl) selEl.value = key;
+    }
+};
+
+// --- NOVA LÓGICA DE CHECKLIST "SPLIT VIEW" ---
 window.abrirModal = function(area) {
     areaAtual = area;
     const dados = CHECKLIST[area];
     document.getElementById('tituloModal').innerText = dados.titulo;
+    
+    // Limpa corpo e preview
     const corpo = document.getElementById('corpoChecklist');
     corpo.innerHTML = "";
+    document.getElementById('textoAoVivo').value = "";
 
+    // Gera checkboxes
     dados.grupos.forEach((g, gIdx) => {
         let html = `<div class="check-grupo"><h5>${g.nome}</h5>`;
         g.itens.forEach((it, iIdx) => {
             const idChk = `chk_${area}_${gIdx}_${iIdx}`;
+            // Adicionamos evento onchange para atualizar ao vivo
             html += `
                 <div class="check-item">
                     <input type="checkbox" id="${idChk}" 
+                        onchange="window.atualizarPreviewAoVivo()"
                         data-txt="${it.txt}" data-ind="${it.ind}" data-enc="${it.enc}">
                     <label for="${idChk}">${it.txt}</label>
                 </div>`;
@@ -419,53 +415,202 @@ window.abrirModal = function(area) {
         html += `</div>`;
         corpo.innerHTML += html;
     });
+
+    // Pega o texto atual da área (se houver) e põe no preview
+    const idArea = areaAtual === 'pedagogica' ? 'txtPedagogica' : areaAtual === 'clinica' ? 'txtClinica' : 'txtSocial';
+    document.getElementById('textoAoVivo').value = document.getElementById(idArea).value;
+
     document.getElementById('modalChecklist').style.display = 'flex';
 };
 
-window.fecharModal = function(id) { document.getElementById(id).style.display = 'none'; };
-
-window.processarChecklist = function() {
+// Função chamada a cada clique no checkbox
+window.atualizarPreviewAoVivo = function() {
     const checks = document.querySelectorAll('#corpoChecklist input:checked');
-    let txt = "", ind = "", enc = "";
-
+    let textos = [];
     checks.forEach(c => {
-        if(c.dataset.txt) txt += c.dataset.txt + " ";
+        if(c.dataset.txt) textos.push(c.dataset.txt);
+    });
+    // Junta com espaço e põe no textarea da direita
+    document.getElementById('textoAoVivo').value = textos.join(" ");
+};
+
+window.confirmarChecklist = function() {
+    // Pega o texto FINAL editado pelo usuário na direita
+    const textoFinal = document.getElementById('textoAoVivo').value;
+    
+    // Atualiza os campos globais baseados no que foi CHECKADO (Indicações/Encaminhamentos)
+    // O texto principal vem da caixa editável
+    const checks = document.querySelectorAll('#corpoChecklist input:checked');
+    let ind = "", enc = "";
+    checks.forEach(c => {
         if(c.dataset.ind) ind += "• " + c.dataset.ind + "\n";
         if(c.dataset.enc) enc += "• " + c.dataset.enc + "\n";
     });
 
-    const idArea = areaAtual === 'pedagogica' ? 'txtPedagogica' : 
-                   areaAtual === 'clinica' ? 'txtClinica' : 'txtSocial';
-    
-    const el = document.getElementById(idArea);
-    if(el) { el.value = txt; autoResize(el); }
+    // Destino Texto Principal
+    const idArea = areaAtual === 'pedagogica' ? 'txtPedagogica' : areaAtual === 'clinica' ? 'txtClinica' : 'txtSocial';
+    const elArea = document.getElementById(idArea);
+    elArea.value = textoFinal;
+    autoResize(elArea);
 
-    if(txt) {
+    // Destino Globais
+    if(ind) { const i = document.getElementById('txtIndicacoes'); i.value += (i.value ? "\n" : "") + ind; autoResize(i); }
+    if(enc) { const e = document.getElementById('txtEncaminhamentos'); e.value += (e.value ? "\n" : "") + enc; autoResize(e); }
+
+    // Conclusão Diagnóstica (sugestão: adicionar também)
+    if(textoFinal) {
         const c = document.getElementById('txtConclusao');
-        c.value += (c.value ? "\n" : "") + txt;
-        autoResize(c);
+        // Evita duplicar se já tiver
+        if(!c.value.includes(textoFinal.substring(0, 20))) {
+             c.value += (c.value ? "\n" : "") + textoFinal;
+             autoResize(c);
+        }
     }
-    if(ind) {
-        const i = document.getElementById('txtIndicacoes');
-        i.value += (i.value ? "\n" : "") + ind;
-        autoResize(i);
-    }
-    if(enc) {
-        const e = document.getElementById('txtEncaminhamentos');
-        e.value += (e.value ? "\n" : "") + enc;
-        autoResize(e);
-    }
+
     window.fecharModal('modalChecklist');
 };
 
-window.abrirBusca = function() { document.getElementById('modalBusca').style.display = 'flex'; };
+window.fecharModal = function(id) { document.getElementById(id).style.display = 'none'; };
 
-// --- SALVAR E CARREGAR ---
+// --- GESTÃO DE DADOS (MODERNA) ---
+window.abrirBusca = function() { document.getElementById('modalBusca').style.display = 'flex'; window.executarBusca(); };
+
+window.executarBusca = async function() {
+    const termo = document.getElementById('buscaInput').value.toLowerCase();
+    const lista = document.getElementById('listaResultados');
+    lista.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Buscando...</p></div>';
+    
+    try {
+        const q = query(tabelaRelatorios, orderBy('timestamp', 'desc'));
+        const snap = await getDocs(q);
+        
+        lista.innerHTML = "";
+        if(snap.empty) { lista.innerHTML = '<div class="empty-state"><p>Nenhum registro encontrado.</p></div>'; return; }
+
+        let count = 0;
+        snap.forEach(d => {
+            const data = d.data();
+            const nome = data.estudante ? data.estudante.toLowerCase() : "";
+            const pai = data.filiacao ? data.filiacao.toLowerCase() : "";
+            
+            // Busca por Nome do Estudante OU Filiação
+            if(nome.includes(termo) || pai.includes(termo)) {
+                count++;
+                const dataF = data.timestamp ? new Date(data.timestamp.seconds*1000).toLocaleDateString() : "-";
+                
+                lista.innerHTML += `
+                    <div class="result-card">
+                        <div class="card-header">
+                            <h4>${data.estudante || "Sem Nome"}</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-meta"><i class="fas fa-user-friends"></i> ${data.filiacao || "Filiação não inf."}</div>
+                            <div class="card-meta"><i class="fas fa-calendar-alt"></i> Atualizado em: ${dataF}</div>
+                        </div>
+                        <div class="card-actions">
+                             <button class="btn-card btn-del" onclick="window.excluirRelatorio('${d.id}')">Excluir</button>
+                             <button class="btn-card btn-open" onclick="window.carregar('${d.id}')">Carregar Relatório</button>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        if(count === 0) lista.innerHTML = '<div class="empty-state"><p>Nenhum resultado para "'+termo+'".</p></div>';
+
+    } catch(e) { console.error(e); lista.innerHTML = "Erro na conexão."; }
+};
+
+// --- IMPORTAR / EXPORTAR DADOS ---
+window.exportarDados = async function() {
+    try {
+        const snap = await getDocs(collection(db, "relatorios_diagnosticos"));
+        let dados = [];
+        snap.forEach(doc => dados.push(doc.data()));
+        
+        const json = JSON.stringify(dados, null, 2);
+        const blob = new Blob([json], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup_relatorios_${new Date().toLocaleDateString().replace(/\//g,'-')}.json`;
+        a.click();
+    } catch(e) { alert("Erro ao exportar: " + e.message); }
+};
+
+window.importarDados = function(input) {
+    const file = input.files[0];
+    if(!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const dados = JSON.parse(e.target.result);
+            if(!Array.isArray(dados)) throw new Error("Formato inválido");
+            
+            if(confirm(`Deseja importar ${dados.length} relatórios? Isso pode levar um tempo.`)) {
+                const batch = writeBatch(db); // Batch para performance (limite 500 por vez, aqui simplificado)
+                // Nota: Firestore Batch tem limite, para muitos dados ideal é loop com Promise.all em chunks
+                // Vamos fazer loop simples para garantir
+                let contador = 0;
+                for(const item of dados) {
+                    await addDoc(tabelaRelatorios, item);
+                    contador++;
+                }
+                alert(`${contador} relatórios importados com sucesso!`);
+                window.executarBusca();
+            }
+        } catch(err) { alert("Erro ao importar: " + err.message); }
+    };
+    reader.readAsText(file);
+};
+
+// --- RELATÓRIO DE LISTA ALFABÉTICA ---
+window.gerarRelatorioLista = async function() {
+    try {
+        const q = query(tabelaRelatorios, orderBy('estudante', 'asc')); // Ordem alfabética
+        const snap = await getDocs(q);
+        
+        let html = `
+            <html><head><title>Lista de Alunos</title>
+            <style>body{font-family:sans-serif; padding:20px;} table{width:100%; border-collapse:collapse;} th, td{border:1px solid #333; padding:8px; text-align:left;} th{background:#eee;}</style>
+            </head><body>
+            <h2>Relatório Geral de Alunos Avaliados</h2>
+            <table>
+                <thead><tr><th>Nome do Estudante</th><th>Filiação</th><th>Data Avaliação</th></tr></thead>
+                <tbody>
+        `;
+        
+        snap.forEach(d => {
+            const data = d.data();
+            html += `<tr>
+                <td>${data.estudante || "-"}</td>
+                <td>${data.filiacao || "-"}</td>
+                <td>${data.dataAvaliacao ? new Date(data.dataAvaliacao).toLocaleDateString() : "-"}</td>
+            </tr>`;
+        });
+        
+        html += `</tbody></table></body></html>`;
+        
+        const win = window.open('', '_blank');
+        win.document.write(html);
+        win.print();
+        
+    } catch(e) { alert("Erro ao gerar lista: " + e.message); }
+};
+
+window.excluirRelatorio = async function(id) {
+    if(confirm("Tem certeza que deseja excluir permanentemente este relatório?")) {
+        await deleteDoc(doc(tabelaRelatorios, id));
+        window.executarBusca();
+    }
+}
+
+// --- SALVAR / CARREGAR ---
 window.salvarRelatorio = async function() {
     const btn = document.querySelector('.verde');
-    const iconeOriginal = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    
+    btn.innerHTML = '...';
     try {
         const dados = {
             escola: document.getElementById('escola').value,
@@ -474,88 +619,35 @@ window.salvarRelatorio = async function() {
             idade: document.getElementById('idade').value,
             filiacao: document.getElementById('filiacao').value,
             dataAvaliacao: document.getElementById('dataAvaliacao').value,
-            
             txtPedagogica: document.getElementById('txtPedagogica').value,
             txtClinica: document.getElementById('txtClinica').value,
             txtSocial: document.getElementById('txtSocial').value,
-            
             txtConclusao: document.getElementById('txtConclusao').value,
             txtIndicacoes: document.getElementById('txtIndicacoes').value,
             txtEncaminhamentos: document.getElementById('txtEncaminhamentos').value,
             txtObservacoes: document.getElementById('txtObservacoes').value,
-            
-            // Salva IDs das assinaturas
             idAssPedagogica: document.getElementById('selPedagogica').value,
             idAssPsicologia: document.getElementById('selPsicologia').value,
             idAssSocial: document.getElementById('selSocial').value,
-            
             timestamp: new Date()
         };
-
         const idDoc = document.getElementById('docId').value;
-        if(idDoc) {
-            await updateDoc(doc(tabelaRelatorios, idDoc), dados);
-            alert("Atualizado!");
-        } else {
-            const ref = await addDoc(tabelaRelatorios, dados);
-            document.getElementById('docId').value = ref.id;
-            alert("Salvo!");
-        }
-    } catch(e) {
-        console.error(e);
-        alert("Erro: " + e.message);
-    } finally {
-        btn.innerHTML = iconeOriginal;
-    }
-};
-
-window.executarBusca = async function() {
-    const termo = document.getElementById('buscaInput').value.toLowerCase();
-    const lista = document.getElementById('listaResultados');
-    lista.innerHTML = "Carregando...";
-    
-    try {
-        const q = query(tabelaRelatorios, orderBy('timestamp', 'desc'));
-        const snap = await getDocs(q);
-        
-        lista.innerHTML = "";
-        if(snap.empty) { lista.innerHTML = "Nada encontrado."; return; }
-
-        snap.forEach(d => {
-            const data = d.data();
-            if(data.estudante && data.estudante.toLowerCase().includes(termo)) {
-                const dataF = data.timestamp ? new Date(data.timestamp.seconds*1000).toLocaleDateString() : "-";
-                lista.innerHTML += `
-                    <div style="padding:10px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
-                        <div><b>${data.estudante}</b><br><small>${dataF}</small></div>
-                        <button onclick="window.carregar('${d.id}')" style="background:var(--azul-claro); color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Abrir</button>
-                    </div>
-                `;
-            }
-        });
-    } catch(e) { console.error(e); lista.innerHTML = "Erro."; }
+        if(idDoc) { await updateDoc(doc(tabelaRelatorios, idDoc), dados); alert("Atualizado!"); }
+        else { const ref = await addDoc(tabelaRelatorios, dados); document.getElementById('docId').value = ref.id; alert("Salvo!"); }
+    } catch(e) { console.error(e); alert("Erro ao salvar."); } 
+    finally { btn.innerHTML = '<i class="fas fa-save"></i>'; }
 };
 
 window.carregar = async function(id) {
-    const docRef = doc(tabelaRelatorios, id);
-    const snap = await getDoc(docRef);
+    const snap = await getDoc(doc(tabelaRelatorios, id));
     if(snap.exists()) {
         const d = snap.data();
         document.getElementById('docId').value = id;
-        
-        const campos = ['escola','nomeEstudante','dataNascimento','idade','filiacao','dataAvaliacao',
-                        'txtPedagogica','txtClinica','txtSocial','txtConclusao','txtIndicacoes',
-                        'txtEncaminhamentos','txtObservacoes'];
-        
-        campos.forEach(k => {
-            const el = document.getElementById(k);
-            if(el) { el.value = d[k] || ""; autoResize(el); }
-        });
-
+        const campos = ['escola','nomeEstudante','dataNascimento','idade','filiacao','dataAvaliacao','txtPedagogica','txtClinica','txtSocial','txtConclusao','txtIndicacoes','txtEncaminhamentos','txtObservacoes'];
+        campos.forEach(k => { const el = document.getElementById(k); if(el) { el.value = d[k] || ""; autoResize(el); } });
         if(d.idAssPedagogica) window.trocarAssinatura('pedagogia', d.idAssPedagogica);
         if(d.idAssPsicologia) window.trocarAssinatura('psicologia', d.idAssPsicologia);
         if(d.idAssSocial) window.trocarAssinatura('social', d.idAssSocial);
-        
         window.atualizarDataAssinatura();
         window.fecharModal('modalBusca');
     }
