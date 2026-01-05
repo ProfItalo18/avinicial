@@ -1,21 +1,20 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 1. FIREBASE CONFIG (PREENCHA AQUI) ---
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJECT_ID",
-  storageBucket: "SEU_BUCKET",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SEU_APP_ID"
+  apiKey: "AIzaSyAuyLoRREleZ9hA2JFBJhUk0oysY0AV_Zw",
+  authDomain: "relatoriosescolamanain.firebaseapp.com",
+  projectId: "relatoriosescolamanain",
+  storageBucket: "relatoriosescolamanain.firebasestorage.app",
+  messagingSenderId: "610886737458",
+  appId: "1:610886737458:web:abe0e11610bc90ee9a662b"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const tabelaRelatorios = collection(db, "relatorios_diagnosticos");
+const tabelaRelatorios = collection(db, "relatorios");
 
-let areaAtual = "";
+let idRelatorioAtual = null;
 
 // --- 2. PERFIS DE ASSINATURA (EDITE AQUI) ---
 const PERFIS = {
