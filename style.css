@@ -1,249 +1,212 @@
 :root {
-    --primary: #2c3e50;
-    --secondary: #3498db;
-    --bg-screen: #f4f6f8;
+    --primary: #1a237e; /* Azul mais institucional */
+    --secondary: #0277bd;
+    --accent: #00bfa5;
+    --bg: #f5f7fa;
     --paper: #ffffff;
-    --text-color: #333;
-    --border-color: #ddd;
+    --text: #263238;
+    --danger: #c62828;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
 
 body {
-    background-color: var(--bg-screen);
-    color: var(--text-color);
-    padding-bottom: 50px;
+    background-color: var(--bg);
+    color: var(--text);
+    padding-bottom: 60px;
 }
 
-/* --- Layout Principal --- */
+/* --- Layout Papel na Tela --- */
 .main-content {
-    max-width: 210mm; /* Tamanho A4 */
-    margin: 20px auto;
     background: var(--paper);
-    padding: 40px; /* Margem interna do papel na tela */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 210mm; /* A4 */
     min-height: 297mm;
+    margin: 30px auto;
+    padding: 20mm 15mm; /* Margens internas ajustadas */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    position: relative;
+    border-radius: 4px;
 }
 
-h1.document-title {
-    text-align: center;
-    text-transform: uppercase;
-    font-size: 16pt;
-    margin-bottom: 30px;
-    border-bottom: 2px solid var(--primary);
-    padding-bottom: 10px;
+/* Títulos */
+.doc-title {
+    text-align: center; font-size: 18pt; font-weight: 900; margin-bottom: 35px;
+    text-transform: uppercase; color: var(--primary); letter-spacing: 0.5px;
+    border-bottom: 3px solid var(--primary); padding-bottom: 15px;
 }
 
-h2 { font-size: 14pt; color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-h3 { font-size: 12pt; color: var(--secondary); margin-top: 15px; margin-bottom: 10px; }
-
-/* --- Cartões e Seções --- */
-.card {
-    margin-bottom: 25px;
-    padding: 15px;
-    border: 1px solid transparent;
+.section-box { margin-bottom: 30px; }
+.section-title {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 2px solid #eceff1; margin-bottom: 15px; padding-bottom: 5px;
 }
-
-/* Na tela, damos um visual de card. Na impressão, removemos bordas. */
-@media screen {
-    .card { background: #fff; border: 1px solid #eee; border-radius: 8px; }
+.section-title h2 {
+    font-size: 13pt; text-transform: uppercase; color: var(--primary); font-weight: 700;
+    border-left: 6px solid var(--secondary); padding-left: 10px;
 }
+.hint { font-size: 9pt; color: #78909c; font-weight: normal; }
 
-/* --- Grid do Formulário --- */
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
+/* Formulários */
+.form-grid { display: flex; flex-direction: column; gap: 12px; }
+.row-duo { display: flex; gap: 25px; }
+.row-full { width: 100%; }
+.input-group { flex: 1; }
 
-.col-full { grid-column: span 2; }
-.col-half { grid-column: span 1; }
-
-.form-group label {
-    display: block;
-    font-weight: bold;
-    font-size: 0.9rem;
-    margin-bottom: 5px;
-}
+label { font-weight: 700; font-size: 10pt; display: block; margin-bottom: 4px; color: var(--primary); }
 
 input, textarea, select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 11pt;
+    width: 100%; padding: 8px 10px; border: 1px solid #cfd8dc; border-radius: 4px;
+    font-size: 11pt; background: #fff; transition: border 0.3s; color: var(--text);
 }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--secondary); }
 
-input.input-flat {
-    background: #f9f9f9;
-    border: none;
-    font-weight: bold;
-    color: #000;
+textarea { resize: vertical; text-align: justify; line-height: 1.5; font-family: 'Roboto', sans-serif; }
+.auto-text { background-color: #fcfdfd; }
+
+.input-clean { border: none; background: transparent; padding: 0; color: var(--text); }
+.bold { font-weight: 900; }
+
+/* Áreas Avaliadas */
+.area-block { margin-bottom: 25px; background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #eee; }
+.area-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.area-header h3 { font-size: 11.5pt; color: var(--secondary); font-weight: 700; }
+
+.btn-open-modal {
+    background: var(--secondary); color: white; border: none; padding: 8px 15px;
+    border-radius: 4px; cursor: pointer; font-size: 9.5pt; transition: 0.2s; display: flex; align-items: center; gap: 8px;
 }
+.btn-open-modal:hover { background: #01579b; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-textarea {
-    resize: vertical;
-    text-align: justify;
-    line-height: 1.5;
+/* Assinaturas */
+.signatures-container {
+    display: flex; justify-content: space-between; margin-top: 60px; page-break-inside: avoid;
 }
+.sig-box { width: 30%; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.sig-img-wrapper { height: 80px; display: flex; align-items: flex-end; justify-content: center; width: 100%; margin-bottom: 5px; }
+.sig-img-wrapper img { max-height: 100%; max-width: 100%; object-fit: contain; }
+.sig-line { width: 90%; height: 1px; background: var(--primary); margin: 5px 0; }
+.sig-select { margin-bottom: 5px; font-size: 8.5pt; width: auto; padding: 4px; }
+.sig-box p { font-size: 10pt; font-weight: 700; color: var(--primary); }
 
-/* --- Áreas Avaliadas --- */
-.area-title-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
+/* Texto Legal */
+.legal-text-box { border: 1px solid #b0bec5; background: #eceff1; padding: 12px; font-size: 9.5pt; text-align: justify; border-left: 4px solid var(--primary); }
 
-.btn-action {
-    background: var(--secondary);
-    color: white;
-    border: none;
-    padding: 5px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-.btn-action:hover { background: #2980b9; }
+/* Header/Footer Overlays (Escondidos na tela) */
+.print-header-overlay, .print-footer-overlay { display: none; }
 
-/* --- Assinaturas --- */
-.signatures-section {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 50px;
-    page-break-inside: avoid; /* Evita quebra no meio das assinaturas */
-}
-
-.sig-block {
-    width: 30%;
-    text-align: center;
-}
-
-.sig-image-container {
-    height: 80px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    margin-bottom: 5px;
-}
-
-.sig-image-container img {
-    max-height: 100%;
-    max-width: 100%;
-}
-
-.sig-role {
-    border-top: 1px solid #000;
-    padding-top: 5px;
-    font-size: 10pt;
-    font-weight: bold;
-}
-
-.sig-selector {
-    margin-bottom: 5px;
-    font-size: 0.8rem;
-    padding: 2px;
-}
-
-/* --- Texto Legal --- */
-.legal-text p {
-    font-size: 9pt;
-    font-style: italic;
-    text-align: justify;
-    color: #555;
-}
-
-/* --- Header/Footer Print --- */
-.print-header, .print-footer { display: none; } /* Esconde na tela */
-
-/* --- FAB e Modais --- */
-.fab-container {
-    position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000;
-}
-.fab-btn {
-    width: 50px; height: 50px; border-radius: 50%; border: none; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-.btn-print { background: #e67e22; }
-.btn-save { background: #27ae60; }
-
+/* --- MODAIS (Geral) --- */
 .modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
-    display: none; justify-content: center; align-items: center; z-index: 2000;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 2000;
+    backdrop-filter: blur(3px);
 }
-.modal-card {
-    background: white; width: 90%; max-width: 800px; max-height: 90vh;
-    display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+.modal-content {
+    background: white; border-radius: 8px; display: flex; flex-direction: column;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25); max-height: 90vh;
 }
-.modal-header, .modal-footer { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.modal-footer { border-top: 1px solid #eee; border-bottom: none; justify-content: flex-end; }
-.modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+.modal-large { width: 90%; max-width: 900px; }
+.modal-medium { width: 90%; max-width: 600px; }
 
-.checklist-subsection { margin-bottom: 20px; }
-.checklist-subsection h4 { background: #f0f0f0; padding: 8px; border-radius: 4px; margin-bottom: 10px; }
-.checklist-item { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 0.95rem; }
-.checklist-item input { width: auto; margin-right: 10px; margin-top: 4px; }
+.modal-header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; border-radius: 8px 8px 0 0; }
+.close-modal { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+.modal-body { padding: 20px; overflow-y: auto; }
+.modal-footer { padding: 15px 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #f5f5f5; border-radius: 0 0 8px 8px;}
 
-/* ================= IMPRESSÃO ================= */
+/* Modal Checklist Específico */
+.checklist-group { margin-bottom: 20px; break-inside: avoid; }
+.checklist-group h4 { background: #e3f2fd; padding: 8px 12px; border-left: 4px solid var(--secondary); margin-bottom: 10px; color: var(--primary); }
+.check-item { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 10.5pt; padding: 5px; border-radius: 4px; transition: background 0.2s; }
+.check-item:hover { background: #f0f4f8; }
+.check-item input { width: auto; margin-right: 12px; margin-top: 4px; transform: scale(1.1); cursor: pointer; }
+.check-item label { font-weight: normal; color: var(--text); cursor: pointer; }
+.hint-text { font-size: 9pt; color: #666; font-style: italic; }
+.btn-confirm { background: var(--accent); color: white; border: none; padding: 10px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+.btn-confirm:hover { background: #009688; }
+
+/* Modal Busca Específico */
+.search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+.btn-search-action { background: var(--secondary); color: white; border: none; padding: 0 20px; border-radius: 4px; cursor: pointer; }
+.results-list { max-height: 400px; overflow-y: auto; }
+.result-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px; border: 1px solid #eee; margin-bottom: 8px; border-radius: 6px;
+    background: #fff;
+}
+.result-info strong { display: block; color: var(--primary); font-size: 11pt; }
+.result-info span { font-size: 9pt; color: #888; }
+.result-actions { display: flex; gap: 8px; }
+.btn-load { background: var(--secondary); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 9pt; }
+.btn-delete { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 9pt; }
+.loading-text { text-align: center; color: #999; padding: 20px; }
+
+/* BOTOES FLUTUANTES */
+.fab-actions { position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column-reverse; gap: 15px; z-index: 1500; }
+.fab { width: 55px; height: 55px; border-radius: 50%; border: none; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 6px 10px rgba(0,0,0,0.3); transition: transform 0.2s; display: flex; justify-content: center; align-items: center; }
+.fab:hover { transform: scale(1.05); }
+.btn-print { background: #ff9800; }
+.btn-save { background: #2ecc71; }
+.btn-search { background: #3f51b5; }
+
+/* ================== IMPRESSÃO (A4) ================== */
 @media print {
-    @page {
-        margin: 0; /* Remove margens do navegador para controlar via CSS */
-        size: A4;
-    }
-
-    body {
-        background: white;
-        padding: 0;
-        /* Margens para acomodar Header e Footer fixos */
-        margin-top: 140px; 
-        margin-bottom: 80px;
+    @page { margin: 0; size: A4; }
+    
+    body { 
+        background: white; 
+        /* Margens para o conteúdo não bater no header/footer fixos */
+        margin-top: 150px;  /* Ajuste conforme a altura do seu cabeçalho */
+        margin-bottom: 100px; /* Ajuste conforme a altura do seu rodapé */
     }
 
     .main-content {
-        box-shadow: none;
-        margin: 0;
-        padding: 0 20mm; /* Margens laterais do conteúdo */
-        width: 100%;
-        max-width: none;
+        width: 100%; margin: 0; padding: 0 20mm; 
+        box-shadow: none; min-height: auto; border-radius: 0;
     }
 
     .no-print { display: none !important; }
 
-    /* Header Fixo */
-    .print-header {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 130px; /* Ajuste conforme altura da imagem */
-        background: white;
-        z-index: 1000;
+    /* Cabeçalho Fixo (Texto + Logo) */
+    .print-header-overlay {
+        display: block; position: fixed; top: 0; left: 0; width: 100%; 
+        background: white; z-index: 200; border-bottom: 3px solid var(--primary);
+        padding: 15px 20mm;
+        height: 130px; /* Altura fixa para reservar espaço */
+    }
+    .header-content { display: flex; align-items: center; justify-content: flex-start; height: 100%; }
+    .header-logo { height: 90px; width: auto; margin-right: 20px; object-fit: contain; }
+    .header-text h1 { margin: 0; color: var(--primary); font-size: 18pt; font-weight: 900; }
+    .header-text p { margin: 2px 0; font-size: 10pt; color: var(--text); }
+    .header-text .small-text { font-size: 9pt; color: #666; }
+
+    /* Rodapé Fixo (Texto) */
+    .print-footer-overlay {
+        display: block; position: fixed; bottom: 0; left: 0; width: 100%;
+        background: white; z-index: 200; border-top: 1px solid #ccc;
+        padding: 10px 20mm;
+        height: 80px; /* Altura fixa para reservar espaço */
         text-align: center;
     }
-    .print-header img { height: 100%; width: 100%; object-fit: contain; }
+    .footer-content p { margin: 3px 0; font-size: 9pt; color: #555; }
+    .footer-content .small-text { font-size: 8pt; font-style: italic; margin-top: 5px; }
 
-    /* Footer Fixo */
-    .print-footer {
-        display: block;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 70px; /* Ajuste conforme altura da imagem */
-        background: white;
-        z-index: 1000;
+    /* Estilos de impressão para inputs */
+    input, textarea, select {
+        border: none; background: transparent; padding: 0; resize: none;
+        font-family: 'Times New Roman', serif; color: black; font-size: 12pt;
+        line-height: 1.4;
     }
-    .print-footer img { height: 100%; width: 100%; object-fit: contain; }
-
-    /* Ajustes finos de texto */
-    input, textarea {
-        border: none;
-        background: transparent;
-        padding: 0;
-        resize: none;
-        color: black;
-        font-family: 'Times New Roman', serif; /* Fonte mais formal para impressão */
-    }
+    textarea { overflow: hidden; } /* Evita barras de rolagem na impressão */
     
-    .card { padding: 0; margin-bottom: 15px; border: none; }
+    /* Títulos na impressão */
+    .doc-title { font-size: 20pt; border-bottom-width: 4px; margin-bottom: 40px; }
+    .section-title h2 { background: none; padding-left: 0; border-left: none; color: #000; border-bottom: 2px solid #000; }
+    .section-box { margin-bottom: 20px; }
+    .area-block { background: none; border: none; padding: 0; margin-bottom: 20px; }
+    .area-header h3 { color: #000; text-decoration: underline; }
+    label { color: #000; }
+    .sig-box p, .sig-line { color: #000; background: #000; }
+    .legal-text-box { background: none; border: none; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 10px 0; color: #000; }
+    
+    /* Forçar quebras de página corretas */
+    section { page-break-inside: avoid; }
 }

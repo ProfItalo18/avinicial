@@ -3,182 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Avaliação de Ingresso - Escola Manain</title>
+    <title>Relatório de Avaliação Diagnóstica - Escola Manain</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="print-header">
-        <img src="header.png" alt="Cabeçalho Escola Manain">
+    <div class="print-header-overlay">
+        <div class="header-content">
+            <img src="col.png" alt="Logo Escola Manain" class="header-logo">
+            <div class="header-text">
+                <h1>ESCOLA MANAIN</h1>
+                <p>Educação Especial e Inclusiva</p>
+                <p class="small-text">Credenciada pela Resolução n° XXXXX/XXXX - NRE Londrina</p>
+            </div>
+        </div>
     </div>
 
-    <div class="print-footer">
-        <img src="footer.png" alt="Rodapé Escola Manain">
+    <div class="print-footer-overlay">
+        <div class="footer-content">
+            <p>Rua da Escola, 123 - Bairro - Londrina/PR - CEP: 00000-000</p>
+            <p>Telefone: (43) 3333-0000 | E-mail: contato@escolamanain.com.br</p>
+            <p class="small-text">"Inclusão com responsabilidade e amor."</p>
+        </div>
     </div>
 
     <main class="main-content">
         
-        <h1 class="document-title">RELATÓRIO DE AVALIAÇÃO DE INGRESSO</h1>
+        <h1 class="doc-title">RELATÓRIO DE AVALIAÇÃO DIAGNÓSTICA DE INGRESSO</h1>
 
-        <section class="card identification-section">
-            <div class="section-header">
-                <h2><i class="fas fa-user-graduate"></i> 1. Dados de Identificação</h2>
+        <input type="hidden" id="relatorioId">
+
+        <section class="section-box identification">
+            <div class="section-title">
+                <h2>1. DADOS DE IDENTIFICAÇÃO</h2>
             </div>
             
             <div class="form-grid">
-                <div class="form-group col-half">
-                    <label>Município:</label>
-                    <input type="text" value="Londrina/PR" readonly class="input-flat">
-                </div>
-                <div class="form-group col-half">
-                    <label>NRE:</label>
-                    <input type="text" value="Londrina/PR" readonly class="input-flat">
+                <div class="row-duo">
+                    <div class="input-group">
+                        <label>Município:</label>
+                        <input type="text" id="municipio" value="Londrina/PR" readonly class="input-clean bold">
+                    </div>
+                    <div class="input-group">
+                        <label>NRE:</label>
+                        <input type="text" id="nre" value="Londrina/PR" readonly class="input-clean bold">
+                    </div>
                 </div>
 
-                <div class="form-group col-full">
+                <div class="row-full">
                     <label>Escola:</label>
-                    <input type="text" value="Escola Manain" class="input-editable">
+                    <input type="text" id="escola" value="Escola Manain" class="input-editable">
                 </div>
 
-                <div class="form-group col-full">
+                <div class="row-full">
                     <label>Nome do Estudante:</label>
-                    <input type="text" id="nomeEstudante" placeholder="Digite o nome completo...">
+                    <input type="text" id="nomeEstudante" placeholder="Digite o nome completo do aluno...">
                 </div>
 
-                <div class="form-group col-half">
-                    <label>Data de Nascimento:</label>
-                    <input type="date" id="dataNascimento" onchange="calcularIdade()">
-                </div>
-                <div class="form-group col-half">
-                    <label>Idade:</label>
-                    <input type="text" id="idadeCalculada" readonly placeholder="Automático">
+                <div class="row-duo">
+                    <div class="input-group">
+                        <label>Data de Nascimento:</label>
+                        <input type="date" id="dataNascimento" onchange="calcularIdade()">
+                    </div>
+                    <div class="input-group">
+                        <label>Idade:</label>
+                        <input type="text" id="idadeCalculada" readonly placeholder="Automático">
+                    </div>
                 </div>
 
-                <div class="form-group col-full">
+                <div class="row-full">
                     <label>Filiação (Mãe / Pai):</label>
-                    <input type="text" id="filiacao" placeholder="Nome da Mãe / Nome do Pai">
+                    <input type="text" id="filiacao" placeholder="Nome da Mãe e Nome do Pai">
                 </div>
 
-                 <div class="form-group col-full">
+                <div class="row-full">
                     <label>Data da Avaliação:</label>
                     <input type="date" id="dataAvaliacao">
                 </div>
             </div>
         </section>
 
-        <section class="card areas-section">
-            <div class="section-header">
-                <h2><i class="fas fa-clipboard-check"></i> 2. Síntese das Áreas Avaliadas</h2>
-                <p class="no-print helper-text">Clique nos botões abaixo para preencher os checklists. O texto será gerado automaticamente.</p>
+        <section class="section-box">
+            <div class="section-title">
+                <h2>2. SÍNTESE DAS ÁREAS AVALIADAS (Diagnóstico)</h2>
+                <span class="no-print hint">Preencha os checklists para gerar os textos base.</span>
             </div>
 
             <div class="area-block">
-                <div class="area-title-row">
+                <div class="area-header">
                     <h3>2.1 Avaliação Pedagógica</h3>
-                    <button class="btn-action no-print" onclick="abrirModalArea('pedagogica')">
-                        <i class="fas fa-edit"></i> Preencher Checklist
+                    <button class="btn-open-modal no-print" onclick="abrirModalAvaliacao('pedagogica')">
+                        <i class="fas fa-list-check"></i> Checklist Pedagógico
                     </button>
                 </div>
-                <textarea id="textoPedagogico" class="auto-textarea" rows="6" placeholder="O texto será gerado aqui após o preenchimento..."></textarea>
+                <textarea id="textoPedagogico" rows="6" class="auto-text" placeholder="Síntese dos aspectos cognitivos, acadêmicos e funcionais..."></textarea>
             </div>
 
             <div class="area-block">
-                <div class="area-title-row">
+                <div class="area-header">
                     <h3>2.2 Avaliação Clínica</h3>
-                    <button class="btn-action no-print" onclick="abrirModalArea('clinica')">
-                        <i class="fas fa-user-md"></i> Preencher Checklist
+                    <button class="btn-open-modal no-print" onclick="abrirModalAvaliacao('clinica')">
+                        <i class="fas fa-user-nurse"></i> Checklist Clínico
                     </button>
                 </div>
-                <textarea id="textoClinico" class="auto-textarea" rows="6" placeholder="O texto será gerado aqui após o preenchimento..."></textarea>
+                <textarea id="textoClinico" rows="6" class="auto-text" placeholder="Síntese do desenvolvimento, saúde e autonomia..."></textarea>
             </div>
 
             <div class="area-block">
-                <div class="area-title-row">
+                <div class="area-header">
                     <h3>2.3 Avaliação Serviço Social</h3>
-                    <button class="btn-action no-print" onclick="abrirModalArea('social')">
-                        <i class="fas fa-users"></i> Preencher Checklist
+                    <button class="btn-open-modal no-print" onclick="abrirModalAvaliacao('social')">
+                        <i class="fas fa-users"></i> Checklist Social
                     </button>
                 </div>
-                <textarea id="textoSocial" class="auto-textarea" rows="6" placeholder="O texto será gerado aqui após o preenchimento..."></textarea>
+                <textarea id="textoSocial" rows="6" class="auto-text" placeholder="Síntese do contexto familiar e socioeconômico..."></textarea>
             </div>
         </section>
 
-        <section class="card">
-            <h3>3. Conclusão Diagnóstica</h3>
-            <textarea id="conclusaoDiagnostica" rows="5" placeholder="Síntese automática das conclusões das 3 áreas (editável)..."></textarea>
+        <section class="section-box">
+            <div class="section-title"><h2>3. CONCLUSÃO DIAGNÓSTICA</h2></div>
+            <textarea id="conclusaoDiagnostica" rows="6" placeholder="Integração dos dados das áreas, hipóteses diagnósticas e necessidades educacionais específicas (Editável)."></textarea>
         </section>
 
-        <section class="card">
-            <h3>4. Indicações Pedagógicas</h3>
-            <textarea id="indicacoesPedagogicas" rows="8" placeholder="Resumo pedagógico automático (aprox. 20 linhas)..."></textarea>
+        <section class="section-box">
+            <div class="section-title"><h2>4. INDICAÇÕES PEDAGÓGICAS (Plano de Atuação)</h2></div>
+            <textarea id="indicacoesPedagogicas" rows="10" placeholder="Sugestões de estratégias, recursos e adaptações curriculares (Automático/Editável)."></textarea>
         </section>
 
-        <section class="card">
-            <h3>5. Encaminhamentos</h3>
-            <textarea id="encaminhamentosGerais" rows="4" placeholder="Lista automática de encaminhamentos sugeridos..."></textarea>
+        <section class="section-box">
+            <div class="section-title"><h2>5. ENCAMINHAMENTOS DA REDE</h2></div>
+            <textarea id="encaminhamentosGerais" rows="5" placeholder="Encaminhamentos para saúde, assistência social ou outros serviços (Automático/Editável)."></textarea>
         </section>
 
-        <section class="card">
-            <h3>6. Observações Complementares</h3>
-            <div class="legal-text">
-                <p>A Escola Manain segue as diretrizes da Lei de Diretrizes e Bases da Educação Nacional (LDB 9394/96), garantindo o direito da pessoa com deficiência à educação inclusiva e de qualidade, conforme o Estatuto da Pessoa com Deficiência (Lei 13.146/2015) e demais normativas vigentes no estado do Paraná.</p>
+        <section class="section-box">
+            <div class="section-title"><h2>6. OBSERVAÇÕES COMPLEMENTARES E BASE LEGAL</h2></div>
+            <div class="legal-text-box">
+                <p>Este relatório de avaliação diagnóstica fundamenta-se nos princípios da educação inclusiva, conforme a Lei de Diretrizes e Bases da Educação Nacional (LDB 9394/96), o Estatuto da Pessoa com Deficiência (Lei 13.146/2015) e as Diretrizes Nacionais para a Educação Especial na Educação Básica. O objetivo é identificar potencialidades e barreiras para planejar o Atendimento Educacional Especializado (AEE) adequado.</p>
             </div>
         </section>
 
-        <section class="signatures-section">
-            <div class="sig-block">
-                <div class="sig-image-container">
-                    <img id="imgPedagogica" src="asspedagoga.png" alt="Assinatura Pedagógica">
+        <section class="signatures-container">
+            <div class="sig-box">
+                <div class="sig-img-wrapper">
+                    <img id="sigImgPedagogica" src="asspedagoga.png" alt="Assinatura Pedagógica">
                 </div>
-                <select class="no-print sig-selector" onchange="trocarAssinatura('pedagogica', this.value)">
-                    <option value="1">Coord. Pedagógica 1</option>
-                    <option value="2">Coord. Pedagógica 2</option>
+                <select id="selPedagogica" class="no-print sig-select" onchange="mudarAssinatura('pedagogica', this.value)">
+                    <option value="1" selected>Pedagoga Responsável 1</option>
+                    <option value="2">Pedagoga Responsável 2</option>
                 </select>
-                <p class="sig-role">Coordenação Pedagógica</p>
+                <div class="sig-line"></div>
+                <p>Coordenação Pedagógica / AEE</p>
             </div>
 
-            <div class="sig-block">
-                <div class="sig-image-container">
+            <div class="sig-box">
+                <div class="sig-img-wrapper">
                     <img src="asspsicologa.png" alt="Assinatura Psicóloga">
                 </div>
-                <p class="sig-role">Psicóloga</p>
+                <div class="sig-line"></div>
+                <p>Psicóloga Escolar</p>
             </div>
 
-            <div class="sig-block">
-                <div class="sig-image-container">
-                    <img id="imgSocial" src="asssocial.png" alt="Assinatura Social">
+            <div class="sig-box">
+                <div class="sig-img-wrapper">
+                    <img id="sigImgSocial" src="asssocial.png" alt="Assinatura Social">
                 </div>
-                <select class="no-print sig-selector" onchange="trocarAssinatura('social', this.value)">
-                    <option value="1">Assistente Social 1</option>
+                <select id="selSocial" class="no-print sig-select" onchange="mudarAssinatura('social', this.value)">
+                    <option value="1" selected>Assistente Social 1</option>
                     <option value="2">Assistente Social 2</option>
                 </select>
-                <p class="sig-role">Assistente Social</p>
+                <div class="sig-line"></div>
+                <p>Assistente Social</p>
             </div>
         </section>
-
     </main>
 
-    <div class="fab-container no-print">
-        <button onclick="window.print()" class="fab-btn btn-print" title="Imprimir"><i class="fas fa-print"></i></button>
-        <button onclick="salvarNovoRelatorioNoBanco()" class="fab-btn btn-save" title="Salvar"><i class="fas fa-cloud-upload-alt"></i></button>
+    <div class="fab-actions no-print">
+        <button onclick="abrirModalBusca()" class="fab btn-search" title="Buscar Relatório"><i class="fas fa-search"></i></button>
+        <button onclick="salvarRelatorioFirebase()" class="fab btn-save" title="Salvar/Atualizar"><i class="fas fa-cloud-upload-alt"></i></button>
+        <button onclick="window.print()" class="fab btn-print" title="Imprimir"><i class="fas fa-print"></i></button>
     </div>
 
-    <div id="modalChecklist" class="modal-overlay">
-        <div class="modal-card">
-            <header class="modal-header">
-                <h2 id="modalTitle">Avaliação</h2>
-                <button onclick="fecharModalArea()" class="close-btn">&times;</button>
-            </header>
-            <div class="modal-body" id="modalContent">
+    <div id="modalAvaliacaoOverlay" class="modal-overlay">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="modalAvaliacaoTitle">Avaliação Diagnóstica</h2>
+                <button onclick="fecharModal('modalAvaliacaoOverlay')" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalChecklistBody">
                 </div>
-            <footer class="modal-footer">
-                <button onclick="confirmarChecklist()" class="btn-confirm">Gerar Texto e Fechar</button>
-            </footer>
+            <div class="modal-footer">
+                <p class="hint-text">Marque os itens observados para compor o relatório.</p>
+                <button onclick="processarChecklist()" class="btn-confirm"><i class="fas fa-file-import"></i> Gerar Textos</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalBuscaOverlay" class="modal-overlay">
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h2>Buscar Relatórios Salvos</h2>
+                <button onclick="fecharModal('modalBuscaOverlay')" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body search-body">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Filtrar por nome do estudante...">
+                    <button onclick="buscarRelatorios()" class="btn-search-action"><i class="fas fa-search"></i></button>
+                </div>
+                <div id="searchResultsList" class="results-list">
+                    <p class="loading-text">Digite um nome para buscar...</p>
+                </div>
+            </div>
         </div>
     </div>
 
