@@ -15,33 +15,50 @@
 body {
     background-color: var(--bg);
     color: var(--text);
-    padding-bottom: 60px;
+    /* Margem inferior na tela para ver o rodapé fixo */
+    padding-bottom: 100px; 
 }
 
-/* ================= ELEMENTOS FLUTUANTES (CABEÇALHO/RODAPÉ) ================= */
+/* ================= ELEMENTOS FIXOS (VISUAIS) ================= */
+/* Na tela, eles podem ficar fixos ou absolutos. 
+   Na impressão (ver @media print), eles ficam FIXED em cada página. */
+
+.page-header {
+    position: absolute; /* Na tela, fica no topo absoluto */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 140px; /* Altura do seu cabeçalho */
+    z-index: 100;
+    display: none; /* Escondemos na tela web para não atrapalhar, mostramos só no print se quiser, ou ajustamos */
+}
+
+/* Vamos mostrar o cabeçalho/rodapé apenas na impressão para não atrapalhar a edição web */
 .page-header, .page-footer {
     display: none;
 }
 
-/* ================= LAYOUT PRINCIPAL ================= */
+.page-header img, .page-footer img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ================= LAYOUT DO RELATÓRIO ================= */
 .report-container {
     width: 100%;
     max-width: 210mm;
     margin: 20px auto;
     background: var(--paper);
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border-collapse: collapse; 
+    border-collapse: collapse;
 }
 
-/* ESPAÇADORES */
-.header-space { height: 150px; } 
-.footer-space { height: 80px; } 
+/* Espaçadores vazios dentro da tabela que empurram o conteúdo */
+.header-space { height: 140px; }
+.footer-space { height: 70px; }
 
-.print-header-img, .print-footer-img {
-    width: 100%; height: 100%; object-fit: contain; display: block;
-}
-
-.main-content { padding: 0 40px; } 
+.main-content { padding: 0 40px 20px 40px; }
 
 /* ================= TIPOGRAFIA E SEÇÕES ================= */
 .report-title {
@@ -59,7 +76,7 @@ body {
     -webkit-print-color-adjust: exact; print-color-adjust: exact;
 }
 
-/* ================= FORMULÁRIO ================= */
+/* ================= FORMULÁRIO GRID ================= */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .input-group { display: flex; flex-direction: column; }
 .input-group.full-width { grid-column: span 2; }
@@ -68,147 +85,133 @@ label { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 4px; }
 
 input, textarea, select {
     border: 1px solid var(--border); padding: 8px; border-radius: 4px;
-    font-size: 14px; width: 100%; background: #fafafa; transition: 0.2s; font-family: inherit;
+    font-size: 14px; width: 100%; background: #fafafa; transition: 0.2s;
 }
 
 input:focus, textarea:focus { border-color: var(--secondary); background: #fff; outline: none; }
 
 textarea {
-    resize: none; overflow: hidden; line-height: 1.5; text-align: justify; min-height: 40px;
+    resize: none; overflow-y: hidden; line-height: 1.5; text-align: justify; min-height: 40px;
 }
 
-/* ================= BOTÕES, MODAIS E EXTRAS ================= */
+/* ================= BOTÕES ================= */
 .areas-buttons { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
 .btn-area {
-    padding: 10px 20px; border: none; border-radius: 6px; color: white; cursor: pointer;
-    font-weight: 500; display: flex; align-items: center; gap: 8px; font-size: 13px;
+    padding: 12px 20px; border: none; border-radius: 6px;
+    color: white; cursor: pointer; font-weight: 500;
+    display: flex; align-items: center; gap: 8px; transition: transform 0.2s;
 }
+.btn-area:hover { transform: translateY(-2px); opacity: 0.9; }
 .area-ped { background-color: #e67e22; }
 .area-clin { background-color: #27ae60; }
 .area-soc { background-color: #8e44ad; }
 
 #toast {
-    visibility: hidden; min-width: 250px; background-color: var(--primary); color: #fff;
-    text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 2000;
-    left: 50%; bottom: 30px; transform: translateX(-50%); opacity: 0; transition: 0.3s;
+    visibility: hidden; min-width: 250px; background-color: var(--primary);
+    color: #fff; text-align: center; border-radius: 4px; padding: 16px;
+    position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%);
+    opacity: 0; transition: opacity 0.3s, bottom 0.3s;
 }
 #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
-/* Assinaturas */
+/* ================= ASSINATURAS ================= */
 .signatures-section { margin-top: 50px; page-break-inside: avoid; }
 .signature-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: center; page-break-inside: avoid; }
 .signature-block { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
 .sig-line { width: 100%; border-bottom: 1px solid #000; margin-bottom: 5px; height: 60px; display: flex; align-items: flex-end; justify-content: center; }
 .sig-img { max-height: 55px; max-width: 100%; }
-.sig-name { font-weight: bold; font-size: 13px; margin: 5px 0 2px 0; text-transform: uppercase; }
+.sig-name { font-weight: bold; font-size: 14px; margin: 5px 0 2px 0; text-transform: uppercase; }
 .sig-role { font-size: 12px; color: #444; margin: 0; }
-.sig-select { margin-top: 8px; padding: 4px; font-size: 11px; background: #f9f9f9; border: 1px solid #ccc; }
-.legal-text { font-size: 11px; text-align: justify; font-style: italic; color: #555; }
+.sig-select { margin-top: 10px; padding: 5px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; background: #f9f9f9; }
+.legal-text { font-size: 12px; text-align: justify; font-style: italic; color: #555; }
 
-/* Modal Padrão e Busca */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
-.modal-card { background: white; width: 95%; max-width: 850px; height: 85vh; border-radius: 8px; display: flex; flex-direction: column; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-.modal-header { padding: 15px; background: var(--primary); color: white; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
+/* ================= MODAL ================= */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
+    backdrop-filter: blur(2px);
+}
+.modal-card {
+    background: white; width: 90%; max-width: 800px; height: 85vh;
+    border-radius: 8px; display: flex; flex-direction: column;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.modal-header {
+    padding: 15px 20px; background: var(--primary); color: white;
+    border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center;
+}
 .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
 .modal-footer { padding: 15px; border-top: 1px solid #ddd; text-align: right; background: #f9f9f9; border-radius: 0 0 8px 8px; }
 .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
-.btn-confirm { background: var(--success); color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
-.check-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; cursor: pointer; padding: 5px; }
-.check-item:hover { background-color: #f0f8ff; }
-.checklist-section-title { color: var(--secondary); margin: 20px 0 10px 0; border-bottom: 1px solid #eee; }
+.btn-confirm { background: var(--secondary); color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+.checklist-group { margin-bottom: 20px; }
+.checklist-group h4 { color: var(--secondary); margin-bottom: 10px; border-bottom: 1px solid #eee; }
+.check-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; cursor: pointer; }
+.check-item:hover { background-color: #f0f8ff; border-radius: 4px; }
+.check-item input { width: auto; margin-top: 4px; }
 
-/* Busca */
+/* ================= BUSCA ================= */
 .search-box-container { position: relative; margin-bottom: 20px; }
-.search-input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 20px; border: 2px solid #dfe6e9; }
+.search-input { width: 100%; padding: 12px 15px 12px 40px; border: 2px solid #dfe6e9; border-radius: 25px; font-size: 16px; }
 .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; }
-.results-list { display: flex; flex-direction: column; gap: 10px; }
-.report-item { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px; border: 1px solid #eee; border-radius: 6px; }
-.report-name { font-weight: bold; color: var(--primary); font-size: 14px; }
-.report-date { font-size: 12px; color: #888; }
+.results-list { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; }
+.report-item { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
+.report-name { font-weight: bold; color: var(--primary); font-size: 14px; display: block; }
+.report-date { font-size: 12px; color: #7f8c8d; }
 .report-actions { display: flex; gap: 8px; }
-.btn-action { border: none; padding: 6px 12px; border-radius: 4px; color: white; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px; }
-.btn-load { background: var(--secondary); } .btn-delete { background: var(--accent); }
+.btn-action { border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; color: white; display: flex; align-items: center; gap: 5px; }
+.btn-load { background-color: var(--secondary); } .btn-delete { background-color: var(--accent); }
 
-/* FAB */
+/* ================= FAB ================= */
 .fab-container { position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
-.fab-btn { width: 45px; height: 45px; border-radius: 50%; border: none; color: white; font-size: 18px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: 0.3s; }
+.fab-btn { width: 50px; height: 50px; border-radius: 50%; border: none; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: 0.3s; }
 .fab-btn:hover { transform: scale(1.1); }
-.btn-print { background: #34495e; } .btn-save { background: #27ae60; } .btn-search { background: #f39c12; } .btn-reset { background: #c0392b; }
+.btn-print { background: #34495e; } .btn-save { background: #27ae60; } .btn-reset { background: #c0392b; } .btn-search { background-color: #f39c12; }
 
-/* ==========================================================================
-   REGRAS DE IMPRESSÃO (SEM SCROLLBARS E VISIBILIDADE TOTAL)
-   ========================================================================== */
+/* ================= IMPRESSÃO (CORREÇÃO DO RODAPÉ) ================= */
 @media print {
-    /* 1. Reset da Página */
-    @page { margin: 0; size: A4; }
-    body { margin: 0; padding: 0; background: white; }
-
-    /* 2. Ocultar interface de tela */
+    body { background: white; padding: 0; margin: 0; }
     .no-print, .fab-container, .modal-overlay { display: none !important; }
+    
+    .report-container { box-shadow: none; margin: 0; width: 100%; border: none; }
+    
+    /* Configuração de inputs para impressão */
+    input, textarea, select {
+        border: none; background: transparent; padding: 0; resize: none; width: 100%;
+        font-family: 'Times New Roman', serif; font-size: 12pt; color: #000; text-align: justify;
+    }
+    select { appearance: none; -webkit-appearance: none; }
 
-    /* 3. Container Principal */
-    .report-container { width: 100%; margin: 0; border: none; box-shadow: none; display: table; }
-
-    /* 4. Fixar Cabeçalho e Rodapé VISUAIS */
-    .page-header {
+    /* --- CABEÇALHO E RODAPÉ FIXOS --- */
+    
+    /* 1. Mostra os elementos que estavam escondidos */
+    .page-header, .page-footer {
         display: block !important;
-        position: fixed; top: 0; left: 0; right: 0;
-        height: 140px; /* Ajuste se sua imagem for maior */
-        z-index: 1000;
-        background: white;
+        position: fixed; /* Isso faz eles grudarem no papel */
+        left: 0;
+        width: 100%;
+        background: white; /* Garante que nada fique transparente por baixo */
+        z-index: 9999;
+    }
+
+    /* 2. Posicionamento exato */
+    .page-header {
+        top: 0;
+        height: 140px; /* Ajuste conforme sua imagem */
     }
 
     .page-footer {
-        display: block !important;
-        position: fixed; bottom: 0; left: 0; right: 0;
-        height: 60px; /* Ajuste se sua imagem for maior */
-        z-index: 1000;
-        background: white;
+        bottom: 0;
+        height: 70px; /* Ajuste conforme sua imagem */
     }
 
-    .page-header img, .page-footer img {
-        width: 100%; height: 100%; object-fit: contain;
-    }
-
-    /* 5. Espaçadores da Tabela (PROTEÇÃO CONTRA SOBREPOSIÇÃO) */
+    /* 3. A Tabela repete o espaço vazio para não encavalar texto */
     thead { display: table-header-group; }
     tfoot { display: table-footer-group; }
     
-    .header-space { height: 150px; } 
-    .footer-space { height: 80px; } 
+    .header-space { height: 140px; }
+    .footer-space { height: 70px; }
 
-    /* 6. REMOÇÃO DE BARRAS DE ROLAGEM E EXPANSÃO */
-    textarea {
-        /* Remove o visual da barra */
-        overflow: hidden !important;
-        /* Remove resize manual */
-        resize: none !important;
-        /* Tira bordas */
-        border: none !important;
-        background: transparent !important;
-        /* Força a altura a ser AUTOMÁTICA para mostrar tudo */
-        height: auto !important;
-        /* Garante largura total */
-        width: 100% !important;
-        white-space: pre-wrap !important;
-        font-family: 'Times New Roman', serif !important;
-        font-size: 12pt !important;
-        color: #000 !important;
-        padding: 0 !important;
-        margin: 5px 0 !important;
-        display: block !important;
-    }
-    
-    input, select {
-        border: none; background: transparent; padding: 0; 
-        font-family: 'Times New Roman', serif; font-size: 12pt;
-    }
-    select { appearance: none; -webkit-appearance: none; }
-    
-    /* 7. Evitar quebras ruins */
-    .section-box { page-break-inside: auto; }
-    h3, .section-title { page-break-after: avoid; }
-    tr { page-break-inside: avoid; }
-
+    /* 4. Cores de fundo forçadas */
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }

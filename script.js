@@ -200,7 +200,6 @@ let dadosSelecionados = {
 };
 let areaAtual = '';
 
-// ================= FUNÇÕES UTILITÁRIAS =================
 function showToast(msg = "Operação realizada com sucesso!") {
     const toast = document.getElementById("toast");
     if(toast) {
@@ -227,7 +226,6 @@ function getLabelById(area, id) {
     return itemEncontrado ? itemEncontrado.label : "";
 }
 
-// ================= LÓGICA DE NEGÓCIO =================
 window.calcularIdade = function() {
     const dataNascInput = document.getElementById('dataNascimento');
     if (!dataNascInput.value) return;
@@ -256,7 +254,6 @@ window.trocarAssinatura = function(area, idProfissional) {
     if (cargoEl) cargoEl.innerText = `${dados.cargo} - ${dados.registro}`;
 }
 
-// ================= MODAL E TEXTOS =================
 window.abrirModal = function(area) {
     areaAtual = area;
     const dadosArea = CHECKLIST_DB[area];
@@ -558,21 +555,6 @@ window.limparTudo = function() {
         idRelatorioAtual = null; 
         location.reload();
     }
-}
-
-// FUNÇÃO ESPECIAL DE IMPRESSÃO
-window.imprimirRelatorio = function() {
-    // 1. Força a expansão de todos os textareas para o tamanho do conteúdo
-    const textareas = document.querySelectorAll('textarea');
-    textareas.forEach(el => {
-        el.style.height = 'auto'; 
-        el.style.height = el.scrollHeight + 'px';
-    });
-
-    // 2. Pequeno delay para o navegador renderizar
-    setTimeout(() => {
-        window.print();
-    }, 100);
 }
 
 window.onload = function() {
