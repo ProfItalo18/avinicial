@@ -32,19 +32,11 @@
 
     <table class="report-container">
         <thead>
-            <tr>
-                <td>
-                    <div class="header-space">&nbsp;</div>
-                </td>
-            </tr>
+            <tr><td><div class="header-space">&nbsp;</div></td></tr>
         </thead>
 
         <tfoot>
-            <tr>
-                <td>
-                    <div class="footer-space">&nbsp;</div>
-                </td>
-            </tr>
+            <tr><td><div class="footer-space">&nbsp;</div></td></tr>
         </tfoot>
 
         <tbody>
@@ -96,15 +88,9 @@
                             <h3 class="section-title">2. SÍNTESE DAS ÁREAS AVALIADAS</h3>
                             
                             <div class="areas-buttons no-print">
-                                <button onclick="abrirModal('pedagogica')" class="btn-area area-ped">
-                                    <i class="fas fa-brain"></i> Avaliação Pedagógica
-                                </button>
-                                <button onclick="abrirModal('clinica')" class="btn-area area-clin">
-                                    <i class="fas fa-user-md"></i> Avaliação Clínica
-                                </button>
-                                <button onclick="abrirModal('social')" class="btn-area area-soc">
-                                    <i class="fas fa-users"></i> Serviço Social
-                                </button>
+                                <button onclick="abrirModal('pedagogica')" class="btn-area area-ped"><i class="fas fa-brain"></i> Avaliação Pedagógica</button>
+                                <button onclick="abrirModal('clinica')" class="btn-area area-clin"><i class="fas fa-user-md"></i> Avaliação Clínica</button>
+                                <button onclick="abrirModal('social')" class="btn-area area-soc"><i class="fas fa-users"></i> Serviço Social</button>
                             </div>
 
                             <div class="input-group full-width" style="margin-top: 20px;">
@@ -206,16 +192,16 @@
                 <div class="section-box">
                     <div class="form-grid">
                         <div class="input-group">
-                            <label style="color: var(--secondary); font-weight:bold;">1. Observações Manuais / Iniciais:</label>
+                            <label style="color: var(--secondary); font-weight:bold;">1. Observações Manuais:</label>
                             <textarea id="obsManualInput" rows="4" placeholder="Digite aqui..." oninput="atualizarPreview()"></textarea>
                         </div>
                         <div class="input-group">
-                            <label style="color: var(--secondary); font-weight:bold;">2. Texto Gerado:</label>
+                            <label style="color: var(--secondary); font-weight:bold;">2. Texto Automático:</label>
                             <textarea id="previewAutomatico" rows="4" readonly style="background-color: #eee; font-style: italic;"></textarea>
                         </div>
                     </div>
                     <div class="input-group" style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px;">
-                        <label>Resultado Final (Visualização):</label>
+                        <label>Prévia Final:</label>
                         <p id="previewFinal" style="font-size: 13px; color: #333; font-weight: 500;"></p>
                     </div>
                 </div>

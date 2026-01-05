@@ -200,6 +200,7 @@ let dadosSelecionados = {
 };
 let areaAtual = '';
 
+// ================= FUNÇÕES UTILITÁRIAS =================
 function showToast(msg = "Operação realizada com sucesso!") {
     const toast = document.getElementById("toast");
     if(toast) {
@@ -226,6 +227,7 @@ function getLabelById(area, id) {
     return itemEncontrado ? itemEncontrado.label : "";
 }
 
+// ================= LÓGICA DE NEGÓCIO =================
 window.calcularIdade = function() {
     const dataNascInput = document.getElementById('dataNascimento');
     if (!dataNascInput.value) return;
@@ -254,6 +256,7 @@ window.trocarAssinatura = function(area, idProfissional) {
     if (cargoEl) cargoEl.innerText = `${dados.cargo} - ${dados.registro}`;
 }
 
+// ================= MODAL E TEXTOS =================
 window.abrirModal = function(area) {
     areaAtual = area;
     const dadosArea = CHECKLIST_DB[area];
@@ -356,7 +359,6 @@ function gerarCamposAutomaticosGerais() {
         if (dados.itens.length > 0) {
             const rotulos = dados.itens.map(id => getLabelById(area, id)).filter(l => l !== "");
             if (rotulos.length > 0) {
-                // Título sem numeração
                 textoConclusao += `Na ${tituloArea}, observou-se: ${rotulos.join(", ")}.\n`;
             }
         } 
