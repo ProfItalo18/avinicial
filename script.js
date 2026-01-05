@@ -31,7 +31,6 @@ const EQUIPE = {
     }
 };
 
-
 const CHECKLIST_DB = {
     pedagogica: {
         titulo: "Avaliação Pedagógica",
