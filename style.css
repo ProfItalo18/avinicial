@@ -1,134 +1,284 @@
-/* ================= VARIAVEIS E RESET ================= */
+/* ==========================================================================
+   1. VARIÁVEIS E RESET GLOBAL
+   ========================================================================== */
 :root {
-    --primary: #2c3e50;
-    --secondary: #3498db;
-    --accent: #e74c3c;
-    --bg: #f4f6f8;
-    --paper: #ffffff;
-    --border: #dfe6e9;
-    --text: #2d3436;
-    --success: #27ae60;
+    --primary: #2c3e50;    /* Azul Escuro (Títulos) */
+    --secondary: #3498db;  /* Azul Claro (Destaques) */
+    --accent: #e74c3c;     /* Vermelho (Ações de risco/Excluir) */
+    --success: #27ae60;    /* Verde (Salvar/Confirmar) */
+    --bg: #f4f6f8;         /* Fundo da tela */
+    --paper: #ffffff;      /* Fundo do papel */
+    --border: #dfe6e9;     /* Bordas sutis */
+    --text: #2d3436;       /* Cor do texto principal */
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'Roboto', sans-serif; 
+}
 
 body {
     background-color: var(--bg);
     color: var(--text);
-    padding-bottom: 60px;
+    padding-bottom: 80px; /* Espaço extra para scroll não bater no fundo */
 }
 
-/* ================= LAYOUT PRINCIPAL (PAPEL) ================= */
+/* ==========================================================================
+   2. LAYOUT DO RELATÓRIO (FOLHA A4)
+   ========================================================================== */
 .report-container {
     width: 100%;
-    max-width: 210mm;
-    margin: 20px auto;
+    max-width: 210mm; /* Largura exata A4 */
+    margin: 30px auto;
     background: var(--paper);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border-collapse: collapse;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Sombra para dar efeito de papel flutuando */
+    border-collapse: collapse; /* Essencial para a estrutura de tabela funcionar */
 }
 
-.header-space { height: 130px; }
-.footer-space { height: 80px; }
+/* --- Áreas Reservadas para Cabeçalho e Rodapé (FIXAS) --- */
+.header-space { 
+    height: 140px; /* Altura fixa reservada no topo de CADA página */
+    width: 100%;
+    position: relative;
+    overflow: hidden; /* Garante que imagem grande não quebre o layout */
+}
 
+.footer-space { 
+    height: 60px; /* Altura fixa reservada no fim de CADA página */
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Configuração das Imagens para preencher sem distorcer */
 .print-header-img, .print-footer-img {
-    width: 100%; height: 100%; object-fit: contain; display: block;
+    width: 100%;
+    height: 100%; 
+    object-fit: contain; /* Ajusta a imagem dentro do espaço */
+    display: block;
 }
 
-.main-content { padding: 20px 40px; }
+/* Corpo do texto dentro do papel */
+.main-content {
+    padding: 20px 40px; /* Margens internas do conteúdo */
+}
 
-/* ================= TIPOGRAFIA E SEÇÕES ================= */
+/* ==========================================================================
+   3. TIPOGRAFIA E SEÇÕES
+   ========================================================================== */
 .report-title {
-    text-align: center; font-size: 18px; font-weight: 700;
-    text-transform: uppercase; margin-bottom: 30px;
-    border-bottom: 2px solid var(--primary); padding-bottom: 10px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 10px;
+    color: var(--primary);
 }
 
-.section-box { margin-bottom: 25px; }
+.section-box {
+    margin-bottom: 25px;
+    page-break-inside: avoid; /* Tenta não quebrar a caixa no meio da página */
+}
 
 .section-title {
-    font-size: 14px; font-weight: 700; background-color: #eee;
-    padding: 5px 10px; margin-bottom: 15px;
-    border-left: 4px solid var(--primary); text-transform: uppercase;
-    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    font-size: 14px;
+    font-weight: 700;
+    background-color: #eee;
+    padding: 5px 10px;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--primary);
+    text-transform: uppercase;
+    /* Garante que o fundo cinza saia na impressão */
+    -webkit-print-color-adjust: exact; 
+    print-color-adjust: exact;
 }
 
-/* ================= FORMULÁRIO GRID ================= */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.input-group { display: flex; flex-direction: column; }
-.input-group.full-width { grid-column: span 2; }
+/* ==========================================================================
+   4. FORMULÁRIO (GRID E CAMPOS)
+   ========================================================================== */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 colunas */
+    gap: 15px;
+}
 
-label { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 4px; }
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group.full-width {
+    grid-column: span 2; /* Ocupa a linha toda */
+}
+
+label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 4px;
+}
 
 input, textarea, select {
-    border: 1px solid var(--border); padding: 8px; border-radius: 4px;
-    font-size: 14px; width: 100%; background: #fafafa; transition: 0.2s;
+    border: 1px solid var(--border);
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    background: #fafafa;
+    transition: 0.2s;
+    font-family: inherit;
 }
 
-input:focus, textarea:focus { border-color: var(--secondary); background: #fff; outline: none; }
+input:focus, textarea:focus, select:focus {
+    border-color: var(--secondary);
+    background: #fff;
+    outline: none;
+}
 
 textarea {
-    resize: none; overflow-y: hidden; line-height: 1.5; text-align: justify; min-height: 40px;
+    resize: none; /* Remove o puxador manual (o JS faz auto-resize) */
+    overflow-y: hidden; /* Remove barra de rolagem */
+    line-height: 1.5;
+    text-align: justify;
+    min-height: 40px;
 }
 
-/* ================= BOTÕES ================= */
-.areas-buttons { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
-.btn-area {
-    padding: 12px 20px; border: none; border-radius: 6px;
-    color: white; cursor: pointer; font-weight: 500;
-    display: flex; align-items: center; gap: 8px; transition: transform 0.2s;
+/* Texto legal pequeno */
+.legal-text {
+    font-size: 11px;
+    text-align: justify;
+    font-style: italic;
+    color: #666;
+    line-height: 1.3;
 }
+
+/* ==========================================================================
+   5. BOTÕES E INTERFACE (TELA)
+   ========================================================================== */
+.areas-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.btn-area {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s, opacity 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
 .btn-area:hover { transform: translateY(-2px); opacity: 0.9; }
 .area-ped { background-color: #e67e22; }
 .area-clin { background-color: #27ae60; }
 .area-soc { background-color: #8e44ad; }
 
-/* TOAST */
+/* FAB Buttons (Botões Flutuantes no Canto) */
+.fab-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 999;
+}
+
+.fab-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fab-btn:hover { transform: scale(1.1); }
+.btn-print { background: #34495e; }
+.btn-save { background: #27ae60; }
+.btn-search { background: #f39c12; }
+.btn-reset { background: #c0392b; }
+
+/* Toast Notification */
 #toast {
-    visibility: hidden; min-width: 250px; background-color: var(--primary);
-    color: #fff; text-align: center; border-radius: 4px; padding: 16px;
-    position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%);
-    opacity: 0; transition: opacity 0.3s, bottom 0.3s;
+    visibility: hidden;
+    min-width: 250px;
+    background-color: var(--primary);
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 16px;
+    position: fixed;
+    z-index: 2000;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.3s, bottom 0.3s;
 }
 #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
-/* ================= ASSINATURAS (NOVO ESTILO) ================= */
-.signatures-section { margin-top: 50px; page-break-inside: avoid; }
+/* ==========================================================================
+   6. ASSINATURAS (GRID DE 3 COLUNAS)
+   ========================================================================== */
+.signatures-section {
+    margin-top: 50px;
+    page-break-inside: avoid; /* Não quebra no meio */
+}
 
 .signature-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr; /* 3 colunas iguais */
     gap: 20px;
-    margin-top: 50px;
     text-align: center;
-    page-break-inside: avoid; 
 }
 
 .signature-block {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end; 
+    justify-content: flex-end; /* Alinha conteúdo na base */
 }
 
 .sig-line {
     width: 100%;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #000; /* Linha da assinatura */
     margin-bottom: 5px;
-    height: 60px;
+    height: 70px; /* Altura fixa para a imagem não pular */
     display: flex;
     align-items: flex-end;
     justify-content: center;
 }
 
 .sig-img {
-    max-height: 55px; 
-    max-width: 100%;
+    max-height: 65px;
+    max-width: 90%;
+    object-fit: contain;
 }
 
 .sig-name {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
     margin: 5px 0 2px 0;
     text-transform: uppercase;
 }
@@ -140,87 +290,191 @@ textarea {
 }
 
 .sig-select {
-    margin-top: 10px;
-    padding: 5px;
-    font-size: 12px;
+    margin-top: 8px;
+    padding: 4px;
+    font-size: 11px;
     border: 1px solid #ccc;
     border-radius: 4px;
     background: #f9f9f9;
+    max-width: 100%;
 }
 
-.legal-text { font-size: 12px; text-align: justify; font-style: italic; color: #555; }
-
-/* ================= MODAL ================= */
+/* ==========================================================================
+   7. MODAIS (GERAL E BUSCA)
+   ========================================================================== */
 .modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
-    backdrop-filter: blur(2px);
+    display: none; /* Oculto por padrão */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px); /* Desfoque no fundo */
 }
+
 .modal-card {
-    background: white; width: 90%; max-width: 800px; height: 85vh;
-    border-radius: 8px; display: flex; flex-direction: column;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    background: white;
+    width: 95%;
+    max-width: 850px;
+    height: 85vh; /* Ocupa 85% da altura da tela */
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
 }
+
 .modal-header {
-    padding: 15px 20px; background: var(--primary); color: white;
-    border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 20px;
+    background: var(--primary);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-.modal-body { flex: 1; overflow-y: auto; padding: 20px; }
-.modal-footer { padding: 15px; border-top: 1px solid #ddd; text-align: right; background: #f9f9f9; border-radius: 0 0 8px 8px; }
+
+.modal-body {
+    flex: 1;
+    overflow-y: auto; /* Scroll apenas no corpo do modal */
+    padding: 20px;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+    background-color: #f9f9f9;
+    border-radius: 0 0 8px 8px;
+}
 
 .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
-.btn-confirm { background: var(--secondary); color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
-.checklist-group { margin-bottom: 20px; }
-.checklist-group h4 { color: var(--secondary); margin-bottom: 10px; border-bottom: 1px solid #eee; }
-.check-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; cursor: pointer; }
-.check-item:hover { background-color: #f0f8ff; border-radius: 4px; }
-.check-item input { width: auto; margin-top: 4px; }
+.btn-confirm { background: var(--success); color: white; padding: 10px 25px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.btn-confirm:hover { background: #219150; }
 
-/* ================= MODAL DE BUSCA ================= */
+/* Estilos de Checklist */
+.checklist-section-title {
+    color: var(--secondary);
+    margin: 20px 0 10px 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.check-item:hover { background-color: #f0f8ff; }
+.check-item input { width: auto; margin-top: 4px; cursor: pointer; }
+.check-item label { cursor: pointer; font-size: 13px; color: #333; line-height: 1.4; }
+
+/* Estilos Específicos do Modal de Busca */
 .search-box-container { position: relative; margin-bottom: 20px; }
 .search-input {
-    width: 100%; padding: 12px 15px 12px 40px; border: 2px solid #dfe6e9;
-    border-radius: 25px; font-size: 16px;
+    padding-left: 40px; /* Espaço para ícone */
+    border-radius: 20px;
+    border: 2px solid #dfe6e9;
 }
-.search-input:focus { border-color: var(--secondary); outline: none; }
 .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; }
-.results-list { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; }
-.report-item {
-    display: flex; justify-content: space-between; align-items: center;
-    background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee;
+
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
-.report-item:hover { background: #fff; border-color: var(--secondary); }
-.report-name { font-weight: bold; color: var(--primary); font-size: 14px; display: block; }
-.report-date { font-size: 12px; color: #7f8c8d; }
+
+.report-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.report-item:hover {
+    border-color: var(--secondary);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.report-name { font-weight: bold; color: var(--primary); display: block; }
+.report-date { font-size: 12px; color: #888; }
+
 .report-actions { display: flex; gap: 8px; }
-.btn-action { border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; color: white; display: flex; align-items: center; gap: 5px; }
+.btn-action {
+    border: none; padding: 6px 12px; border-radius: 4px; color: white; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 5px;
+}
 .btn-load { background-color: var(--secondary); }
 .btn-delete { background-color: var(--accent); }
 
-/* ================= FAB BUTTONS ================= */
-.fab-container { position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
-.fab-btn {
-    width: 50px; height: 50px; border-radius: 50%; border: none; color: white;
-    font-size: 20px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: 0.3s;
-}
-.fab-btn:hover { transform: scale(1.1); }
-.btn-print { background: #34495e; } .btn-save { background: #27ae60; }
-.btn-reset { background: #c0392b; } .btn-search { background-color: #f39c12; }
-
-/* ================= IMPRESSÃO ================= */
+/* ==========================================================================
+   8. REGRAS DE IMPRESSÃO (CRÍTICO)
+   ========================================================================== */
 @media print {
-    body { background: white; padding-bottom: 0; }
-    .no-print { display: none !important; }
-    .report-container { box-shadow: none; margin: 0; width: 100%; max-width: 100%; border: none; }
-    input, textarea, select {
-        border: none; background: transparent; padding: 0; resize: none; width: 100%;
-        font-family: 'Times New Roman', serif; font-size: 12pt; color: #000; text-align: justify;
+    /* Configuração da Página Física */
+    @page {
+        /* Margem segura para não cortar cabeçalho/rodapé.
+           10mm é padrão A4 seguro. */
+        margin: 10mm; 
+        size: A4;
     }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    /* Oculta tudo que é de tela */
+    .no-print, .fab-container, .modal-overlay { 
+        display: none !important; 
+    }
+
+    /* Reseta estilos de container para ocupar folha toda */
+    .report-container {
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        border: none;
+    }
+
+    /* Transforma inputs/textareas em texto puro */
+    input, textarea, select {
+        border: none;
+        background: transparent;
+        padding: 0;
+        resize: none;
+        width: 100%;
+        font-family: 'Times New Roman', serif; /* Fonte mais formal na impressão */
+        font-size: 12pt;
+        color: #000;
+        overflow: hidden; /* Esconde barras de rolagem */
+    }
+
+    /* Esconde a seta do select */
     select { appearance: none; -webkit-appearance: none; }
+
+    /* Mágica da Repetição de Cabeçalho/Rodapé */
     thead { display: table-header-group; }
     tfoot { display: table-footer-group; }
+    
+    /* Garante que o espaço reservado seja respeitado */
     .header-space, .footer-space { display: block; }
+
+    /* Evita quebras de página ruins */
     h3, .section-title { page-break-after: avoid; }
-    .section-box { page-break-inside: avoid; }
+    .section-box, .signature-grid { page-break-inside: avoid; }
+    
+    /* Garante impressão de cores de fundo (títulos cinza) */
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }
