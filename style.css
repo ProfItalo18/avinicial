@@ -1,204 +1,175 @@
-/* RESET E VARIÁVEIS */
 :root {
-    --azul: #2c3e50;
-    --azul-claro: #3498db;
-    --cinza: #ecf0f1;
-    --borda: #bdc3c7;
+    --azul-escuro: #2c3e50;
+    --azul-claro: #2980b9;
+    --bg: #e9ecef;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
 
 body {
-    background-color: #dcdde1;
-    padding-bottom: 80px; /* Espaço para botão flutuante */
+    background: var(--bg);
+    padding-bottom: 80px; /* Espaço para FAB */
 }
 
-/* --- CABEÇALHO --- */
-.header-oficial {
-    background: white;
-    padding: 10px 0;
-    border-bottom: 2px solid var(--azul);
-    text-align: center;
-}
-
-.header-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    max-width: 210mm;
-    margin: 0 auto;
-}
-
-.logo-topo { height: 80px; width: auto; }
-
-.header-texto h1 { font-size: 14pt; color: var(--azul); font-weight: bold; margin-bottom: 5px; }
-.header-texto p { font-size: 10pt; color: #333; }
-.header-texto .sub-texto { font-size: 9pt; font-style: italic; }
-
-/* --- CONTEÚDO (FOLHA A4) --- */
+/* --- Layout A4 --- */
 .folha-a4 {
-    background: white;
     width: 210mm;
     min-height: 297mm;
-    margin: 20px auto;
-    padding: 20mm;
+    background: white;
+    margin: 30px auto;
+    padding: 20mm 15mm;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    position: relative;
 }
 
+/* --- Header e Footer (Visual) --- */
+.header-oficial {
+    background: white; border-bottom: 3px solid var(--azul-escuro);
+    padding: 10px 0; text-align: center;
+    /* Na tela, fica escondido, mostraremos apenas no topo da folha via JS se quiser, ou fixo no print */
+    display: none; 
+}
+/* Mostra na tela para visualização bonita */
+.header-oficial { display: block; margin-bottom: 20px; }
+
+.header-content { display: flex; justify-content: center; align-items: center; gap: 15px; }
+.logo-topo { height: 75px; }
+.header-texto h1 { font-size: 14pt; color: var(--azul-escuro); margin: 0; }
+.header-texto p { font-size: 10pt; margin: 2px 0; }
+.sub-texto { font-size: 9pt; font-style: italic; }
+
+.footer-oficial {
+    background: white; border-top: 1px solid #999;
+    padding: 10px 0; text-align: center; font-size: 9pt;
+    margin-top: 30px;
+}
+
+/* --- Títulos --- */
 .titulo-documento {
-    text-align: center;
-    font-size: 14pt;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-bottom: 30px;
-    text-decoration: underline;
+    text-align: center; font-size: 14pt; font-weight: bold;
+    text-transform: uppercase; margin-bottom: 25px;
+    text-decoration: underline; color: #000;
 }
 
-/* --- FORMULÁRIOS --- */
-.secao { margin-bottom: 25px; }
 .titulo-secao {
-    font-size: 11pt;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-bottom: 1px solid #000;
-    margin-bottom: 10px;
-    padding-bottom: 2px;
+    font-size: 11pt; font-weight: bold; background: #f8f9fa;
+    padding: 5px; margin-bottom: 10px; border-left: 5px solid var(--azul-escuro);
+    color: #000;
 }
 
-.linha-form {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 10px;
+/* --- Formulário --- */
+.grid-form { display: flex; flex-direction: column; gap: 8px; }
+.linha { display: flex; gap: 15px; align-items: flex-end; }
+.campo-full { width: 100%; }
+
+.label { font-weight: bold; font-size: 10pt; margin-right: 5px; color: var(--azul-escuro); }
+.valor-fixo { font-weight: bold; font-size: 11pt; }
+
+.input-linha {
+    border: none; border-bottom: 1px solid #999;
+    width: 100%; font-size: 11pt; background: transparent;
+    padding: 2px 0; font-family: 'Times New Roman', serif;
 }
 
-.campo { display: flex; flex-direction: column; }
-.campo label { font-size: 9pt; font-weight: bold; margin-bottom: 2px; }
-.campo input { 
-    padding: 5px; 
-    border: 1px solid var(--borda); 
-    border-radius: 4px; 
-    font-size: 10pt; 
+/* --- Áreas e Textareas --- */
+.area-box { margin-bottom: 15px; break-inside: avoid; }
+.titulo-area { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.titulo-area h4 { font-size: 10pt; font-weight: bold; color: var(--azul-escuro); }
+
+.btn-acao {
+    background: var(--azul-claro); color: white; border: none;
+    padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 9pt;
 }
-
-.pequeno { width: 20%; }
-.medio { width: 48%; }
-.grande { width: 60%; }
-.total { width: 100%; }
-
-.input-fixo { border: none; background: transparent; font-weight: bold; color: #000; }
-.input-editavel { border: 1px solid var(--borda); }
 
 textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--borda);
-    border-radius: 4px;
-    font-family: 'Times New Roman', serif; /* Fonte formal no texto */
-    font-size: 11pt;
-    resize: vertical;
-    text-align: justify;
-    line-height: 1.5;
+    width: 100%; border: 1px solid #ccc; border-radius: 4px;
+    padding: 8px; font-family: 'Times New Roman', serif;
+    font-size: 11pt; line-height: 1.4; resize: vertical;
+    overflow: hidden; /* Remove barra de rolagem */
+    min-height: 40px;
 }
 
-/* --- ÁREAS DE AVALIAÇÃO --- */
-.area-box { margin-bottom: 15px; }
-.area-titulo-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
-.area-titulo-row h4 { font-size: 10pt; color: var(--azul); }
+/* --- Assinaturas --- */
+.local-data-container { text-align: right; margin-top: 30px; margin-bottom: 10px; font-size: 11pt; }
 
-.btn-check {
-    background: var(--azul-claro); color: white; border: none; padding: 4px 10px;
-    border-radius: 4px; cursor: pointer; font-size: 9pt;
+.assinaturas-wrapper {
+    display: flex; justify-content: space-between; margin-top: 20px;
+    break-inside: avoid;
 }
+.assinatura-item { text-align: center; width: 32%; display: flex; flex-direction: column; align-items: center; }
 
-.instrucao { font-size: 9pt; color: #7f8c8d; margin-bottom: 10px; font-style: italic; }
+.img-ass { height: 70px; display: flex; align-items: flex-end; justify-content: center; width: 100%; }
+.img-ass img { max-height: 100%; max-width: 100%; object-fit: contain; }
 
-.texto-legal { font-size: 8pt; margin-top: 10px; text-align: justify; }
+.linha-ass { border-top: 1px solid #000; width: 90%; margin: 5px 0; }
+.nome-assinatura { font-weight: bold; font-size: 10pt; margin: 2px 0; color: #000; }
+.cargo-assinatura { font-size: 9pt; margin: 0; color: #333; }
 
-/* --- ASSINATURAS --- */
-.assinaturas-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 50px;
-    page-break-inside: avoid;
-}
+.sel-ass { margin-top: 5px; padding: 3px; font-size: 9pt; max-width: 100%; }
 
-.box-assinatura {
-    width: 30%;
-    text-align: center;
-}
-
-.img-wrapper { height: 60px; display: flex; align-items: flex-end; justify-content: center; }
-.img-wrapper img { max-height: 100%; max-width: 100%; }
-
-.linha-ass { border-top: 1px solid #000; margin: 5px 0; }
-.box-assinatura p { font-size: 9pt; font-weight: bold; }
-.sel-ass { font-size: 8pt; margin-bottom: 2px; }
-
-/* --- RODAPÉ --- */
-.footer-oficial {
-    background: white;
-    border-top: 1px solid #ccc;
-    padding: 10px 0;
-    text-align: center;
-    margin-top: 20px;
-}
-.footer-texto p { font-size: 8pt; margin: 2px 0; }
-
-/* --- BOTÕES FLUTUANTES --- */
-.fab-menu { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; }
-.fab-menu button {
-    width: 50px; height: 50px; border-radius: 50%; border: none; color: white;
-    background: var(--azul); font-size: 18px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-.fab-menu .btn-print { background: #e67e22; }
-
-/* --- MODAL --- */
+/* --- Modais e FAB --- */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000;
+    background: rgba(0,0,0,0.5); display: none; justify-content: center;
+    align-items: center; z-index: 2000;
 }
 .modal-card {
-    background: white; width: 90%; max-width: 700px; max-height: 90vh;
-    border-radius: 8px; display: flex; flex-direction: column; padding: 20px;
+    background: white; padding: 20px; border-radius: 8px;
+    width: 90%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column;
 }
 .modal-body { overflow-y: auto; flex: 1; margin: 15px 0; }
-.check-grupo { margin-bottom: 15px; }
-.check-grupo h5 { background: #f1f2f6; padding: 5px; margin-bottom: 5px; }
+.modal-header { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.check-grupo h5 { background: #f1f2f6; padding: 5px; margin: 10px 0 5px 0; border-left: 3px solid var(--azul-claro); }
 .check-item { display: flex; gap: 10px; margin-bottom: 5px; font-size: 10pt; }
+.btn-confirmar { background: #27ae60; color: white; border: none; padding: 10px; width: 100%; cursor: pointer; }
 
-/* ================= IMPRESSÃO (A MÁGICA) ================= */
+.fab-menu { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 1500; }
+.btn-fab { width: 50px; height: 50px; border-radius: 50%; border: none; color: white; font-size: 18px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+.azul { background: var(--azul-claro); }
+.verde { background: #27ae60; }
+.laranja { background: #e67e22; }
+
+/* ================= IMPRESSÃO (A4 FIXO) ================= */
 @media print {
     @page { margin: 0; size: A4; }
     
     body { background: white; margin: 0; padding: 0; }
+    .no-print, .sel-ass { display: none !important; }
 
-    .no-print { display: none !important; }
-
-    /* Fixar Cabeçalho */
+    /* Fixar Header e Footer no Papel */
     .header-oficial {
         position: fixed; top: 0; left: 0; width: 100%; height: 120px;
-        z-index: 1000; border-bottom: 2px solid #000; padding: 5px 0;
+        z-index: 1000; border-bottom: 2px solid #000; background: white;
+        padding-top: 10px; display: block;
     }
 
-    /* Fixar Rodapé */
     .footer-oficial {
-        position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
-        z-index: 1000; border-top: 1px solid #000; padding: 5px 0;
+        position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+        z-index: 1000; border-top: 1px solid #000; background: white;
+        display: block;
     }
 
-    /* Ajustar conteúdo para não bater no cabeçalho/rodapé fixos */
     .folha-a4 {
-        width: 100%; box-shadow: none; margin: 0; padding: 0 15mm;
-        margin-top: 130px; /* Espaço do header */
-        margin-bottom: 70px; /* Espaço do footer */
+        width: 100%; margin: 0; padding: 0 15mm;
+        box-shadow: none;
+        /* Margens para o conteúdo não bater no header/footer */
+        margin-top: 130px; 
+        margin-bottom: 80px;
     }
 
-    input, textarea {
-        border: none; padding: 0; background: transparent;
-        font-family: 'Times New Roman', serif; color: black;
+    /* Remove estilos de formulário */
+    textarea {
+        border: none; padding: 0; resize: none; overflow: hidden;
+        color: black; font-size: 11pt;
     }
+    .input-linha { border-bottom: none; }
+    .titulo-secao { background: none; border-left: none; border-bottom: 2px solid #000; padding-left: 0; }
+    .label { color: black; }
+    .titulo-area h4 { color: black; text-decoration: underline; }
     
-    /* Previne quebras feias */
-    .secao, .assinaturas-container { page-break-inside: avoid; }
+    /* Assinaturas limpas */
+    .cargo-assinatura, .nome-assinatura { color: black !important; }
+    
+    /* Evita quebras */
+    .secao, .area-box, .assinaturas-wrapper, .linha { page-break-inside: avoid; }
 }
