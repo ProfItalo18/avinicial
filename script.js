@@ -1,6 +1,3 @@
-/* ==========================================================================
-   CONFIGURAÇÃO DO FIREBASE (NUVEM)
-   ========================================================================== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -13,17 +10,12 @@ const firebaseConfig = {
   appId: "1:610886737458:web:abe0e11610bc90ee9a662b"
 };
 
-// Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const tabelaRelatorios = collection(db, "relatorios");
 
 let idRelatorioAtual = null;
 
-/* ==========================================================================
-   CONFIGURAÇÃO DA EQUIPE (ASSINATURAS DINÂMICAS)
-   EDITE OS DADOS REAIS ABAIXO
-   ========================================================================== */
 const EQUIPE = {
     pedagogia: {
         'ped1': { nome: "Jheniffer Cavalheiro André", cargo: "Coord. Pedagógica", registro: "RG 9.727.432-0 / Ata nº 15/2018", img: "asspedagoda.png" },
@@ -39,13 +31,10 @@ const EQUIPE = {
     }
 };
 
-/* ==========================================================================
-   1. BANCO DE DADOS DOS CHECKLISTS
-   (Títulos alterados para não terem numeração)
-   ========================================================================== */
+
 const CHECKLIST_DB = {
     pedagogica: {
-        titulo: "Avaliação Pedagógica", // Alterado
+        titulo: "Avaliação Pedagógica",
         targetId: "sintesePedagogica",
         itens: [
             { tipo: 'titulo', texto: '1. Cognição e Aprendizagem' },
@@ -98,7 +87,7 @@ const CHECKLIST_DB = {
         ]
     },
     clinica: {
-        titulo: "Avaliação Clínica", // Alterado
+        titulo: "Avaliação Clínica",
         targetId: "sinteseClinica",
         itens: [
             { tipo: 'titulo', texto: '1. Saúde Neurológica e Geral' },
@@ -151,7 +140,7 @@ const CHECKLIST_DB = {
         ]
     },
     social: {
-        titulo: "Serviço Social", // Alterado
+        titulo: "Serviço Social",
         targetId: "sinteseSocial",
         itens: [
             { tipo: 'titulo', texto: '1. Estrutura e Dinâmica Familiar' },
@@ -212,7 +201,6 @@ let dadosSelecionados = {
 };
 let areaAtual = '';
 
-// ================= FUNÇÕES UTILITÁRIAS =================
 function showToast(msg = "Operação realizada com sucesso!") {
     const toast = document.getElementById("toast");
     if(toast) {
@@ -239,7 +227,6 @@ function getLabelById(area, id) {
     return itemEncontrado ? itemEncontrado.label : "";
 }
 
-// ================= LÓGICA DE NEGÓCIO =================
 window.calcularIdade = function() {
     const dataNascInput = document.getElementById('dataNascimento');
     if (!dataNascInput.value) return;
@@ -253,7 +240,6 @@ window.calcularIdade = function() {
     document.getElementById('idade').value = idade + " anos";
 }
 
-// Função atualizada para trocar Imagem + Nome + Cargo
 window.trocarAssinatura = function(area, idProfissional) {
     if (!idProfissional) return;
 
@@ -269,7 +255,6 @@ window.trocarAssinatura = function(area, idProfissional) {
     if (cargoEl) cargoEl.innerText = `${dados.cargo} - ${dados.registro}`;
 }
 
-// ================= MODAL E TEXTOS =================
 window.abrirModal = function(area) {
     areaAtual = area;
     const dadosArea = CHECKLIST_DB[area];
@@ -346,7 +331,6 @@ window.confirmarModal = function() {
 
     dadosSelecionados[areaAtual] = { manual, itens: ids, textoGerado, indicacoes: inds, encaminhamentos: encs };
 
-    // SÍNTESE
     const targetId = CHECKLIST_DB[areaAtual].targetId;
     const elSintese = document.getElementById(targetId);
     
@@ -373,7 +357,7 @@ function gerarCamposAutomaticosGerais() {
         if (dados.itens.length > 0) {
             const rotulos = dados.itens.map(id => getLabelById(area, id)).filter(l => l !== "");
             if (rotulos.length > 0) {
-                // AQUI: Texto de conclusão sem numeração no título
+                // Título sem numeração
                 textoConclusao += `Na ${tituloArea}, observou-se: ${rotulos.join(", ")}.\n`;
             }
         } 
@@ -401,10 +385,6 @@ function gerarCamposAutomaticosGerais() {
     elEnc.value = unicosEnc.join(" / ");
     autoResize(elEnc);
 }
-
-/* ==========================================================================
-   CRUD FIREBASE (SALVAR, CARREGAR, EXCLUIR NA NUVEM)
-   ========================================================================== */
 
 window.salvarNovoRelatorioNoBanco = async function() {
     const nomeEstudante = document.getElementById('nomeEstudante').value;

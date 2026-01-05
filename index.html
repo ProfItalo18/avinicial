@@ -13,6 +13,14 @@
 </head>
 <body>
 
+    <div class="page-header">
+        <img src="header.png" alt="Cabeçalho">
+    </div>
+
+    <div class="page-footer">
+        <img src="footer.png" alt="Rodapé">
+    </div>
+
     <div id="toast">Operação realizada com sucesso!</div>
 
     <div class="fab-container no-print">
@@ -26,9 +34,7 @@
         <thead>
             <tr>
                 <td>
-                    <div class="header-space">
-                        <img src="header.png" alt="Cabeçalho" class="print-header-img">
-                    </div>
+                    <div class="header-space">&nbsp;</div>
                 </td>
             </tr>
         </thead>
@@ -36,9 +42,7 @@
         <tfoot>
             <tr>
                 <td>
-                    <div class="footer-space">
-                        <img src="footer.png" alt="Rodapé" class="print-footer-img">
-                    </div>
+                    <div class="footer-space">&nbsp;</div>
                 </td>
             </tr>
         </tfoot>
@@ -146,39 +150,39 @@
                                 
                                 <div class="signature-block">
                                     <div class="sig-line">
-                                        <img id="img_pedagogia" src="asspedagoda.png" alt="Assinatura Pedagoga" class="sig-img">
+                                        <img id="img_pedagogia" src="sig_placeholder.png" alt="Assinatura Pedagoga" class="sig-img">
                                     </div>
                                     <p id="nome_pedagogia" class="sig-name">Nome da Pedagoga</p>
                                     <p id="cargo_pedagogia" class="sig-role">Pedagoga</p>
                                     <select class="sig-select no-print" onchange="trocarAssinatura('pedagogia', this.value)">
                                         <option value="">Selecione...</option>
-                                        <option value="ped1">Pedagoga 1</option>
-                                        <option value="ped2">Pedagoga 2</option>
+                                        <option value="ped1">Jheniffer Cavalheiro André</option>
+                                        <option value="ped2">Isabella Floripes Sanches</option>
                                     </select>
                                 </div>
 
                                 <div class="signature-block">
                                     <div class="sig-line">
-                                        <img id="img_psicologia" src="asspsicologa.png" alt="Assinatura Psicóloga" class="sig-img">
+                                        <img id="img_psicologia" src="sig_placeholder.png" alt="Assinatura Psicóloga" class="sig-img">
                                     </div>
                                     <p id="nome_psicologia" class="sig-name">Nome da Psicóloga</p>
                                     <p id="cargo_psicologia" class="sig-role">Psicóloga</p>
                                     <select class="sig-select no-print" onchange="trocarAssinatura('psicologia', this.value)">
                                         <option value="">Selecione...</option>
-                                        <option value="psi1">Psicóloga 1</option>
+                                        <option value="psi1">Jaqueline Gonçalves Malaquim</option>
                                         <option value="psi2">Psicóloga 2</option>
                                     </select>
                                 </div>
 
                                 <div class="signature-block">
                                     <div class="sig-line">
-                                        <img id="img_social" src="asssocial.png" alt="Assinatura A. Social" class="sig-img">
+                                        <img id="img_social" src="sig_placeholder.png" alt="Assinatura A. Social" class="sig-img">
                                     </div>
                                     <p id="nome_social" class="sig-name">Nome Assistente Social</p>
                                     <p id="cargo_social" class="sig-role">Assistente Social</p>
                                     <select class="sig-select no-print" onchange="trocarAssinatura('social', this.value)">
                                         <option value="">Selecione...</option>
-                                        <option value="soc1">A. Social 1</option>
+                                        <option value="soc1">Andrea Cristina Santos</option>
                                         <option value="soc2">A. Social 2</option>
                                     </select>
                                 </div>
@@ -198,32 +202,28 @@
                 <h2 id="modalTitulo">Área</h2>
                 <button onclick="fecharModal()" class="close-btn">&times;</button>
             </header>
-            
             <div class="modal-body">
                 <div class="section-box">
                     <div class="form-grid">
                         <div class="input-group">
                             <label style="color: var(--secondary); font-weight:bold;">1. Observações Manuais / Iniciais:</label>
-                            <textarea id="obsManualInput" rows="4" placeholder="Digite aqui o texto livre..." oninput="atualizarPreview()"></textarea>
+                            <textarea id="obsManualInput" rows="4" placeholder="Digite aqui..." oninput="atualizarPreview()"></textarea>
                         </div>
                         <div class="input-group">
-                            <label style="color: var(--secondary); font-weight:bold;">2. Texto Gerado pelos Checkboxes:</label>
+                            <label style="color: var(--secondary); font-weight:bold;">2. Texto Gerado:</label>
                             <textarea id="previewAutomatico" rows="4" readonly style="background-color: #eee; font-style: italic;"></textarea>
                         </div>
                     </div>
                     <div class="input-group" style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px;">
-                        <label>Resultado Final na Síntese (Visualização):</label>
+                        <label>Resultado Final (Visualização):</label>
                         <p id="previewFinal" style="font-size: 13px; color: #333; font-weight: 500;"></p>
                     </div>
                 </div>
-
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
-
                 <div id="modalChecklistContent"></div>
             </div>
-
             <footer class="modal-footer">
-                <button onclick="confirmarModal()" class="btn-confirm">Confirmar e Gerar Relatório</button>
+                <button onclick="confirmarModal()" class="btn-confirm">Confirmar e Gerar</button>
             </footer>
         </div>
     </div>
@@ -231,21 +231,18 @@
     <div id="modalBusca" class="modal-overlay">
         <div class="modal-card" style="height: auto; max-height: 80vh;">
             <header class="modal-header">
-                <h2><i class="fas fa-search"></i> Buscar Relatórios Salvos</h2>
+                <h2><i class="fas fa-search"></i> Buscar Relatórios</h2>
                 <button onclick="fecharModalBusca()" class="close-btn">&times;</button>
             </header>
-            
             <div class="modal-body">
                 <div class="search-box-container">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="inputBusca" class="search-input" placeholder="Digite o nome do estudante..." onkeyup="filtrarRelatorios()">
+                    <input type="text" id="inputBusca" class="search-input" placeholder="Digite o nome..." onkeyup="filtrarRelatorios()">
                 </div>
-
                 <div id="listaRelatorios" class="results-list">
                     <p style="text-align:center; color:#999; margin-top:20px;">Carregando...</p>
                 </div>
             </div>
-
             <footer class="modal-footer">
                 <button onclick="fecharModalBusca()" class="btn-confirm" style="background:#7f8c8d">Fechar</button>
             </footer>
