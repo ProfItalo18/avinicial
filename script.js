@@ -774,3 +774,26 @@ window.addEventListener("load", () => {
   gerarConclusao();
   toast("Sistema iniciado.");
 });
+
+function atualizarLocalDataAssinatura(){
+  const campoData = document.getElementById("dataAvaliacao");
+  const box = document.getElementById("sigLocalData");
+  if(!campoData || !box) return;
+
+  if(!campoData.value){
+    box.textContent = "Londrina/PR";
+    return;
+  }
+
+  const data = new Date(campoData.value + "T00:00:00");
+  const formato = data.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  });
+
+  box.textContent = `Londrina/PR, ${formato}`;
+}
+
+document.getElementById("dataAvaliacao")?.addEventListener("change", atualizarLocalDataAssinatura);
+window.addEventListener("load", atualizarLocalDataAssinatura);
