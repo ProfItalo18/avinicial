@@ -1,217 +1,249 @@
-/* ================= VARIAVEIS E RESET ================= */
 :root {
     --primary: #2c3e50;
     --secondary: #3498db;
-    --accent: #e74c3c;
-    --bg: #f4f6f8;
+    --bg-screen: #f4f6f8;
     --paper: #ffffff;
-    --border: #dfe6e9;
-    --text: #2d3436;
-    --success: #27ae60;
+    --text-color: #333;
+    --border-color: #ddd;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
 
 body {
-    background-color: var(--bg);
-    color: var(--text);
-    /* Margem inferior na tela para ver o rodapé fixo */
-    padding-bottom: 100px; 
+    background-color: var(--bg-screen);
+    color: var(--text-color);
+    padding-bottom: 50px;
 }
 
-/* ================= ELEMENTOS FIXOS (VISUAIS) ================= */
-/* Na tela, eles podem ficar fixos ou absolutos. 
-   Na impressão (ver @media print), eles ficam FIXED em cada página. */
-
-.page-header {
-    position: absolute; /* Na tela, fica no topo absoluto */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 140px; /* Altura do seu cabeçalho */
-    z-index: 100;
-    display: none; /* Escondemos na tela web para não atrapalhar, mostramos só no print se quiser, ou ajustamos */
-}
-
-/* Vamos mostrar o cabeçalho/rodapé apenas na impressão para não atrapalhar a edição web */
-.page-header, .page-footer {
-    display: none;
-}
-
-.page-header img, .page-footer img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-/* ================= LAYOUT DO RELATÓRIO ================= */
-.report-container {
-    width: 100%;
-    max-width: 210mm;
+/* --- Layout Principal --- */
+.main-content {
+    max-width: 210mm; /* Tamanho A4 */
     margin: 20px auto;
     background: var(--paper);
+    padding: 40px; /* Margem interna do papel na tela */
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border-collapse: collapse;
+    min-height: 297mm;
 }
 
-/* Espaçadores vazios dentro da tabela que empurram o conteúdo */
-.header-space { height: 140px; }
-.footer-space { height: 70px; }
-
-.main-content { padding: 0 40px 20px 40px; }
-
-/* ================= TIPOGRAFIA E SEÇÕES ================= */
-.report-title {
-    text-align: center; font-size: 18px; font-weight: 700;
-    text-transform: uppercase; margin-bottom: 30px; margin-top: 20px;
-    border-bottom: 2px solid var(--primary); padding-bottom: 10px;
+h1.document-title {
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 16pt;
+    margin-bottom: 30px;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 10px;
 }
 
-.section-box { margin-bottom: 25px; }
+h2 { font-size: 14pt; color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+h3 { font-size: 12pt; color: var(--secondary); margin-top: 15px; margin-bottom: 10px; }
 
-.section-title {
-    font-size: 14px; font-weight: 700; background-color: #eee;
-    padding: 5px 10px; margin-bottom: 15px;
-    border-left: 4px solid var(--primary); text-transform: uppercase;
-    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+/* --- Cartões e Seções --- */
+.card {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid transparent;
 }
 
-/* ================= FORMULÁRIO GRID ================= */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.input-group { display: flex; flex-direction: column; }
-.input-group.full-width { grid-column: span 2; }
+/* Na tela, damos um visual de card. Na impressão, removemos bordas. */
+@media screen {
+    .card { background: #fff; border: 1px solid #eee; border-radius: 8px; }
+}
 
-label { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 4px; }
+/* --- Grid do Formulário --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.col-full { grid-column: span 2; }
+.col-half { grid-column: span 1; }
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
 
 input, textarea, select {
-    border: 1px solid var(--border); padding: 8px; border-radius: 4px;
-    font-size: 14px; width: 100%; background: #fafafa; transition: 0.2s;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 11pt;
 }
 
-input:focus, textarea:focus { border-color: var(--secondary); background: #fff; outline: none; }
+input.input-flat {
+    background: #f9f9f9;
+    border: none;
+    font-weight: bold;
+    color: #000;
+}
 
 textarea {
-    resize: none; overflow-y: hidden; line-height: 1.5; text-align: justify; min-height: 40px;
+    resize: vertical;
+    text-align: justify;
+    line-height: 1.5;
 }
 
-/* ================= BOTÕES ================= */
-.areas-buttons { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
-.btn-area {
-    padding: 12px 20px; border: none; border-radius: 6px;
-    color: white; cursor: pointer; font-weight: 500;
-    display: flex; align-items: center; gap: 8px; transition: transform 0.2s;
+/* --- Áreas Avaliadas --- */
+.area-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
-.btn-area:hover { transform: translateY(-2px); opacity: 0.9; }
-.area-ped { background-color: #e67e22; }
-.area-clin { background-color: #27ae60; }
-.area-soc { background-color: #8e44ad; }
 
-#toast {
-    visibility: hidden; min-width: 250px; background-color: var(--primary);
-    color: #fff; text-align: center; border-radius: 4px; padding: 16px;
-    position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%);
-    opacity: 0; transition: opacity 0.3s, bottom 0.3s;
+.btn-action {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
 }
-#toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+.btn-action:hover { background: #2980b9; }
 
-/* ================= ASSINATURAS ================= */
-.signatures-section { margin-top: 50px; page-break-inside: avoid; }
-.signature-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: center; page-break-inside: avoid; }
-.signature-block { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
-.sig-line { width: 100%; border-bottom: 1px solid #000; margin-bottom: 5px; height: 60px; display: flex; align-items: flex-end; justify-content: center; }
-.sig-img { max-height: 55px; max-width: 100%; }
-.sig-name { font-weight: bold; font-size: 14px; margin: 5px 0 2px 0; text-transform: uppercase; }
-.sig-role { font-size: 12px; color: #444; margin: 0; }
-.sig-select { margin-top: 10px; padding: 5px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; background: #f9f9f9; }
-.legal-text { font-size: 12px; text-align: justify; font-style: italic; color: #555; }
+/* --- Assinaturas --- */
+.signatures-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    page-break-inside: avoid; /* Evita quebra no meio das assinaturas */
+}
 
-/* ================= MODAL ================= */
+.sig-block {
+    width: 30%;
+    text-align: center;
+}
+
+.sig-image-container {
+    height: 80px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.sig-image-container img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.sig-role {
+    border-top: 1px solid #000;
+    padding-top: 5px;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+.sig-selector {
+    margin-bottom: 5px;
+    font-size: 0.8rem;
+    padding: 2px;
+}
+
+/* --- Texto Legal --- */
+.legal-text p {
+    font-size: 9pt;
+    font-style: italic;
+    text-align: justify;
+    color: #555;
+}
+
+/* --- Header/Footer Print --- */
+.print-header, .print-footer { display: none; } /* Esconde na tela */
+
+/* --- FAB e Modais --- */
+.fab-container {
+    position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000;
+}
+.fab-btn {
+    width: 50px; height: 50px; border-radius: 50%; border: none; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.btn-print { background: #e67e22; }
+.btn-save { background: #27ae60; }
+
 .modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
-    backdrop-filter: blur(2px);
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+    display: none; justify-content: center; align-items: center; z-index: 2000;
 }
 .modal-card {
-    background: white; width: 90%; max-width: 800px; height: 85vh;
-    border-radius: 8px; display: flex; flex-direction: column;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    background: white; width: 90%; max-width: 800px; max-height: 90vh;
+    display: flex; flex-direction: column; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
-.modal-header {
-    padding: 15px 20px; background: var(--primary); color: white;
-    border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center;
-}
-.modal-body { flex: 1; overflow-y: auto; padding: 20px; }
-.modal-footer { padding: 15px; border-top: 1px solid #ddd; text-align: right; background: #f9f9f9; border-radius: 0 0 8px 8px; }
-.close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
-.btn-confirm { background: var(--secondary); color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
-.checklist-group { margin-bottom: 20px; }
-.checklist-group h4 { color: var(--secondary); margin-bottom: 10px; border-bottom: 1px solid #eee; }
-.check-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; cursor: pointer; }
-.check-item:hover { background-color: #f0f8ff; border-radius: 4px; }
-.check-item input { width: auto; margin-top: 4px; }
+.modal-header, .modal-footer { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.modal-footer { border-top: 1px solid #eee; border-bottom: none; justify-content: flex-end; }
+.modal-body { padding: 20px; overflow-y: auto; flex: 1; }
 
-/* ================= BUSCA ================= */
-.search-box-container { position: relative; margin-bottom: 20px; }
-.search-input { width: 100%; padding: 12px 15px 12px 40px; border: 2px solid #dfe6e9; border-radius: 25px; font-size: 16px; }
-.search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; }
-.results-list { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; }
-.report-item { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-.report-name { font-weight: bold; color: var(--primary); font-size: 14px; display: block; }
-.report-date { font-size: 12px; color: #7f8c8d; }
-.report-actions { display: flex; gap: 8px; }
-.btn-action { border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; color: white; display: flex; align-items: center; gap: 5px; }
-.btn-load { background-color: var(--secondary); } .btn-delete { background-color: var(--accent); }
+.checklist-subsection { margin-bottom: 20px; }
+.checklist-subsection h4 { background: #f0f0f0; padding: 8px; border-radius: 4px; margin-bottom: 10px; }
+.checklist-item { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 0.95rem; }
+.checklist-item input { width: auto; margin-right: 10px; margin-top: 4px; }
 
-/* ================= FAB ================= */
-.fab-container { position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
-.fab-btn { width: 50px; height: 50px; border-radius: 50%; border: none; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: 0.3s; }
-.fab-btn:hover { transform: scale(1.1); }
-.btn-print { background: #34495e; } .btn-save { background: #27ae60; } .btn-reset { background: #c0392b; } .btn-search { background-color: #f39c12; }
-
-/* ================= IMPRESSÃO (CORREÇÃO DO RODAPÉ) ================= */
+/* ================= IMPRESSÃO ================= */
 @media print {
-    body { background: white; padding: 0; margin: 0; }
-    .no-print, .fab-container, .modal-overlay { display: none !important; }
-    
-    .report-container { box-shadow: none; margin: 0; width: 100%; border: none; }
-    
-    /* Configuração de inputs para impressão */
-    input, textarea, select {
-        border: none; background: transparent; padding: 0; resize: none; width: 100%;
-        font-family: 'Times New Roman', serif; font-size: 12pt; color: #000; text-align: justify;
+    @page {
+        margin: 0; /* Remove margens do navegador para controlar via CSS */
+        size: A4;
     }
-    select { appearance: none; -webkit-appearance: none; }
 
-    /* --- CABEÇALHO E RODAPÉ FIXOS --- */
-    
-    /* 1. Mostra os elementos que estavam escondidos */
-    .page-header, .page-footer {
-        display: block !important;
-        position: fixed; /* Isso faz eles grudarem no papel */
+    body {
+        background: white;
+        padding: 0;
+        /* Margens para acomodar Header e Footer fixos */
+        margin-top: 140px; 
+        margin-bottom: 80px;
+    }
+
+    .main-content {
+        box-shadow: none;
+        margin: 0;
+        padding: 0 20mm; /* Margens laterais do conteúdo */
+        width: 100%;
+        max-width: none;
+    }
+
+    .no-print { display: none !important; }
+
+    /* Header Fixo */
+    .print-header {
+        display: block;
+        position: fixed;
+        top: 0;
         left: 0;
         width: 100%;
-        background: white; /* Garante que nada fique transparente por baixo */
-        z-index: 9999;
+        height: 130px; /* Ajuste conforme altura da imagem */
+        background: white;
+        z-index: 1000;
+        text-align: center;
     }
+    .print-header img { height: 100%; width: 100%; object-fit: contain; }
 
-    /* 2. Posicionamento exato */
-    .page-header {
-        top: 0;
-        height: 140px; /* Ajuste conforme sua imagem */
-    }
-
-    .page-footer {
+    /* Footer Fixo */
+    .print-footer {
+        display: block;
+        position: fixed;
         bottom: 0;
-        height: 70px; /* Ajuste conforme sua imagem */
+        left: 0;
+        width: 100%;
+        height: 70px; /* Ajuste conforme altura da imagem */
+        background: white;
+        z-index: 1000;
     }
+    .print-footer img { height: 100%; width: 100%; object-fit: contain; }
 
-    /* 3. A Tabela repete o espaço vazio para não encavalar texto */
-    thead { display: table-header-group; }
-    tfoot { display: table-footer-group; }
+    /* Ajustes finos de texto */
+    input, textarea {
+        border: none;
+        background: transparent;
+        padding: 0;
+        resize: none;
+        color: black;
+        font-family: 'Times New Roman', serif; /* Fonte mais formal para impressão */
+    }
     
-    .header-space { height: 140px; }
-    .footer-space { height: 70px; }
-
-    /* 4. Cores de fundo forçadas */
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .card { padding: 0; margin-bottom: 15px; border: none; }
 }
