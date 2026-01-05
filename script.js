@@ -1,15 +1,6 @@
-/* =========================================================
-   IMPORTAÇÕES DO FIREBASE (NÃO ALTERAR)
-   ========================================================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getFirestore, collection, addDoc, getDocs, doc, 
-  deleteDoc, updateDoc, getDoc, query, orderBy, where 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* =========================================================
-   1. CONFIGURAÇÃO (SUAS CHAVES)
-   ========================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyAuyLoRREleZ9hA2JFBJhUk0oysY0AV_Zw",
   authDomain: "relatoriosescolamanain.firebaseapp.com",
@@ -19,16 +10,29 @@ const firebaseConfig = {
   appId: "1:610886737458:web:abe0e11610bc90ee9a662b"
 };
 
-// Inicializa o Banco
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const relatoriosRef = collection(db, "relatorios");
+const tabelaRelatorios = collection(db, "relatorios");
 
-let idRelatorioAtual = null; // Controla se estamos editando ou criando novo
+let idRelatorioAtual = null;
 
-/* =========================================================
-   2. DADOS DOS CHECKLISTS (BANCO DE FRASES)
-   ========================================================= */
+// --- 2. DADOS DA EQUIPE (CORRIGIDO CONFORME SUA SOLICITAÇÃO) ---
+const EQUIPE = {
+    pedagogia: {
+        'ped1': { nome: "Jheniffer Cavalheiro André", cargo: "Coord. Pedagógica", registro: "RG 9.727.432-0 / Ata nº 15/2018", img: "asspedagoda.png" },
+        'ped2': { nome: "Isabella Floripes Sanches", cargo: "Coord. Pedagógica", registro: "RG 10.617.697-3 / Ata nº 17/2021", img: "asspedagoda2.png" }
+    },
+    psicologia: {
+        'psi1': { nome: "Jaqueline Gonçalves Malaquim", cargo: "Psicóloga Escolar", registro: "CRP 08/30548", img: "asspsicologa.png" },
+        'psi2': { nome: "", cargo: "Psicóloga", registro: "", img: "" }
+    },
+    social: {
+        'soc1': { nome: "Andrea Cristina Santos", cargo: "Assistente Social", registro: "CRESS/PR 9794", img: "asssocial.png" },
+        'soc2': { nome: "", cargo: "Assistente Social", registro: "", img: "" }
+    }
+};
+
+// --- 3. DADOS DO CHECKLIST ---
 const DADOS_CHECKLIST = {
     pedagogica: {
         titulo: "1.2 Avaliação Pedagógica e Funcional (Educação Especial)",
@@ -302,397 +306,278 @@ const DADOS_CHECKLIST = {
     }
 };
 
-/* =========================================================
-   3. FUNÇÕES DE INTERFACE (MODAIS E UX)
-   ========================================================= */
+// --- 4. FUNÇÕES GLOBAIS (EXPOSTAS AO WINDOW PARA OS BOTÕES FUNCIONAREM) ---
 
-// Função para redimensionar caixas de texto automaticamente
 function autoResize(el) {
     el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
+    el.style.height = (el.scrollHeight) + 'px';
 }
 
-// Configura os textareas para crescerem sozinhos
-document.querySelectorAll('textarea').forEach(tx => {
-    tx.addEventListener('input', () => autoResize(tx));
+window.addEventListener('load', () => {
+    // Inicialização
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.addEventListener('input', function() { autoResize(this); });
+    });
+    preencherSelect('selPedagogica', EQUIPE.pedagogia);
+    preencherSelect('selPsicologia', EQUIPE.psicologia);
+    preencherSelect('selSocial', EQUIPE.social);
+    
+    // Padrões
+    window.trocarAssinatura('pedagogia', 'ped1');
+    window.trocarAssinatura('psicologia', 'psi1');
+    window.trocarAssinatura('social', 'soc1');
+    window.atualizarDataAssinatura();
 });
 
-// Toast (Notificação flutuante)
-function showToast(msg, tipo = 'sucesso') {
-    const toast = document.createElement('div');
-    toast.style.position = 'fixed';
-    toast.style.bottom = '20px';
-    toast.style.left = '50%';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.background = tipo === 'erro' ? '#c0392b' : '#27ae60';
-    toast.style.color = 'white';
-    toast.style.padding = '12px 24px';
-    toast.style.borderRadius = '30px';
-    toast.style.zIndex = '3000';
-    toast.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+function preencherSelect(id, objetoCategoria) {
+    const sel = document.getElementById(id);
+    if(!sel) return;
+    sel.innerHTML = "";
+    for (const [key, dados] of Object.entries(objetoCategoria)) {
+        const txt = dados.nome ? dados.nome : `Vazio (${key})`;
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = txt;
+        sel.appendChild(opt);
+    }
 }
 
-/* =========================================================
-   4. LÓGICA DO CHECKLIST INTELIGENTE
-   ========================================================= */
-let areaAtualEdicao = ''; // 'pedagogica', 'clinica' ou 'social'
-
-// Abre o modal de checklist
-window.abrirModalChecklist = function(area) {
-    areaAtualEdicao = area;
-    const modal = document.getElementById('modalChecklist');
-    const containerLeft = document.querySelector('.split-left');
-    const previewRight = document.querySelector('.textarea-preview');
-    const titulo = document.getElementById('tituloModal');
-
-    // 1. Limpa anterior
-    containerLeft.innerHTML = '';
-    previewRight.value = '';
-
-    // 2. Define título
-    const titulosMap = { 'pedagogica': 'Avaliação Pedagógica', 'clinica': 'Avaliação Clínica', 'social': 'Avaliação Social' };
-    titulo.textContent = titulosMap[area] || 'Avaliação';
-
-    // 3. Carrega Texto existente (se houver) para edição
-    const campoPrincipal = document.getElementById(`txt${capitalize(area)}`);
-    if(campoPrincipal && campoPrincipal.value) {
-        previewRight.value = campoPrincipal.value;
-    }
-
-    // 4. Gera as perguntas (Checkboxes)
-    const dados = BANCO_CHECKLIST[area];
+// === LÓGICA DE ASSINATURA ===
+window.trocarAssinatura = function(categoria, key) {
+    const dados = EQUIPE[categoria][key];
     if(dados) {
-        dados.forEach(grupo => {
-            const divGrupo = document.createElement('div');
-            divGrupo.className = 'check-grupo';
-            divGrupo.innerHTML = `<h5>${grupo.titulo}</h5>`;
-            
-            grupo.itens.forEach(item => {
-                const divItem = document.createElement('div');
-                divItem.className = 'check-item';
-                divItem.onclick = (e) => {
-                    // Clica no div para marcar o checkbox
-                    if(e.target.tagName !== 'INPUT') {
-                        const chk = divItem.querySelector('input');
-                        chk.checked = !chk.checked;
-                        atualizarPreview(area);
-                    }
-                };
+        let sufixo = "";
+        if(categoria === 'pedagogia') sufixo = 'Pedagogica';
+        else if(categoria === 'psicologia') sufixo = 'Psicologia';
+        else if(categoria === 'social') sufixo = 'Social';
+        
+        const imgEl = document.getElementById(`img${sufixo}`);
+        const nomeEl = document.getElementById(`nome${sufixo}`);
+        const cargoEl = document.getElementById(`cargo${sufixo}`);
+        const regEl = document.getElementById(`reg${sufixo}`);
+        const selEl = document.getElementById(`sel${sufixo}`);
 
-                divItem.innerHTML = `
-                    <input type="checkbox" id="${item.id}" value="${item.valor}" onchange="window.atualizarPreview('${area}')">
-                    <label for="${item.id}">${item.texto}</label>
-                `;
-                divGrupo.appendChild(divItem);
-            });
-            containerLeft.appendChild(divGrupo);
-        });
-    } else {
-        containerLeft.innerHTML = '<p style="padding:20px; color:#666;">Nenhum checklist configurado para esta área.</p>';
+        if(imgEl) { imgEl.src = dados.img; imgEl.style.display = dados.img ? 'block' : 'none'; }
+        if(nomeEl) nomeEl.innerText = dados.nome;
+        if(cargoEl) cargoEl.innerText = dados.cargo;
+        if(regEl) regEl.innerText = dados.registro;
+        if(selEl) selEl.value = key;
     }
-
-    // 5. Mostra Modal
-    modal.style.display = 'flex';
 };
 
-// Atualiza o texto da direita conforme marca os checkboxes na esquerda
-window.atualizarPreview = function(area) {
-    const checkboxes = document.querySelectorAll('.split-left input:checked');
-    let textoGerado = [];
+window.calcularIdade = function() {
+    const d = document.getElementById('dataNascimento').value;
+    if(!d) return;
+    const nasc = new Date(d);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - nasc.getFullYear();
+    if (hoje < new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate())) idade--;
+    document.getElementById('idade').value = `${idade} anos`;
+};
+
+window.atualizarDataAssinatura = function() {
+    const dtInput = document.getElementById('dataAvaliacao').value;
+    const p = document.getElementById('localDataTexto');
+    if(!dtInput) { p.innerText = "Londrina/PR, ____ de __________________ de _______."; return; }
+    const d = new Date(dtInput + 'T12:00:00');
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    p.innerText = `Londrina/PR, ${d.toLocaleDateString('pt-BR', options)}.`;
+};
+
+// === LÓGICA DO CHECKLIST (SPLIT VIEW) ===
+window.abrirModal = function(area) {
+    areaAtual = area;
+    const dados = CHECKLIST[area];
+    document.getElementById('tituloModal').innerText = dados.titulo;
     
-    checkboxes.forEach(chk => {
-        textoGerado.push(chk.value);
+    // Limpa
+    const corpo = document.getElementById('corpoChecklist');
+    corpo.innerHTML = "";
+    
+    // Carrega texto atual
+    const idArea = areaAtual === 'pedagogica' ? 'txtPedagogica' : areaAtual === 'clinica' ? 'txtClinica' : 'txtSocial';
+    document.getElementById('textoAoVivo').value = document.getElementById(idArea).value;
+
+    dados.grupos.forEach((g, gIdx) => {
+        let html = `<div class="check-grupo"><h5>${g.nome}</h5>`;
+        g.itens.forEach((it, iIdx) => {
+            const idChk = `chk_${area}_${gIdx}_${iIdx}`;
+            html += `
+                <div class="check-item">
+                    <input type="checkbox" id="${idChk}" onchange="window.atualizarTextoAoVivo()"
+                        data-txt="${it.txt}" data-ind="${it.ind}" data-enc="${it.enc}">
+                    <label for="${idChk}">${it.txt}</label>
+                </div>`;
+        });
+        html += `</div>`;
+        corpo.innerHTML += html;
+    });
+    document.getElementById('modalChecklist').style.display = 'flex';
+};
+
+window.atualizarTextoAoVivo = function() {
+    const checks = document.querySelectorAll('#corpoChecklist input:checked');
+    let textos = [];
+    checks.forEach(c => { if(c.dataset.txt) textos.push(c.dataset.txt); });
+    document.getElementById('textoAoVivo').value = textos.join(" ");
+};
+
+window.confirmarChecklist = function() {
+    const textoFinal = document.getElementById('textoAoVivo').value;
+    const checks = document.querySelectorAll('#corpoChecklist input:checked');
+    let ind = "", enc = "";
+    
+    checks.forEach(c => {
+        if(c.dataset.ind) ind += "• " + c.dataset.ind + "\n";
+        if(c.dataset.enc) enc += "• " + c.dataset.enc + "\n";
     });
 
-    // Junta as frases com espaço. 
-    // Se quiser manter o texto que o usuário já digitou manualmente, a lógica seria mais complexa.
-    // Aqui, estamos substituindo pelo gerado + edições manuais no preview.
-    const preview = document.querySelector('.textarea-preview');
-    
-    // Simples: joga o texto gerado. O usuário edita no final.
-    if(textoGerado.length > 0) {
-        // Se o preview estiver vazio ou o usuário estiver apenas clicando, atualiza.
-        // Dica: Para não apagar o que ele escreveu manualmente, idealmente concatenamos ou alertamos.
-        // Aqui faremos append simples para facilitar.
-        const textoFinal = textoGerado.join(' ');
-        preview.value = textoFinal; 
-    }
-};
+    const idArea = areaAtual === 'pedagogica' ? 'txtPedagogica' : areaAtual === 'clinica' ? 'txtClinica' : 'txtSocial';
+    const elArea = document.getElementById(idArea);
+    elArea.value = textoFinal;
+    autoResize(elArea);
 
-window.processarChecklist = function() {
-    const preview = document.querySelector('.textarea-preview');
-    const campoPrincipal = document.getElementById(`txt${capitalize(areaAtualEdicao)}`);
-    
-    if(campoPrincipal) {
-        campoPrincipal.value = preview.value;
-        autoResize(campoPrincipal);
-    }
-    
+    if(ind) { const i = document.getElementById('txtIndicacoes'); i.value += (i.value ? "\n" : "") + ind; autoResize(i); }
+    if(enc) { const e = document.getElementById('txtEncaminhamentos'); e.value += (e.value ? "\n" : "") + enc; autoResize(e); }
+    if(textoFinal) { const c = document.getElementById('txtConclusao'); if(!c.value.includes(textoFinal.substring(0,20))) { c.value += (c.value ? "\n" : "") + textoFinal; autoResize(c); } }
+
     window.fecharModal('modalChecklist');
-    showToast("Texto transferido com sucesso!");
 };
 
-/* =========================================================
-   5. CRUD (SALVAR, CARREGAR, BUSCAR)
-   ========================================================= */
+window.fecharModal = function(id) { document.getElementById(id).style.display = 'none'; };
 
-// --- SALVAR ---
-window.salvarRelatorio = async function() {
-    const btn = document.querySelector('.fab-menu .verde');
-    const originalContent = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; // Loading
+// === GESTÃO DE DADOS (DATA CENTER) ===
+window.abrirBusca = function() { document.getElementById('modalBusca').style.display = 'flex'; window.executarBusca(); };
 
-    try {
-        // Coleta dados dos inputs
-        const dados = {
-            escola: document.getElementById('escola').value || '',
-            estudante: document.getElementById('nomeEstudante').value || 'Sem Nome',
-            dataNascimento: document.getElementById('dataNascimento').value || '',
-            idade: document.getElementById('idade').value || '',
-            filiacao: document.getElementById('filiacao').value || '',
-            dataAvaliacao: document.getElementById('dataAvaliacao').value || '',
-            
-            // Áreas de Texto
-            txtPedagogica: document.getElementById('txtPedagogica').value || '',
-            txtClinica: document.getElementById('txtClinica').value || '',
-            txtSocial: document.getElementById('txtSocial').value || '',
-            txtConclusao: document.getElementById('txtConclusao').value || '',
-            txtIndicacoes: document.getElementById('txtIndicacoes').value || '',
-            txtEncaminhamentos: document.getElementById('txtEncaminhamentos').value || '',
-            txtObservacoes: document.getElementById('txtObservacoes').value || '',
-            
-            // Assinaturas (IDs selecionados)
-            assPedagogia: document.getElementById('selPedagogia')?.value || '',
-            assPsicologia: document.getElementById('selPsicologia')?.value || '',
-            assSocial: document.getElementById('selSocial')?.value || '',
-
-            dataCriacao: new Date()
-        };
-
-        if (idRelatorioAtual) {
-            // Atualizar existente
-            await updateDoc(doc(relatoriosRef, idRelatorioAtual), dados);
-            showToast("Relatório atualizado!");
-        } else {
-            // Criar novo
-            const docRef = await addDoc(relatoriosRef, dados);
-            idRelatorioAtual = docRef.id;
-            showToast("Relatório salvo no sistema!");
-        }
-
-    } catch (error) {
-        console.error("Erro ao salvar:", error);
-        showToast("Erro ao salvar. Verifique o console.", "erro");
-    } finally {
-        btn.innerHTML = originalContent;
-    }
-};
-
-// --- ABRIR MODAL DE BUSCA ---
-window.abrirBusca = function() {
-    document.getElementById('modalBusca').style.display = 'flex';
-    window.executarBusca(); // Já carrega os recentes
-};
-
-// --- EXECUTAR BUSCA ---
 window.executarBusca = async function() {
     const termo = document.getElementById('buscaInput').value.toLowerCase();
-    const listaDiv = document.getElementById('listaResultados');
-    listaDiv.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Buscando...</p></div>';
-
+    const lista = document.getElementById('listaResultados');
+    lista.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Buscando...</p></div>';
+    
     try {
-        // Pega todos (para filtrar no cliente por simplicidade de "contains", 
-        // em produção com muitos dados usaria query composta)
-        const q = query(relatoriosRef, orderBy("dataCriacao", "desc"));
-        const snapshot = await getDocs(q);
+        const q = query(tabelaRelatorios, orderBy('timestamp', 'desc'));
+        const snap = await getDocs(q);
+        lista.innerHTML = "";
         
-        listaDiv.innerHTML = '';
-        
-        let encontrou = false;
+        if(snap.empty) { lista.innerHTML = '<div class="empty-state"><p>Nada encontrado.</p></div>'; return; }
 
-        snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const nome = (data.estudante || '').toLowerCase();
-            const filiacao = (data.filiacao || '').toLowerCase();
-
-            if (nome.includes(termo) || filiacao.includes(termo) || termo === '') {
-                encontrou = true;
-                const card = document.createElement('div');
-                card.className = 'result-card';
-                
-                // Formata data
-                let dataFormatada = 'Sem data';
-                if(data.dataCriacao && data.dataCriacao.toDate) {
-                    dataFormatada = data.dataCriacao.toDate().toLocaleDateString('pt-BR');
-                }
-
-                card.innerHTML = `
-                    <div class="card-header">
-                        <h4>${data.estudante}</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-meta"><i class="fas fa-calendar"></i> ${dataFormatada}</div>
-                        <div class="card-meta"><i class="fas fa-user-friends"></i> ${data.filiacao || 'Filiação não inf.'}</div>
-                    </div>
-                    <div class="card-actions">
-                        <button onclick="window.carregarRelatorio('${docSnap.id}')" class="btn-card btn-open">Abrir</button>
-                        <button onclick="window.excluirRelatorio('${docSnap.id}')" class="btn-card btn-del"><i class="fas fa-trash"></i></button>
-                    </div>
-                `;
-                listaDiv.appendChild(card);
+        let count = 0;
+        snap.forEach(d => {
+            const data = d.data();
+            const nome = data.estudante ? data.estudante.toLowerCase() : "";
+            const pai = data.filiacao ? data.filiacao.toLowerCase() : "";
+            
+            if(nome.includes(termo) || pai.includes(termo)) {
+                count++;
+                const dataF = data.timestamp ? new Date(data.timestamp.seconds*1000).toLocaleDateString() : "-";
+                lista.innerHTML += `
+                    <div class="result-card">
+                        <div class="card-header"><h4>${data.estudante || "Sem Nome"}</h4></div>
+                        <div class="card-body">
+                            <div class="card-meta"><i class="fas fa-user-friends"></i> ${data.filiacao || "?"}</div>
+                            <div class="card-meta"><i class="fas fa-calendar-alt"></i> ${dataF}</div>
+                        </div>
+                        <div class="card-actions">
+                             <button class="btn-card btn-del" onclick="window.excluirRelatorio('${d.id}')">Excluir</button>
+                             <button class="btn-card btn-open" onclick="window.carregar('${d.id}')">Carregar</button>
+                        </div>
+                    </div>`;
             }
         });
-
-        if (!encontrou) {
-            listaDiv.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>Nenhum relatório encontrado.</p></div>';
-        }
-
-    } catch (error) {
-        console.error(error);
-        listaDiv.innerHTML = '<p style="color:red; text-align:center">Erro ao buscar dados.</p>';
-    }
+        if(count === 0) lista.innerHTML = '<div class="empty-state"><p>Sem resultados.</p></div>';
+    } catch(e) { console.error(e); lista.innerHTML = "Erro de conexão."; }
 };
 
-// --- CARREGAR RELATÓRIO NA TELA ---
-window.carregarRelatorio = async function(id) {
+window.exportarDados = async function() {
     try {
-        const docSnap = await getDoc(doc(relatoriosRef, id));
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            idRelatorioAtual = id;
-
-            // Preenche Campos Simples
-            const campos = ['escola', 'nomeEstudante', 'dataNascimento', 'idade', 'filiacao', 'dataAvaliacao', 
-                            'txtPedagogica', 'txtClinica', 'txtSocial', 'txtConclusao', 'txtIndicacoes', 'txtEncaminhamentos', 'txtObservacoes'];
-            
-            // Mapeamento manual para IDs do HTML se forem diferentes das chaves do banco
-            // No salvar usamos IDs diretos, então aqui usamos direto também.
-            // Exceção: 'estudante' no banco vs 'nomeEstudante' no ID HTML
-            
-            document.getElementById('escola').value = data.escola || '';
-            document.getElementById('nomeEstudante').value = data.estudante || '';
-            document.getElementById('dataNascimento').value = data.dataNascimento || '';
-            document.getElementById('idade').value = data.idade || '';
-            document.getElementById('filiacao').value = data.filiacao || '';
-            document.getElementById('dataAvaliacao').value = data.dataAvaliacao || '';
-
-            // Textareas
-            document.getElementById('txtPedagogica').value = data.txtPedagogica || '';
-            document.getElementById('txtClinica').value = data.txtClinica || '';
-            document.getElementById('txtSocial').value = data.txtSocial || '';
-            document.getElementById('txtConclusao').value = data.txtConclusao || '';
-            document.getElementById('txtIndicacoes').value = data.txtIndicacoes || '';
-            document.getElementById('txtEncaminhamentos').value = data.txtEncaminhamentos || '';
-            document.getElementById('txtObservacoes').value = data.txtObservacoes || '';
-
-            // Assinaturas
-            if(data.assPedagogia) document.getElementById('selPedagogia').value = data.assPedagogia;
-            if(data.assPsicologia) document.getElementById('selPsicologia').value = data.assPsicologia;
-            if(data.assSocial) document.getElementById('selSocial').value = data.assSocial;
-
-            // Dispara redimensionamento e updates visuais
-            document.querySelectorAll('textarea').forEach(tx => autoResize(tx));
-            window.atualizarAssinatura('pedagogia');
-            window.atualizarAssinatura('psicologia');
-            window.atualizarAssinatura('social');
-            window.atualizarLocalData();
-
-            // Fecha modal
-            window.fecharModal('modalBusca');
-            showToast(`Relatório de ${data.estudante} carregado.`);
-        }
-    } catch (error) {
-        console.error("Erro ao carregar:", error);
-        showToast("Erro ao abrir documento.", "erro");
-    }
+        const snap = await getDocs(collection(db, "relatorios_diagnosticos"));
+        let dados = [];
+        snap.forEach(doc => dados.push(doc.data()));
+        const blob = new Blob([JSON.stringify(dados, null, 2)], {type: "application/json"});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `backup_escolamanain_${new Date().toLocaleDateString().replace(/\//g,'-')}.json`;
+        a.click();
+    } catch(e) { alert("Erro ao exportar."); }
 };
 
-// --- EXCLUIR ---
-window.excluirRelatorio = async function(id) {
-    if(confirm("Tem certeza que deseja apagar este relatório permanentemente?")) {
+window.importarDados = function(input) {
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = async function(e) {
         try {
-            await deleteDoc(doc(relatoriosRef, id));
-            showToast("Relatório excluído.");
-            window.executarBusca(); // Atualiza a lista
-            if(idRelatorioAtual === id) window.novoRelatorio(); // Limpa a tela se estava aberto
-        } catch (e) {
-            console.error(e);
-            showToast("Erro ao excluir.", "erro");
-        }
+            const dados = JSON.parse(e.target.result);
+            if(confirm(`Importar ${dados.length} registros?`)) {
+                for(const item of dados) await addDoc(tabelaRelatorios, item);
+                alert("Importado com sucesso!");
+                window.executarBusca();
+            }
+        } catch(err) { alert("Arquivo inválido."); }
+    };
+    reader.readAsText(file);
+};
+
+window.gerarRelatorioLista = async function() {
+    const q = query(tabelaRelatorios, orderBy('estudante', 'asc'));
+    const snap = await getDocs(q);
+    let html = `<html><head><title>Lista de Alunos</title><style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:8px}th{background:#eee}</style></head><body><h2>Relatório Geral de Alunos</h2><table><thead><tr><th>Nome</th><th>Filiação</th><th>Data</th></tr></thead><tbody>`;
+    snap.forEach(d => {
+        const dt = d.data();
+        html += `<tr><td>${dt.estudante}</td><td>${dt.filiacao}</td><td>${dt.dataAvaliacao}</td></tr>`;
+    });
+    html += `</tbody></table></body></html>`;
+    const w = window.open('','_blank');
+    w.document.write(html);
+    w.print();
+};
+
+window.excluirRelatorio = async function(id) {
+    if(confirm("Excluir permanentemente?")) { await deleteDoc(doc(tabelaRelatorios, id)); window.executarBusca(); }
+};
+
+// --- SALVAR/CARREGAR ---
+window.salvarRelatorio = async function() {
+    const btn = document.querySelector('.verde');
+    btn.innerHTML = '...';
+    try {
+        const dados = {
+            escola: document.getElementById('escola').value,
+            estudante: document.getElementById('nomeEstudante').value,
+            nascimento: document.getElementById('dataNascimento').value,
+            idade: document.getElementById('idade').value,
+            filiacao: document.getElementById('filiacao').value,
+            dataAvaliacao: document.getElementById('dataAvaliacao').value,
+            txtPedagogica: document.getElementById('txtPedagogica').value,
+            txtClinica: document.getElementById('txtClinica').value,
+            txtSocial: document.getElementById('txtSocial').value,
+            txtConclusao: document.getElementById('txtConclusao').value,
+            txtIndicacoes: document.getElementById('txtIndicacoes').value,
+            txtEncaminhamentos: document.getElementById('txtEncaminhamentos').value,
+            txtObservacoes: document.getElementById('txtObservacoes').value,
+            idAssPedagogica: document.getElementById('selPedagogica').value,
+            idAssPsicologia: document.getElementById('selPsicologia').value,
+            idAssSocial: document.getElementById('selSocial').value,
+            timestamp: new Date()
+        };
+        const idDoc = document.getElementById('docId').value;
+        if(idDoc) { await updateDoc(doc(tabelaRelatorios, idDoc), dados); alert("Atualizado!"); }
+        else { const ref = await addDoc(tabelaRelatorios, dados); document.getElementById('docId').value = ref.id; alert("Salvo!"); }
+    } catch(e) { console.error(e); alert("Erro ao salvar."); }
+    finally { btn.innerHTML = '<i class="fas fa-save"></i>'; }
+};
+
+window.carregar = async function(id) {
+    const snap = await getDoc(doc(tabelaRelatorios, id));
+    if(snap.exists()) {
+        const d = snap.data();
+        document.getElementById('docId').value = id;
+        const campos = ['escola','nomeEstudante','dataNascimento','idade','filiacao','dataAvaliacao','txtPedagogica','txtClinica','txtSocial','txtConclusao','txtIndicacoes','txtEncaminhamentos','txtObservacoes'];
+        campos.forEach(k => { const el = document.getElementById(k); if(el) { el.value = d[k]||""; autoResize(el); } });
+        if(d.idAssPedagogica) window.trocarAssinatura('pedagogia', d.idAssPedagogica);
+        if(d.idAssPsicologia) window.trocarAssinatura('psicologia', d.idAssPsicologia);
+        if(d.idAssSocial) window.trocarAssinatura('social', d.idAssSocial);
+        window.atualizarDataAssinatura();
+        window.fecharModal('modalBusca');
     }
 };
-
-// --- NOVO (LIMPAR TELA) ---
-window.novoRelatorio = function() {
-    idRelatorioAtual = null;
-    document.querySelectorAll('input, textarea').forEach(el => el.value = '');
-    document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
-    window.atualizarLocalData();
-    showToast("Tela limpa. Pronto para novo relatório.");
-    window.scrollTo(0,0);
-};
-
-
-/* =========================================================
-   6. UTILITÁRIOS GERAIS
-   ========================================================= */
-
-// Fecha qualquer modal pelo ID
-window.fecharModal = function(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-};
-
-// Capitaliza string (pedagogica -> Pedagogica)
-function capitalize(s) {
-    return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-// Atualiza a cidade/data no final da página
-window.atualizarLocalData = function() {
-    const dataInput = document.getElementById('dataAvaliacao').value;
-    const localDiv = document.getElementById('localDataAssinatura');
-    
-    if(!localDiv) return;
-
-    if (!dataInput) {
-        localDiv.textContent = "Londrina/PR";
-        return;
-    }
-
-    const partes = dataInput.split('-'); // ano-mes-dia
-    if(partes.length === 3) {
-        const dataObj = new Date(partes[0], partes[1]-1, partes[2]);
-        const opcoes = { year: 'numeric', month: 'long', day: 'numeric' };
-        localDiv.textContent = `Londrina/PR, ${dataObj.toLocaleDateString('pt-BR', opcoes)}`;
-    }
-};
-
-// Atualiza imagens de assinatura
-const IMAGENS_ASSINATURAS = {
-    // Exemplo: 'ped1': 'ass_jheniffer.png'
-    // Você deve ter essas imagens na pasta ou configurar URLs
-};
-
-window.atualizarAssinatura = function(tipo) {
-    // Lógica opcional para mostrar a imagem da assinatura se você tiver os arquivos
-    // Se não tiver arquivos de imagem, apenas o nome no select já resolve para impressão se o CSS estiver ocultando o select
-};
-
-// Inicialização ao carregar página
-window.addEventListener('load', () => {
-    // Configura listeners
-    document.getElementById('dataAvaliacao')?.addEventListener('change', window.atualizarLocalData);
-    
-    // Fecha modais ao clicar fora
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal-overlay')) {
-            event.target.style.display = "none";
-        }
-    }
-
-    // Inicializa data
-    window.atualizarLocalData();
-});
