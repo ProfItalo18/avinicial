@@ -1,254 +1,250 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório Multidisciplinar - Escola Manain</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Relatório Multidisciplinar - Escola Manain</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-    <div class="page-header">
-        <img src="header.png" alt="Cabeçalho">
-    </div>
+  <!-- Cabeçalho e Rodapé (aparecem somente na impressão) -->
+  <div class="page-header"><img src="header.png" alt="Cabeçalho"></div>
+  <div class="page-footer"><img src="footer.png" alt="Rodapé"></div>
 
-    <div class="page-footer">
-        <img src="footer.png" alt="Rodapé">
-    </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
 
-    <div id="toast">Operação realizada com sucesso!</div>
+  <!-- FAB -->
+  <div class="fab no-print">
+    <button class="fab-btn" id="btnPrint" title="Imprimir" aria-label="Imprimir"><i class="fa-solid fa-print"></i></button>
+    <button class="fab-btn" id="btnSave" title="Salvar na Nuvem" aria-label="Salvar na Nuvem"><i class="fa-solid fa-floppy-disk"></i></button>
+    <button class="fab-btn" id="btnSearch" title="Buscar Relatórios" aria-label="Buscar Relatórios"><i class="fa-solid fa-magnifying-glass"></i></button>
+    <button class="fab-btn" id="btnNew" title="Novo / Limpar" aria-label="Novo / Limpar"><i class="fa-solid fa-file-circle-plus"></i></button>
+  </div>
 
-    <div class="fab-container no-print">
-        <button onclick="window.print()" class="fab-btn btn-print" title="Imprimir"><i class="fas fa-print"></i></button>
-        <button onclick="salvarNovoRelatorioNoBanco()" class="fab-btn btn-save" title="Salvar na Nuvem"><i class="fas fa-save"></i></button>
-        <button onclick="abrirModalBusca()" class="fab-btn btn-search" title="Buscar Relatórios"><i class="fas fa-search"></i></button>
-        <button onclick="limparTudo()" class="fab-btn btn-reset" title="Novo / Limpar"><i class="fas fa-file"></i></button>
-    </div>
+  <main class="sheet" role="main">
 
-    <table class="report-container">
-        <thead>
-            <tr>
-                <td>
-                    <div class="header-space">&nbsp;</div>
-                </td>
-            </tr>
-        </thead>
+    <h1 class="report-title">RELATÓRIO DE AVALIAÇÃO DE INGRESSO</h1>
 
-        <tfoot>
-            <tr>
-                <td>
-                    <div class="footer-space">&nbsp;</div>
-                </td>
-            </tr>
-        </tfoot>
+    <!-- 1. DADOS -->
+    <section class="box">
+      <h2 class="box-title">1. DADOS DE IDENTIFICAÇÃO</h2>
 
-        <tbody>
-            <tr>
-                <td>
-                    <main class="main-content">
-                        
-                        <h2 class="report-title">RELATÓRIO DE AVALIAÇÃO DE INGRESSO</h2>
-
-                        <section class="section-box">
-                            <h3 class="section-title">1. DADOS DE IDENTIFICAÇÃO</h3>
-                            <div class="form-grid">
-                                <div class="input-group">
-                                    <label>Município</label>
-                                    <input type="text" value="Londrina/PR" readonly>
-                                </div>
-                                <div class="input-group">
-                                    <label>NRE</label>
-                                    <input type="text" value="Londrina/PR" readonly>
-                                </div>
-                                <div class="input-group full-width">
-                                    <label>Escola</label>
-                                    <input type="text" value="Escola Manain" id="escola">
-                                </div>
-                                <div class="input-group full-width">
-                                    <label>Nome do Estudante</label>
-                                    <input type="text" id="nomeEstudante" placeholder="Nome completo">
-                                </div>
-                                <div class="input-group">
-                                    <label>Data de Nascimento</label>
-                                    <input type="date" id="dataNascimento" onchange="calcularIdade()">
-                                </div>
-                                <div class="input-group">
-                                    <label>Idade</label>
-                                    <input type="text" id="idade" readonly>
-                                </div>
-                                <div class="input-group full-width">
-                                    <label>Filiação (Mãe / Pai)</label>
-                                    <input type="text" id="filiacao">
-                                </div>
-                                <div class="input-group full-width">
-                                    <label>Data da Avaliação</label>
-                                    <input type="date" id="dataAvaliacao">
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="section-box">
-                            <h3 class="section-title">2. SÍNTESE DAS ÁREAS AVALIADAS</h3>
-                            
-                            <div class="areas-buttons no-print">
-                                <button onclick="abrirModal('pedagogica')" class="btn-area area-ped">
-                                    <i class="fas fa-brain"></i> Avaliação Pedagógica
-                                </button>
-                                <button onclick="abrirModal('clinica')" class="btn-area area-clin">
-                                    <i class="fas fa-user-md"></i> Avaliação Clínica
-                                </button>
-                                <button onclick="abrirModal('social')" class="btn-area area-soc">
-                                    <i class="fas fa-users"></i> Serviço Social
-                                </button>
-                            </div>
-
-                            <div class="input-group full-width" style="margin-top: 20px;">
-                                <label>2.1 Avaliação Pedagógica</label>
-                                <textarea id="sintesePedagogica" rows="6" placeholder="Texto gerado automaticamente..."></textarea>
-                            </div>
-                            
-                            <div class="input-group full-width" style="margin-top: 15px;">
-                                <label>2.2 Avaliação Clínica</label>
-                                <textarea id="sinteseClinica" rows="6" placeholder="Texto gerado automaticamente..."></textarea>
-                            </div>
-
-                            <div class="input-group full-width" style="margin-top: 15px;">
-                                <label>2.3 Serviço Social</label>
-                                <textarea id="sinteseSocial" rows="6" placeholder="Texto gerado automaticamente..."></textarea>
-                            </div>
-                        </section>
-
-                        <section class="section-box">
-                            <h3 class="section-title">3. CONCLUSÃO DIAGNÓSTICA</h3>
-                            <textarea id="conclusaoDiagnostica" rows="6" placeholder="Resumo automático das áreas..."></textarea>
-                        </section>
-
-                        <section class="section-box">
-                            <h3 class="section-title">4. INDICAÇÕES PEDAGÓGICAS</h3>
-                            <textarea id="indicacoesPedagogicas" rows="8" placeholder="Sugestões pedagógicas geradas pelo checklist..."></textarea>
-                        </section>
-
-                        <section class="section-box">
-                            <h3 class="section-title">5. ENCAMINHAMENTOS</h3>
-                            <textarea id="encaminhamentos" rows="4" placeholder="Encaminhamentos gerais..."></textarea>
-                        </section>
-
-                        <section class="section-box">
-                            <h3 class="section-title">6. OBSERVAÇÕES COMPLEMENTARES</h3>
-                            <div class="legal-text">
-                                <p>Declaramos que a presente avaliação foi realizada em conformidade com a Lei de Diretrizes e Bases da Educação Nacional (LDB - Lei nº 9.394/96), o Estatuto da Pessoa com Deficiência (Lei nº 13.146/2015) e demais normativas vigentes que garantem o direito à educação inclusiva e ao atendimento educacional especializado.</p>
-                            </div>
-                        </section>
-
-                        <section class="signatures-section">
-                            <div class="signature-grid">
-                                
-                                <div class="signature-block">
-                                    <div class="sig-line">
-                                        <img id="img_pedagogia" src="sig_placeholder.png" alt="Assinatura Pedagoga" class="sig-img">
-                                    </div>
-                                    <p id="nome_pedagogia" class="sig-name">Nome da Pedagoga</p>
-                                    <p id="cargo_pedagogia" class="sig-role">Pedagoga</p>
-                                    <select class="sig-select no-print" onchange="trocarAssinatura('pedagogia', this.value)">
-                                        <option value="">Selecione...</option>
-                                        <option value="ped1">Jheniffer Cavalheiro André</option>
-                                        <option value="ped2">Isabella Floripes Sanches</option>
-                                    </select>
-                                </div>
-
-                                <div class="signature-block">
-                                    <div class="sig-line">
-                                        <img id="img_psicologia" src="sig_placeholder.png" alt="Assinatura Psicóloga" class="sig-img">
-                                    </div>
-                                    <p id="nome_psicologia" class="sig-name">Nome da Psicóloga</p>
-                                    <p id="cargo_psicologia" class="sig-role">Psicóloga</p>
-                                    <select class="sig-select no-print" onchange="trocarAssinatura('psicologia', this.value)">
-                                        <option value="">Selecione...</option>
-                                        <option value="psi1">Jaqueline Gonçalves Malaquim</option>
-                                        <option value="psi2">Psicóloga 2</option>
-                                    </select>
-                                </div>
-
-                                <div class="signature-block">
-                                    <div class="sig-line">
-                                        <img id="img_social" src="sig_placeholder.png" alt="Assinatura A. Social" class="sig-img">
-                                    </div>
-                                    <p id="nome_social" class="sig-name">Nome Assistente Social</p>
-                                    <p id="cargo_social" class="sig-role">Assistente Social</p>
-                                    <select class="sig-select no-print" onchange="trocarAssinatura('social', this.value)">
-                                        <option value="">Selecione...</option>
-                                        <option value="soc1">Andrea Cristina Santos</option>
-                                        <option value="soc2">A. Social 2</option>
-                                    </select>
-                                </div>
-
-                            </div>
-                        </section>
-
-                    </main>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div id="modalUniversal" class="modal-overlay">
-        <div class="modal-card">
-            <header class="modal-header">
-                <h2 id="modalTitulo">Área</h2>
-                <button onclick="fecharModal()" class="close-btn">&times;</button>
-            </header>
-            <div class="modal-body">
-                <div class="section-box">
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label style="color: var(--secondary); font-weight:bold;">1. Observações Manuais / Iniciais:</label>
-                            <textarea id="obsManualInput" rows="4" placeholder="Digite aqui..." oninput="atualizarPreview()"></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label style="color: var(--secondary); font-weight:bold;">2. Texto Gerado:</label>
-                            <textarea id="previewAutomatico" rows="4" readonly style="background-color: #eee; font-style: italic;"></textarea>
-                        </div>
-                    </div>
-                    <div class="input-group" style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px;">
-                        <label>Resultado Final (Visualização):</label>
-                        <p id="previewFinal" style="font-size: 13px; color: #333; font-weight: 500;"></p>
-                    </div>
-                </div>
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
-                <div id="modalChecklistContent"></div>
-            </div>
-            <footer class="modal-footer">
-                <button onclick="confirmarModal()" class="btn-confirm">Confirmar e Gerar</button>
-            </footer>
+      <div class="grid">
+        <div class="field">
+          <label for="municipio">Município</label>
+          <input id="municipio" type="text" value="Londrina/PR" readonly>
         </div>
-    </div>
 
-    <div id="modalBusca" class="modal-overlay">
-        <div class="modal-card" style="height: auto; max-height: 80vh;">
-            <header class="modal-header">
-                <h2><i class="fas fa-search"></i> Buscar Relatórios</h2>
-                <button onclick="fecharModalBusca()" class="close-btn">&times;</button>
-            </header>
-            <div class="modal-body">
-                <div class="search-box-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="inputBusca" class="search-input" placeholder="Digite o nome..." onkeyup="filtrarRelatorios()">
-                </div>
-                <div id="listaRelatorios" class="results-list">
-                    <p style="text-align:center; color:#999; margin-top:20px;">Carregando...</p>
-                </div>
-            </div>
-            <footer class="modal-footer">
-                <button onclick="fecharModalBusca()" class="btn-confirm" style="background:#7f8c8d">Fechar</button>
-            </footer>
+        <div class="field">
+          <label for="nre">NRE</label>
+          <input id="nre" type="text" value="Londrina/PR" readonly>
         </div>
-    </div>
 
-    <script type="module" src="script.js"></script>
+        <div class="field full">
+          <label for="escola">Escola</label>
+          <input id="escola" type="text" value="Escola Manain">
+        </div>
+
+        <div class="field full">
+          <label for="nomeAluno">Nome do Estudante</label>
+          <input id="nomeAluno" type="text" placeholder="Nome completo">
+        </div>
+
+        <div class="field">
+          <label for="dataNascimento">Data de Nascimento</label>
+          <input id="dataNascimento" type="date">
+        </div>
+
+        <div class="field">
+          <label for="idade">Idade</label>
+          <input id="idade" type="text" readonly placeholder="Calculada automaticamente">
+        </div>
+
+        <div class="field full">
+          <label for="filiacao">Filiação (Mãe / Pai)</label>
+          <input id="filiacao" type="text" placeholder="Nome da mãe / Nome do pai">
+        </div>
+
+        <div class="field full">
+          <label for="dataAvaliacao">Data da Avaliação</label>
+          <input id="dataAvaliacao" type="date">
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. SÍNTESES -->
+    <section class="box">
+      <h2 class="box-title">2. SÍNTESE DAS ÁREAS AVALIADAS</h2>
+
+      <div class="area-actions no-print">
+        <button class="btn btn-ped" data-open-area="pedagogica"><i class="fa-solid fa-graduation-cap"></i> Avaliação Pedagógica</button>
+        <button class="btn btn-cli" data-open-area="clinica"><i class="fa-solid fa-user-doctor"></i> Avaliação Clínica</button>
+        <button class="btn btn-soc" data-open-area="social"><i class="fa-solid fa-people-group"></i> Serviço Social</button>
+      </div>
+
+      <div class="field full">
+        <label for="sintesePedagogica">2.1 Avaliação Pedagógica</label>
+        <textarea id="sintesePedagogica" rows="6" placeholder="Gerada automaticamente + complementos manuais."></textarea>
+      </div>
+
+      <div class="field full">
+        <label for="sinteseClinica">2.2 Avaliação Clínica</label>
+        <textarea id="sinteseClinica" rows="6" placeholder="Gerada automaticamente + complementos manuais."></textarea>
+      </div>
+
+      <div class="field full">
+        <label for="sinteseSocial">2.3 Serviço Social</label>
+        <textarea id="sinteseSocial" rows="6" placeholder="Gerada automaticamente + complementos manuais."></textarea>
+      </div>
+    </section>
+
+    <!-- 3. CONCLUSÃO -->
+    <section class="box">
+      <h2 class="box-title">3. CONCLUSÃO DIAGNÓSTICA</h2>
+      <textarea id="conclusaoDiagnostica" rows="6" placeholder="Gerada automaticamente a partir das sínteses."></textarea>
+      <div class="hint">Dica: ao confirmar qualquer área no modal, a conclusão é recalculada automaticamente.</div>
+    </section>
+
+    <!-- 4. INDICAÇÕES -->
+    <section class="box">
+      <h2 class="box-title">4. INDICAÇÕES PEDAGÓGICAS</h2>
+      <textarea id="indicacoesPedagogicas" rows="8" placeholder="Geradas a partir do que foi marcado (Completo/Parcial/Recusou) + observações."></textarea>
+    </section>
+
+    <!-- 5. ENCAMINHAMENTOS -->
+    <section class="box">
+      <h2 class="box-title">5. ENCAMINHAMENTOS</h2>
+      <textarea id="encaminhamentos" rows="5" placeholder="Encaminhamentos gerais (saúde, AEE, rede de apoio, avaliações adicionais etc.)."></textarea>
+    </section>
+
+    <!-- 6. OBS -->
+    <section class="box">
+      <h2 class="box-title">6. OBSERVAÇÕES COMPLEMENTARES</h2>
+      <p class="legal">
+        Declaramos que a presente avaliação foi realizada em conformidade com a LDB (Lei nº 9.394/96),
+        o Estatuto da Pessoa com Deficiência (Lei nº 13.146/2015) e demais normativas vigentes que garantem
+        o direito à educação inclusiva e ao atendimento educacional especializado.
+      </p>
+    </section>
+
+    <!-- ASSINATURAS -->
+    <section class="box signatures">
+      <h2 class="box-title">ASSINATURAS</h2>
+
+      <div class="sig-grid">
+
+        <div class="sig-card">
+          <div class="sig-line"><img id="sigImgPedagogia" alt="Assinatura Pedagogia"></div>
+          <div class="sig-name" id="sigNomePedagogia">—</div>
+          <div class="sig-role" id="sigCargoPedagogia">—</div>
+          <div class="sig-reg" id="sigRegPedagogia">—</div>
+          <select class="sig-select no-print" id="sigSelectPedagogia">
+            <option value="">Selecione...</option>
+            <option value="ped1">Jheniffer Cavalheiro André</option>
+            <option value="ped2">Isabella Floripes Sanches</option>
+          </select>
+        </div>
+
+        <div class="sig-card">
+          <div class="sig-line"><img id="sigImgClinica" alt="Assinatura Psicologia"></div>
+          <div class="sig-name" id="sigNomeClinica">—</div>
+          <div class="sig-role" id="sigCargoClinica">—</div>
+          <div class="sig-reg" id="sigRegClinica">—</div>
+          <select class="sig-select no-print" id="sigSelectClinica">
+            <option value="">Selecione...</option>
+            <option value="psi1">Jaqueline Gonçalves Malaquim</option>
+          </select>
+        </div>
+
+        <div class="sig-card">
+          <div class="sig-line"><img id="sigImgSocial" alt="Assinatura Assistência Social"></div>
+          <div class="sig-name" id="sigNomeSocial">—</div>
+          <div class="sig-role" id="sigCargoSocial">—</div>
+          <div class="sig-reg" id="sigRegSocial">—</div>
+          <select class="sig-select no-print" id="sigSelectSocial">
+            <option value="">Selecione...</option>
+            <option value="soc1">Andrea Cristina Santos</option>
+          </select>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL ÁREA -->
+  <div class="modal-overlay" id="modalArea" aria-hidden="true">
+    <div class="modal">
+      <header class="modal-header">
+        <h3 id="modalTitulo">Área</h3>
+        <button class="x" id="btnCloseModal" aria-label="Fechar">&times;</button>
+      </header>
+
+      <div class="modal-body">
+        <div class="grid2">
+          <div class="field">
+            <label for="modalObsManual">1) Observações Manuais</label>
+            <textarea id="modalObsManual" rows="4" placeholder="Digite complementos específicos..."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="modalTextoAuto">2) Texto Automático</label>
+            <textarea id="modalTextoAuto" rows="4" readonly></textarea>
+          </div>
+        </div>
+
+        <div class="preview">
+          <div class="preview-title">Prévia Final (Automático + Manual)</div>
+          <div id="modalPreviewFinal" class="preview-box"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="checklist-head">
+          <div class="checklist-title">Checklist (Completo / Parcial / Recusou / Não observado)</div>
+          <div class="hint">Você pode usar isso para compor uma síntese mais fiel e objetiva.</div>
+        </div>
+
+        <div id="modalChecklist" class="checklist"></div>
+
+      </div>
+
+      <footer class="modal-footer">
+        <button class="btn btn-ghost" id="btnResetArea"><i class="fa-solid fa-rotate-left"></i> Limpar Área</button>
+        <button class="btn btn-primary" id="btnConfirmArea"><i class="fa-solid fa-check"></i> Confirmar e Gerar</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- MODAL BUSCA -->
+  <div class="modal-overlay" id="modalBusca" aria-hidden="true">
+    <div class="modal modal-search">
+      <header class="modal-header">
+        <h3><i class="fa-solid fa-magnifying-glass"></i> Buscar Relatórios</h3>
+        <button class="x" id="btnCloseBusca" aria-label="Fechar">&times;</button>
+      </header>
+
+      <div class="modal-body">
+        <div class="searchbar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="inputBusca" type="text" placeholder="Digite o nome do aluno...">
+        </div>
+        <div id="listaRelatorios" class="results"></div>
+      </div>
+
+      <footer class="modal-footer">
+        <button class="btn btn-ghost" id="btnRefreshList"><i class="fa-solid fa-arrows-rotate"></i> Atualizar</button>
+        <button class="btn btn-primary" id="btnCloseBusca2">Fechar</button>
+      </footer>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>
