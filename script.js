@@ -16,19 +16,23 @@ const tabelaRelatorios = collection(db, "relatorios");
 
 let idRelatorioAtual = null;
 
-// --- 2. PERFIS DE ASSINATURA ---
-const PERFIS = {
-    pedagogica: [
-        { id: '1', nome: 'Maria da Silva', cargo: 'Coordenação Pedagógica', img: 'asspedagoga.png' },
-        { id: '2', nome: 'Joana Oliveira', cargo: 'Pedagoga / AEE', img: 'asspedagoga2.png' }
-    ],
-    social: [
-        { id: '1', nome: 'Ana Paula Souza', cargo: 'Assistente Social', img: 'asssocial.png' },
-        { id: '2', nome: 'Fernanda Lima', cargo: 'Assistente Social - CRESS 1234', img: 'asssocial2.png' }
-    ]
+// --- 2. DADOS DA EQUIPE (NOVA LÓGICA) ---
+const EQUIPE = {
+    pedagogia: {
+        'ped1': { nome: "Jheniffer Cavalheiro André", cargo: "Coord. Pedagógica", registro: "RG 9.727.432-0 / Ata nº 15/2018", img: "asspedagoda.png" },
+        'ped2': { nome: "Isabella Floripes Sanches", cargo: "Coord. Pedagógica", registro: "RG 10.617.697-3 / Ata nº 17/2021", img: "asspedagoda2.png" }
+    },
+    psicologia: {
+        'psi1': { nome: "Jaqueline Gonçalves Malaquim", cargo: "Psicóloga Escolar", registro: "CRP 08/30548", img: "asspsicologa.png" },
+        'psi2': { nome: "", cargo: "Psicóloga", registro: "", img: "" } // Opção vazia
+    },
+    social: {
+        'soc1': { nome: "Andrea Cristina Santos", cargo: "Assistente Social", registro: "CRESS/PR 9794", img: "asssocial.png" },
+        'soc2': { nome: "", cargo: "Assistente Social", registro: "", img: "" } // Opção vazia
+    }
 };
 
-// --- 3. DADOS DO CHECKLIST (Anexo 2) ---
+// --- 3. DADOS DO CHECKLIST (DIAGNÓSTICO) ---
 const DADOS_CHECKLIST = {
     pedagogica: {
         titulo: "1.2 Avaliação Pedagógica e Funcional (Educação Especial)",
@@ -301,45 +305,74 @@ const DADOS_CHECKLIST = {
         ]
     }
 };
+// --- 4. FUNÇÕES GLOBAIS ---
 
-// --- 4. FUNÇÕES GLOBAIS (ESSENCIAIS PARA OS BOTÕES FUNCIONAREM) ---
-
-// Função auxiliar para textareas crescerem
 function autoResize(el) {
     el.style.height = 'auto';
     el.style.height = (el.scrollHeight) + 'px';
 }
 
-// Inicialização ao carregar a página
 window.addEventListener('load', () => {
-    // Vincula o auto-resize em todos os textareas
+    // Textareas dinâmicos
     document.querySelectorAll('textarea').forEach(tx => {
         tx.addEventListener('input', function() { autoResize(this); });
     });
 
-    // Inicializa selects
-    preencherSelect('selPedagogica', PERFIS.pedagogica);
-    preencherSelect('selSocial', PERFIS.social);
+    // Inicializa Selects
+    preencherSelect('selPedagogica', EQUIPE.pedagogia);
+    preencherSelect('selPsicologia', EQUIPE.psicologia);
+    preencherSelect('selSocial', EQUIPE.social);
 
-    // Define valores padrão
-    window.trocarAssinatura('pedagogica', '1');
-    window.trocarAssinatura('social', '1');
+    // Valores padrão
+    window.trocarAssinatura('pedagogia', 'ped1');
+    window.trocarAssinatura('psicologia', 'psi1');
+    window.trocarAssinatura('social', 'soc1');
+    
     window.atualizarDataAssinatura();
 });
 
-function preencherSelect(id, lista) {
+function preencherSelect(id, objetoCategoria) {
     const sel = document.getElementById(id);
     if(!sel) return;
     sel.innerHTML = "";
-    lista.forEach(p => {
+    
+    for (const [key, dados] of Object.entries(objetoCategoria)) {
+        const txt = dados.nome ? dados.nome : `Opção Vazia (${key})`;
         const opt = document.createElement('option');
-        opt.value = p.id;
-        opt.textContent = p.nome;
+        opt.value = key;
+        opt.textContent = txt;
         sel.appendChild(opt);
-    });
+    }
 }
 
-// *** EXPOSIÇÃO DAS FUNÇÕES PARA O HTML (O SEGREDO PARA OS BOTÕES FUNCIONAREM) ***
+// *** LÓGICA DE ASSINATURA ***
+window.trocarAssinatura = function(categoria, key) {
+    const dados = EQUIPE[categoria][key];
+    if(dados) {
+        // Mapeia categoria para o sufixo do ID (pedagogia -> Pedagogica, etc)
+        let sufixo = "";
+        if(categoria === 'pedagogia') sufixo = 'Pedagogica';
+        else if(categoria === 'psicologia') sufixo = 'Psicologia';
+        else if(categoria === 'social') sufixo = 'Social';
+        
+        const imgEl = document.getElementById(`img${sufixo}`);
+        const nomeEl = document.getElementById(`nome${sufixo}`);
+        const cargoEl = document.getElementById(`cargo${sufixo}`);
+        const regEl = document.getElementById(`reg${sufixo}`);
+        const selEl = document.getElementById(`sel${sufixo}`);
+
+        if(imgEl) {
+            imgEl.src = dados.img;
+            imgEl.style.display = dados.img ? 'block' : 'none'; // Esconde se vazio
+        }
+        if(nomeEl) nomeEl.innerText = dados.nome;
+        if(cargoEl) cargoEl.innerText = dados.cargo;
+        if(regEl) regEl.innerText = dados.registro;
+        
+        // Sincroniza select se chamado via código
+        if(selEl) selEl.value = key;
+    }
+};
 
 window.calcularIdade = function() {
     const d = document.getElementById('dataNascimento').value;
@@ -348,9 +381,7 @@ window.calcularIdade = function() {
     const hoje = new Date();
     let idade = hoje.getFullYear() - nasc.getFullYear();
     const m = hoje.getMonth() - nasc.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
-        idade--;
-    }
+    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
     document.getElementById('idade').value = `${idade} anos`;
 };
 
@@ -361,39 +392,15 @@ window.atualizarDataAssinatura = function() {
         p.innerText = "Londrina/PR, ____ de __________________ de _______.";
         return;
     }
-    // Cria data ajustando timezone para não dar erro de dia anterior
-    const d = new Date(dtInput + 'T12:00:00'); 
-    
+    const d = new Date(dtInput + 'T12:00:00');
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     p.innerText = `Londrina/PR, ${d.toLocaleDateString('pt-BR', options)}.`;
 };
 
-window.trocarAssinatura = function(tipo, id) {
-    const lista = PERFIS[tipo];
-    const perfil = lista.find(p => p.id === id);
-    if(perfil) {
-        // Capitaliza a primeira letra (pedagogica -> Pedagogica)
-        const T = tipo.charAt(0).toUpperCase() + tipo.slice(1);
-        
-        const imgEl = document.getElementById(`img${T}`);
-        const nomeEl = document.getElementById(`nome${T}`);
-        const cargoEl = document.getElementById(`cargo${T}`);
-        const selEl = document.getElementById(`sel${T}`);
-
-        if(imgEl) imgEl.src = perfil.img;
-        if(nomeEl) nomeEl.innerText = perfil.nome;
-        if(cargoEl) cargoEl.innerText = perfil.cargo;
-        if(selEl) selEl.value = id;
-    }
-};
-
-// --- FUNÇÕES DOS MODAIS ---
-
+// --- MODAIS ---
 window.abrirModal = function(area) {
     areaAtual = area;
     const dados = CHECKLIST[area];
-    if(!dados) return;
-
     document.getElementById('tituloModal').innerText = dados.titulo;
     const corpo = document.getElementById('corpoChecklist');
     corpo.innerHTML = "";
@@ -415,9 +422,7 @@ window.abrirModal = function(area) {
     document.getElementById('modalChecklist').style.display = 'flex';
 };
 
-window.fecharModal = function(id) {
-    document.getElementById(id).style.display = 'none';
-};
+window.fecharModal = function(id) { document.getElementById(id).style.display = 'none'; };
 
 window.processarChecklist = function() {
     const checks = document.querySelectorAll('#corpoChecklist input:checked');
@@ -432,14 +437,9 @@ window.processarChecklist = function() {
     const idArea = areaAtual === 'pedagogica' ? 'txtPedagogica' : 
                    areaAtual === 'clinica' ? 'txtClinica' : 'txtSocial';
     
-    // Insere texto na área específica
-    const elArea = document.getElementById(idArea);
-    if(elArea) {
-        elArea.value = txt;
-        autoResize(elArea);
-    }
+    const el = document.getElementById(idArea);
+    if(el) { el.value = txt; autoResize(el); }
 
-    // Insere nos campos globais (Conclusão, Indicações, Encaminhamentos)
     if(txt) {
         const c = document.getElementById('txtConclusao');
         c.value += (c.value ? "\n" : "") + txt;
@@ -458,16 +458,13 @@ window.processarChecklist = function() {
     window.fecharModal('modalChecklist');
 };
 
-window.abrirBusca = function() {
-    document.getElementById('modalBusca').style.display = 'flex';
-};
+window.abrirBusca = function() { document.getElementById('modalBusca').style.display = 'flex'; };
 
-// --- FUNÇÕES DE BANCO DE DADOS (SALVAR/BUSCAR) ---
-
+// --- SALVAR E CARREGAR ---
 window.salvarRelatorio = async function() {
     const btn = document.querySelector('.verde');
     const iconeOriginal = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; // Loading
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     
     try {
         const dados = {
@@ -487,29 +484,28 @@ window.salvarRelatorio = async function() {
             txtEncaminhamentos: document.getElementById('txtEncaminhamentos').value,
             txtObservacoes: document.getElementById('txtObservacoes').value,
             
+            // Salva IDs das assinaturas
             idAssPedagogica: document.getElementById('selPedagogica').value,
+            idAssPsicologia: document.getElementById('selPsicologia').value,
             idAssSocial: document.getElementById('selSocial').value,
             
             timestamp: new Date()
         };
 
         const idDoc = document.getElementById('docId').value;
-        
         if(idDoc) {
-            // Atualizar existente
             await updateDoc(doc(tabelaRelatorios, idDoc), dados);
-            alert("Relatório atualizado com sucesso!");
+            alert("Atualizado!");
         } else {
-            // Criar novo
             const ref = await addDoc(tabelaRelatorios, dados);
             document.getElementById('docId').value = ref.id;
-            alert("Relatório salvo com sucesso!");
+            alert("Salvo!");
         }
     } catch(e) {
-        console.error("Erro ao salvar:", e);
-        alert("Erro ao salvar: " + e.message);
+        console.error(e);
+        alert("Erro: " + e.message);
     } finally {
-        btn.innerHTML = '<i class="fas fa-save"></i>'; // Restaura ícone
+        btn.innerHTML = iconeOriginal;
     }
 };
 
@@ -525,32 +521,19 @@ window.executarBusca = async function() {
         lista.innerHTML = "";
         if(snap.empty) { lista.innerHTML = "Nada encontrado."; return; }
 
-        let encontrou = false;
         snap.forEach(d => {
             const data = d.data();
-            // Filtro local simples (pode ser melhorado para filtro no banco depois)
             if(data.estudante && data.estudante.toLowerCase().includes(termo)) {
-                encontrou = true;
                 const dataF = data.timestamp ? new Date(data.timestamp.seconds*1000).toLocaleDateString() : "-";
-                
                 lista.innerHTML += `
                     <div style="padding:10px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <b>${data.estudante}</b><br>
-                            <small>${dataF}</small>
-                        </div>
+                        <div><b>${data.estudante}</b><br><small>${dataF}</small></div>
                         <button onclick="window.carregar('${d.id}')" style="background:var(--azul-claro); color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Abrir</button>
                     </div>
                 `;
             }
         });
-
-        if(!encontrou) lista.innerHTML = "Nenhum aluno com esse nome.";
-
-    } catch (e) {
-        console.error(e);
-        lista.innerHTML = "Erro na busca.";
-    }
+    } catch(e) { console.error(e); lista.innerHTML = "Erro."; }
 };
 
 window.carregar = async function(id) {
@@ -560,26 +543,20 @@ window.carregar = async function(id) {
         const d = snap.data();
         document.getElementById('docId').value = id;
         
-        // Preenche campos
         const campos = ['escola','nomeEstudante','dataNascimento','idade','filiacao','dataAvaliacao',
                         'txtPedagogica','txtClinica','txtSocial','txtConclusao','txtIndicacoes',
                         'txtEncaminhamentos','txtObservacoes'];
         
         campos.forEach(k => {
             const el = document.getElementById(k);
-            if(el) { 
-                el.value = d[k] || ""; 
-                autoResize(el); // Ajusta altura do textarea
-            }
+            if(el) { el.value = d[k] || ""; autoResize(el); }
         });
 
-        // Carrega assinaturas
-        if(d.idAssPedagogica) window.trocarAssinatura('pedagogica', d.idAssPedagogica);
+        if(d.idAssPedagogica) window.trocarAssinatura('pedagogia', d.idAssPedagogica);
+        if(d.idAssPsicologia) window.trocarAssinatura('psicologia', d.idAssPsicologia);
         if(d.idAssSocial) window.trocarAssinatura('social', d.idAssSocial);
         
         window.atualizarDataAssinatura();
         window.fecharModal('modalBusca');
-    } else {
-        alert("Relatório não encontrado.");
     }
 };

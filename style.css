@@ -104,6 +104,7 @@ textarea {
 .linha-ass { border-top: 1px solid #000; width: 90%; margin: 5px 0; }
 .nome-assinatura { font-weight: bold; font-size: 10pt; margin: 2px 0; color: #000; }
 .cargo-assinatura { font-size: 9pt; margin: 0; color: #333; }
+.reg-assinatura { font-size: 8pt; margin: 0; color: #555; margin-top: 2px; }
 
 .sel-ass { margin-top: 5px; padding: 3px; font-size: 9pt; max-width: 100%; }
 
@@ -168,7 +169,7 @@ textarea {
     .titulo-area h4 { color: black; text-decoration: underline; }
     
     /* Assinaturas limpas */
-    .cargo-assinatura, .nome-assinatura { color: black !important; }
+    .cargo-assinatura, .nome-assinatura, .reg-assinatura { color: black !important; }
     
     /* Evita quebras */
     .secao, .area-box, .assinaturas-wrapper, .linha { page-break-inside: avoid; }

@@ -135,35 +135,42 @@
         </div>
 
         <div class="assinaturas-wrapper">
+            
             <div class="assinatura-item">
                 <div class="img-ass">
-                    <img id="imgPedagogica" src="asspedagoga.png" alt="Pedagoga">
+                    <img id="imgPedagogica" src="" alt="Assinatura Pedagoga">
                 </div>
                 <div class="linha-ass"></div>
                 
-                <p id="nomePedagogica" class="nome-assinatura">Maria da Silva</p>
-                <p id="cargoPedagogica" class="cargo-assinatura">Coordenação Pedagógica</p>
+                <p id="nomePedagogica" class="nome-assinatura">Nome</p>
+                <p id="cargoPedagogica" class="cargo-assinatura">Cargo</p>
+                <p id="regPedagogica" class="reg-assinatura">Registro</p>
                 
-                <select id="selPedagogica" class="sel-ass no-print" onchange="window.trocarAssinatura('pedagogica', this.value)"></select>
+                <select id="selPedagogica" class="sel-ass no-print" onchange="window.trocarAssinatura('pedagogia', this.value)"></select>
             </div>
 
             <div class="assinatura-item">
                 <div class="img-ass">
-                    <img src="asspsicologa.png" alt="Psicóloga">
+                    <img id="imgPsicologia" src="" alt="Assinatura Psicóloga">
                 </div>
                 <div class="linha-ass"></div>
-                <p class="nome-assinatura">Dra. Cláudia</p>
-                <p class="cargo-assinatura">Psicóloga - CRP 08/0000</p>
+                
+                <p id="nomePsicologia" class="nome-assinatura">Nome</p>
+                <p id="cargoPsicologia" class="cargo-assinatura">Cargo</p>
+                <p id="regPsicologia" class="reg-assinatura">Registro</p>
+
+                <select id="selPsicologia" class="sel-ass no-print" onchange="window.trocarAssinatura('psicologia', this.value)"></select>
             </div>
 
             <div class="assinatura-item">
                 <div class="img-ass">
-                    <img id="imgSocial" src="asssocial.png" alt="Social">
+                    <img id="imgSocial" src="" alt="Assinatura Social">
                 </div>
                 <div class="linha-ass"></div>
                 
-                <p id="nomeSocial" class="nome-assinatura">Ana Paula Souza</p>
-                <p id="cargoSocial" class="cargo-assinatura">Assistente Social</p>
+                <p id="nomeSocial" class="nome-assinatura">Nome</p>
+                <p id="cargoSocial" class="cargo-assinatura">Cargo</p>
+                <p id="regSocial" class="reg-assinatura">Registro</p>
 
                 <select id="selSocial" class="sel-ass no-print" onchange="window.trocarAssinatura('social', this.value)"></select>
             </div>
@@ -178,7 +185,7 @@
         </div>
     </footer>
 
-   
+    
     <div class="fab-menu no-print">
         <button onclick="window.abrirBusca()" class="btn-fab azul" title="Buscar"><i class="fas fa-search"></i></button>
         <button onclick="window.salvarRelatorio()" class="btn-fab verde" title="Salvar"><i class="fas fa-save"></i></button>
