@@ -16,7 +16,7 @@ const tabelaRelatorios = collection(db, "relatorios");
 
 let idRelatorioAtual = null;
 
-// --- 2. PERFIS DE ASSINATURA (EDITE AQUI) ---
+// --- 2. PERFIS DE ASSINATURA ---
 const PERFIS = {
     pedagogica: [
         { id: '1', nome: 'Maria da Silva', cargo: 'Coordenação Pedagógica', img: 'asspedagoga.png' },
@@ -28,150 +28,300 @@ const PERFIS = {
     ]
 };
 
-// --- 3. CHECKLIST DIAGNÓSTICO (ANEXO 2) ---
+// --- 3. DADOS DO CHECKLIST (Anexo 2) ---
 const DADOS_CHECKLIST = {
     pedagogica: {
         titulo: "1.2 Avaliação Pedagógica e Funcional (Educação Especial)",
         grupos: [
             {
-                nome: "Habilidades Funcionais e Vida Diária (AVDs)",
+                nome: "Cognição, Currículo e Aprendizagem",
                 itens: [
-                    { label: "Uso do Banheiro", txt: "Uso de fraldas/não tem controle esfincteriano.", ind: "Treino de desfralde/Trocas regulares.", enc: "Enfermagem/Família" },
-                    { label: "Alimentação Autônoma", txt: "Não consegue levar o alimento à boca ou usar talheres.", ind: "Uso de engrossadores/Colher adaptada.", enc: "Terapia Ocupacional" },
-                    { label: "Higiene Pessoal na Escola", txt: "Dificuldade em lavar mãos/rosto sem auxílio físico.", ind: "Apoio físico e dicas visuais no espelho.", enc: "Terapia Ocupacional" },
-                    { label: "Vestuário", txt: "Dificuldade com botões, zíperes ou calçados.", ind: "Uso de velcro/Treino de abotoadura.", enc: "Terapia Ocupacional" },
-                    { label: "Locomoção na Escola", txt: "Não se localiza nos ambientes da escola (refeitório/sala).", ind: "Pistas visuais no chão/paredes.", enc: "Orientação e Mobilidade" }
+                    { label: "Nível de Alfabetização", txt: "Aluno não alfabetizado ou pré-silábico.", ind: "Método fônico/multissensorial.", enc: "Psicopedagogia" },
+                    { label: "Letramento de Sobrevivência", txt: "Não lê placas de perigo, saída ou banheiros.", ind: "Leitura incidental de símbolos.", enc: "Pedagogia" },
+                    { label: "Compreensão de Comandos", txt: "Necessita de apoio gestual/visual para entender.", ind: "Comunicação multimodal.", enc: "Fonoaudiologia" },
+                    { label: "Raciocínio Lógico (Dinheiro)", txt: "Não reconhece valores ou não sabe usar dinheiro.", ind: "Mercadinho simulado.", enc: "Pedagogia" },
+                    { label: "Memória Operacional", txt: "Esquece a instrução logo após ouvi-la.", ind: "Instruções curtas e fracionadas.", enc: "Neuropsicologia" },
+                    { label: "Noção Temporal", txt: "Não compreende ontem/hoje/amanhã ou relógio.", ind: "Rotina visual linear.", enc: "Pedagogia" },
+                    { label: "Generalização do Saber", txt: "Faz a tarefa na sala, mas não aplica na vida real.", ind: "Ensino naturalístico.", enc: "Psicopedagogia" },
+                    { label: "Cores e Formas", txt: "Dificuldade em parear ou nomear cores/formas.", ind: "Jogos de classificação.", enc: "Pedagogia" },
+                    { label: "Escrita do Nome", txt: "Não reconhece ou não escreve o próprio nome.", ind: "Crachá e treino motor.", enc: "Terapia Ocupacional" },
+                    { label: "Causa e Efeito", txt: "Dificuldade em entender consequências de ações.", ind: "Jogos de ação/reação.", enc: "Psicologia" }
                 ]
             },
             {
-                nome: "Comunicação Aumentativa e Alternativa (CAA)",
+                nome: "Habilidades de Vida Diária (AVDs) e Autonomia",
                 itens: [
-                    { label: "Oralidade Funcional", txt: "Emite sons, mas sem função comunicativa clara.", ind: "Estimulação de intenção comunicativa.", enc: "Fonoaudiologia" },
-                    { label: "Compreensão de Comandos", txt: "Compreende apenas comandos com apoio gestual.", ind: "Sempre associar fala a gestos.", enc: "Fonoaudiologia" },
-                    { label: "Uso de PECs/Imagens", txt: "Não utiliza ou não tem prancha de comunicação.", ind: "Implementação de PECs/Prancha.", enc: "Fonoaudiologia/Pedagogia" },
-                    { label: "Comunicação Não-Verbal", txt: "Comunica-se apenas por choro ou agressividade.", ind: "Mapeamento da função do comportamento.", enc: "Psicologia Comportamental" },
-                    { label: "Inteligibilidade", txt: "Fala presente, mas ininteligível para estranhos.", ind: "Uso de pistas de contexto.", enc: "Fonoaudiologia" }
+                    { label: "Controle Esfincteriano", txt: "Uso de fraldas ou escapes frequentes.", ind: "Treino de toalete/Trocas.", enc: "Enfermagem/Família" },
+                    { label: "Alimentação Autônoma", txt: "Dependência total/parcial para levar à boca.", ind: "Talheres engrossados/adaptados.", enc: "Terapia Ocupacional" },
+                    { label: "Vestuário (Botões/Zíper)", txt: "Não consegue manipular fechos de roupas.", ind: "Treino com alinhavos/botões.", enc: "Terapia Ocupacional" },
+                    { label: "Higiene Pessoal (Limpeza)", txt: "Não consegue limpar-se após usar o banheiro.", ind: "Supervisão e apoio físico.", enc: "Monitoria" },
+                    { label: "Higiene Bucal", txt: "Não consegue escovar os dentes sozinho.", ind: "Escovação guiada.", enc: "Odontologia" },
+                    { label: "Organização de Pertences", txt: "Não reconhece sua mochila ou perde itens.", ind: "Etiquetas visuais grandes.", enc: "Pedagogia" },
+                    { label: "Uso de Bebedouro", txt: "Dificuldade motora para usar copo ou bebedouro.", ind: "Garrafa adaptada com canudo.", enc: "Terapia Ocupacional" },
+                    { label: "Assoar o Nariz", txt: "Não sabe assoar o nariz ou limpar secreção.", ind: "Treino de higiene respiratória.", enc: "Fonoaudiologia" },
+                    { label: "Amarrar Cadarços", txt: "Dificuldade motora fina para laços.", ind: "Tênis com velcro/elástico.", enc: "Família" },
+                    { label: "Pedir Ajuda", txt: "Não solicita auxílio quando em dificuldade.", ind: "Treino de comunicação funcional.", enc: "Psicologia" }
                 ]
             },
             {
-                nome: "Cognição e Currículo Funcional (DI)",
+                nome: "Comportamento, Socialização e Emocional",
                 itens: [
-                    { label: "Letramento de Sobrevivência", txt: "Não reconhece placas de perigo, banheiros ou saídas.", ind: "Leitura incidental (rótulos, placas).", enc: "Psicopedagogia" },
-                    { label: "Uso do Dinheiro", txt: "Não reconhece valor de cédulas/moedas.", ind: "Simulação de compra/venda.", enc: "Pedagogia" },
-                    { label: "Noção Temporal", txt: "Não compreende ontem/hoje/amanhã ou relógio.", ind: "Rotina visual linear e calendário.", enc: "Pedagogia" },
-                    { label: "Pareamento/Classificação", txt: "Dificuldade em agrupar itens (cor, forma, função).", ind: "Atividades com objetos concretos.", enc: "Psicopedagogia" },
-                    { label: "Memória Operacional", txt: "Esquece a instrução no meio da execução.", ind: "Instruções curtas e segmentadas.", enc: "Neuropsicologia" },
-                    { label: "Alfabetização (Nível)", txt: "Pré-silábico: Não associa escrita à fala.", ind: "Consciência fonológica inicial.", enc: "Psicopedagogia" }
+                    { label: "Interação com Pares", txt: "Isolamento, não brinca ou agride colegas.", ind: "Mediação de brincadeiras.", enc: "Psicologia" },
+                    { label: "Autoagressividade", txt: "Morde-se, bate a cabeça ou se arranha.", ind: "Contenção segura/Análise funcional.", enc: "Psiquiatria" },
+                    { label: "Heteroagressividade", txt: "Agride fisicamente professores ou colegas.", ind: "Manejo comportamental.", enc: "Psicologia/Psiquiatria" },
+                    { label: "Percepção de Perigo", txt: "Não avalia riscos (altura, carros, tomadas).", ind: "Supervisão 1:1 constante.", enc: "Monitoria/Família" },
+                    { label: "Tolerância à Frustração", txt: "Desorganiza-se gravemente diante do 'não'.", ind: "Reforço diferencial.", enc: "Psicologia" },
+                    { label: "Estereotipias Motoras", txt: "Movimentos repetitivos que atrapalham a função.", ind: "Redirecionamento de atenção.", enc: "Terapia Ocupacional" },
+                    { label: "Comportamento Sexual", txt: "Toque inadequado em si ou nos outros em público.", ind: "Educação sexual adequada à idade.", enc: "Psicologia" },
+                    { label: "Respeito a Regras", txt: "Dificuldade em seguir combinados da sala.", ind: "Quadro de regras visual.", enc: "Pedagogia" },
+                    { label: "Contato Visual", txt: "Evita olhar nos olhos durante a interação.", ind: "Posicionar-se na altura do aluno.", enc: "Fonoaudiologia" },
+                    { label: "Mudança de Rotina", txt: "Crise diante de imprevistos ou trocas de sala.", ind: "Antecipação visual de mudanças.", enc: "Pedagogia" }
                 ]
             },
             {
-                nome: "Socialização e Comportamento Adaptativo",
+                nome: "Tecnologia Assistiva e Adaptação de Materiais",
                 itens: [
-                    { label: "Regras Sociais", txt: "Comportamento inadequado em público (ex: despir-se).", ind: "Histórias sociais e modelagem.", enc: "Psicologia" },
-                    { label: "Percepção de Perigo", txt: "Não avalia riscos (altura, carros, quente/frio).", ind: "Supervisão constante 1:1.", enc: "Família/Monitoria" },
-                    { label: "Interação com Pares", txt: "Isolamento passivo ou agressividade reativa.", ind: "Mediação de brincadeiras.", enc: "Psicologia" },
-                    { label: "Estereotipias Motoras", txt: "Movimentos que impedem a realização da tarefa.", ind: "Redirecionamento motor.", enc: "T.O./Psicologia" },
-                    { label: "Autoagressão", txt: "Morde-se ou bate a cabeça quando frustrado.", ind: "Proteção física e análise funcional.", enc: "Psiquiatria/Psicologia" }
+                    { label: "Recursos de Baixa Tecnologia", txt: "Não possui engrossadores ou tesoura adaptada.", ind: "Confecção/compra de recursos.", enc: "Terapia Ocupacional" },
+                    { label: "Uso de Tablet/Computador", txt: "Dificuldade motora impede uso de mouse/teclado.", ind: "Mouse adaptado/Acionadores.", enc: "Informática Inclusiva" },
+                    { label: "Softwares de Comunicação", txt: "Necessita de app (ex: Livox) mas não usa.", ind: "Implementação de prancha digital.", enc: "Fonoaudiologia" },
+                    { label: "Adaptação Postural na Mesa", txt: "Cadeira escolar inadequada, pés balançando.", ind: "Apoio para pés e adaptação.", enc: "Fisioterapia" },
+                    { label: "Recursos Visuais Ampliados", txt: "Fonte do material didático muito pequena.", ind: "Ampliação (Fonte 24+) e alto contraste.", enc: "Pedagogia" },
+                    { label: "Cadernos Pautados", txt: "Dificuldade em respeitar a linha comum.", ind: "Pauta ampliada ou colorida.", enc: "Psicopedagogia" },
+                    { label: "Óculos e Lupas", txt: "Possui óculos mas recusa o uso na sala.", ind: "Treino de adaptação.", enc: "Família/Professor" },
+                    { label: "Eliminação de Barreiras", txt: "Mochila ou layout da sala impedem circulação.", ind: "Reorganização do espaço físico.", enc: "Gestão Escolar" },
+                    { label: "Tempo de Prova", txt: "Não consegue terminar avaliações no tempo.", ind: "Tempo estendido (Lei).", enc: "Coordenação Pedagógica" },
+                    { label: "Ledores e Escribas", txt: "Necessita de apoio para ler/escrever na prova.", ind: "Designação de tutor.", enc: "Coordenação Pedagógica" }
+                ]
+            },
+            {
+                nome: "Educação Física e Motricidade Global",
+                itens: [
+                    { label: "Participação nas Aulas", txt: "Excluído das atividades práticas.", ind: "Adaptação das regras/atividades.", enc: "Prof. Ed. Física" },
+                    { label: "Coordenação Motora Grossa", txt: "Tropeça muito, cai ao correr.", ind: "Circuito psicomotor.", enc: "Fisioterapia" },
+                    { label: "Compreensão de Regras", txt: "Não entende regras coletivas de jogos.", ind: "Jogos simplificados.", enc: "Prof. Ed. Física" },
+                    { label: "Esquema Corporal", txt: "Não identifica direita/esquerda no corpo.", ind: "Atividades com espelho.", enc: "Psicomotricidade" },
+                    { label: "Tolerância ao Esforço", txt: "Cansaço extremo ou falta de ar rápida.", ind: "Avaliação cardiorrespiratória.", enc: "Cardiologia" },
+                    { label: "Equilíbrio", txt: "Dificuldade em pular num pé só.", ind: "Treino de equilíbrio.", enc: "Fisioterapia" },
+                    { label: "Medo de Altura/Movimento", txt: "Pânico em brinquedos de parque.", ind: "Insegurança gravitacional.", enc: "Terapia Ocupacional" },
+                    { label: "Vestuário Esportivo", txt: "Dificuldade em trocar de roupa para a aula.", ind: "Tempo extra/Privacidade.", enc: "Auxiliar de Classe" },
+                    { label: "Inclusão no Time", txt: "Colegas não passam a bola/excluem.", ind: "Conscientização da turma.", enc: "Psicologia Escolar" },
+                    { label: "Esporte Paralímpico", txt: "Potencial para bocha ou atletismo adaptado.", ind: "Encaminhar para centros de treino.", enc: "Esporte/Lazer" }
+                ]
+            },
+            {
+                nome: "Habilidades Artísticas e Criatividade",
+                itens: [
+                    { label: "Expressão pelo Desenho", txt: "Desenho muito imaturo (garatujas).", ind: "Estimulação do grafismo.", enc: "Arte-terapia" },
+                    { label: "Sensibilidade Musical", txt: "Interesse intenso ou aversão a músicas.", ind: "Musicoterapia.", enc: "Musicoterapia" },
+                    { label: "Manuseio de Materiais", txt: "Aversão a tocar em tinta ou cola.", ind: "Dessensibilização tátil.", enc: "Terapia Ocupacional" },
+                    { label: "Criatividade", txt: "Brincadeira muito concreta, sem 'faz de conta'.", ind: "Estimulação do simbólico.", enc: "Psicologia" },
+                    { label: "Recorte e Colagem", txt: "Não consegue usar tesoura.", ind: "Tesoura com mola.", enc: "Terapia Ocupacional" },
+                    { label: "Memorização de Canções", txt: "Dificuldade em decorar letras.", ind: "Repetição e apoio visual.", enc: "Fonoaudiologia" },
+                    { label: "Participação em Eventos", txt: "Recusa-se a participar de festas.", ind: "Respeitar limites/Bastidores.", enc: "Coordenação" },
+                    { label: "Pintura", txt: "Não pinta dentro do contorno.", ind: "Bordas em relevo (cola quente).", enc: "Pedagogia" },
+                    { label: "Teatro e Role-play", txt: "Dificuldade em assumir personagens.", ind: "Dramatização de histórias.", enc: "Artes" },
+                    { label: "Interesse Focado", txt: "Desenha apenas um único tema.", ind: "Ampliação de repertório.", enc: "Psicologia" }
                 ]
             }
         ]
     },
     clinica: {
-        titulo: "1.3 Avaliação Clínica e de Reabilitação (Saúde/SUS)",
+        titulo: "1.3 Avaliação Clínica e Anamnese de Saúde (SUS)",
         grupos: [
             {
-                nome: "Neurológico e Comorbidades",
+                nome: "Diagnósticos, CIDs e Histórico Médico",
                 itens: [
-                    { label: "Epilepsia/Convulsões", txt: "Histórico de crises frequentes ou ausências.", ind: "Protocolo de crise na sala.", enc: "Neurologista" },
-                    { label: "Controle Medicamentoso", txt: "Sonolência excessiva devido à medicação.", ind: "Ajuste de horário de atividades.", enc: "Neurologista/Psiquiatra" },
-                    { label: "Transtornos do Sono", txt: "Troca o dia pela noite ou insônia severa.", ind: "Higiene do sono.", enc: "Neurologista" },
-                    { label: "Cefaleia/Dores", txt: "Queixa frequente de dores sem causa aparente.", ind: "Investigação clínica.", enc: "Pediatria/Clínico Geral" },
-                    { label: "Tiques/Tourette", txt: "Tiques motores ou vocais involuntários.", ind: "Não punir/Ignorar tique.", enc: "Neurologista" }
+                    { label: "Diagnóstico Principal (CID)", txt: "Laudo ausente, vencido ou CID genérico.", ind: "Solicitar laudo atualizado.", enc: "Médico Especialista" },
+                    { label: "Deficiência Intelectual", txt: "Sinais de DI sem laudo formalizado.", ind: "Avaliação neuropsicológica/QI.", enc: "Neuropsicologia" },
+                    { label: "Comorbidades Psiquiátricas", txt: "TDAH, TOD ou Ansiedade associados.", ind: "Acompanhamento psiquiátrico.", enc: "Psiquiatria" },
+                    { label: "Doenças Crônicas", txt: "Diabetes, Asma, Cardiopatia, Hipertensão.", ind: "Plano de cuidados escolar.", enc: "Pediatria/Cardiologia" },
+                    { label: "Alergias Alimentares", txt: "Alergia a leite (AALV), glúten, corantes.", ind: "Dieta especial/Alerta na cozinha.", enc: "Nutrição" },
+                    { label: "Alergias Medicamentosas", txt: "Reação grave a Dipirona, Penicilina, etc.", ind: "Registro em ficha de emergência.", enc: "Enfermagem" },
+                    { label: "Carteira de Vacinação", txt: "Vacinas atrasadas ou incompletas.", ind: "Atualização vacinal obrigatória.", enc: "UBS/Posto de Saúde" },
+                    { label: "Exames Sensoriais", txt: "Nunca fez audiometria ou oftalmológico.", ind: "Triagem auditiva e visual.", enc: "Oftalmo/Otorrino" },
+                    { label: "Histórico de Internações", txt: "Internações frequentes ou recentes.", ind: "Atenção à imunidade/fadiga.", enc: "Enfermagem" },
+                    { label: "Prematuridade", txt: "Histórico de parto prematuro extremo.", ind: "Vigilância do desenvolvimento.", enc: "Neuropediatra" }
                 ]
             },
             {
-                nome: "Físico, Motor e Mobilidade (Fisioterapia)",
+                nome: "Gerenciamento Medicamentoso",
                 itens: [
-                    { label: "Uso de Cadeira de Rodas", txt: "Dependente para transferência e locomoção.", ind: "Adaptação do mobiliário escolar.", enc: "Fisioterapia" },
-                    { label: "Marcha/Andar", txt: "Marcha instável, na ponta dos pés ou com apoio.", ind: "Treino de marcha/Equilíbrio.", enc: "Fisioterapia/Ortopedia" },
-                    { label: "Espasticidade/Rigidez", txt: "Membros rígidos, dificultando higiene/atividades.", ind: "Alongamento passivo/Órteses.", enc: "Fisioterapia/T.O." },
-                    { label: "Deformidades Ósseas", txt: "Escoliose severa ou deformidades em mãos/pés.", ind: "Posicionamento adequado na cadeira.", enc: "Ortopedia" },
-                    { label: "Controle de Tronco/Cewfalico", txt: "Não sustenta a cabeça ou cai para o lado.", ind: "Uso de colar cervical/adaptação.", enc: "Fisioterapia" }
+                    { label: "Uso de Psicofármacos", txt: "Uso contínuo (Ritalina, Risperidona, etc.).", ind: "Monitorar comportamento.", enc: "Psiquiatria" },
+                    { label: "Anticonvulsivantes", txt: "Uso para controle de epilepsia (Depakote, etc.).", ind: "Atenção à sonolência.", enc: "Neurologia" },
+                    { label: "Administração na Escola", txt: "Necessita tomar remédio no horário de aula.", ind: "Receita e autorização dos pais.", enc: "Enfermagem" },
+                    { label: "Adesão da Família", txt: "Família esquece ou não compra a medicação.", ind: "Conscientização/Serviço Social.", enc: "Assistente Social" },
+                    { label: "Efeitos Colaterais", txt: "Aluno apresenta tremores, babação ou sedação.", ind: "Relatório para o médico.", enc: "Médico Assistente" },
+                    { label: "Farmácia de Alto Custo", txt: "Dificuldade em conseguir medicação pelo SUS.", ind: "Auxílio no processo administrativo.", enc: "Assistente Social/Farmácia" },
+                    { label: "Interação Medicamentosa", txt: "Uso de múltiplos fármacos (polifarmácia).", ind: "Vigilância de reações adversas.", enc: "Médico/Farmacêutico" },
+                    { label: "Via de Administração", txt: "Uso de sonda (GTT) ou insulina injetável.", ind: "Cuidados de enfermagem.", enc: "Enfermagem" },
+                    { label: "Medicação de Resgate", txt: "Necessita de medicação para crise convulsiva.", ind: "Protocolo de emergência.", enc: "SAMU/Enfermagem" },
+                    { label: "Armazenamento", txt: "Medicamento requer refrigeração na escola.", ind: "Geladeira com controle temp.", enc: "Enfermagem" }
                 ]
             },
             {
-                nome: "Sensorial e Terapia Ocupacional",
+                nome: "Neurológico, Físico e Sensorial",
                 itens: [
-                    { label: "Hipersensibilidade Auditiva", txt: "Desorganização extrema com barulho.", ind: "Uso de abafadores.", enc: "Terapia Ocupacional" },
-                    { label: "Busca Sensorial", txt: "Leva tudo à boca ou busca pressão profunda.", ind: "Mordedores de silicone.", enc: "Terapia Ocupacional" },
-                    { label: "Seletividade Alimentar", txt: "Restrição severa (risco nutricional).", ind: "Dessensibilização alimentar.", enc: "Fono/Nutrição" },
-                    { label: "Coordenação Visomotora", txt: "Não consegue seguir objeto com os olhos.", ind: "Estimulação visual com luzes.", enc: "Oftalmologia/T.O." }
+                    { label: "Crises Convulsivas", txt: "Crises ativas, ausências ou espasmos.", ind: "Proteção física durante crise.", enc: "Neurologia" },
+                    { label: "Disfagia (Engasgo)", txt: "Tosse ao comer/beber, risco de aspiração.", ind: "Espessante e postura.", enc: "Fonoaudiologia" },
+                    { label: "Hipersensibilidade Auditiva", txt: "Chora/agride com barulho alto.", ind: "Protetor auricular (fone).", enc: "Terapia Ocupacional" },
+                    { label: "Baixa Visão/Cegueira", txt: "Dificuldade visual severa mesmo com óculos.", ind: "Materiais ampliados/Braille.", enc: "Oftalmo/Pedagogia" },
+                    { label: "Perda Auditiva", txt: "Não responde a chamados ou pede repetição.", ind: "Uso de AASI/Libras.", enc: "Otorrino/Fono" },
+                    { label: "Mobilidade (Cadeira)", txt: "Uso de cadeira de rodas, andador ou muletas.", ind: "Acessibilidade/Rampas.", enc: "Fisioterapia" },
+                    { label: "Deformidades Ósseas", txt: "Escoliose grave, pés tortos, contraturas.", ind: "Posicionamento adequado.", enc: "Ortopedia/Fisio" },
+                    { label: "Tônus Muscular", txt: "Espasticidade (duro) ou Hipotonia (mole).", ind: "Mobiliário adaptado.", enc: "Fisioterapia" },
+                    { label: "Órteses (AFO/KAFO)", txt: "Indicado uso de órtese mas não possui.", ind: "Encaminhar p/ oficina ortopédica.", enc: "Reabilitação Física" },
+                    { label: "Sialorreia (Babação)", txt: "Babação excessiva, molha roupa e mesa.", ind: "Uso de babador/bandana.", enc: "Fonoaudiologia" }
                 ]
             },
             {
-                nome: "Saúde Bucal e Nutricional",
+                nome: "Sexualidade, Puberdade e Adolescência",
                 itens: [
-                    { label: "Disfagia (Engasgos)", txt: "Tosse ou engasgo ao comer/beber.", ind: "Espessante alimentar/Postura.", enc: "Fonoaudiologia" },
-                    { label: "Sialorreia (Babação)", txt: "Excesso de saliva, molha a roupa/mesa.", ind: "Bandana/Exercícios orofaciais.", enc: "Fonoaudiologia" },
-                    { label: "Higiene Bucal", txt: "Cáries visíveis ou gengivite.", ind: "Escovação supervisionada.", enc: "Odontologia (CEO)" },
-                    { label: "Estado Nutricional", txt: "Baixo peso ou obesidade mórbida.", ind: "Adequação da merenda.", enc: "Nutricionista/Endócrino" },
-                    { label: "Respiração", txt: "Respirador oral crônico (adenoide).", ind: "Limpeza nasal.", enc: "Otorrinolaringologista" }
+                    { label: "Menarca/Menstruação", txt: "Menina não sabe lidar com absorvente.", ind: "Treino concreto de troca.", enc: "Enfermagem/T.O." },
+                    { label: "Polução Noturna/Ereção", txt: "Menino assustado com mudanças corporais.", ind: "Conversa explicativa.", enc: "Psicologia/Médico" },
+                    { label: "Privacidade", txt: "Troca de roupa ou toca partes íntimas em público.", ind: "Ensino de público x privado.", enc: "Psicologia Comportamental" },
+                    { label: "Prevenção de Abuso", txt: "Não sabe identificar toque bom x ruim.", ind: "Treino de autoproteção.", enc: "Psicologia" },
+                    { label: "Consentimento", txt: "Abraça/beija estranhos sem pedir permissão.", ind: "Regra do 'círculo de confiança'.", enc: "Psicologia" },
+                    { label: "Higiene Íntima", txt: "Dificuldade na limpeza adequada.", ind: "Supervisão e treino de AVD.", enc: "Terapia Ocupacional" },
+                    { label: "Identidade de Gênero", txt: "Questões sobre identidade/orientação.", ind: "Acolhimento sem julgamento.", enc: "Psicologia" },
+                    { label: "Métodos Contraceptivos", txt: "Adolescente ativo sexualmente sem proteção.", ind: "Planejamento familiar/DIU.", enc: "Ginecologia/Urologia" },
+                    { label: "Comportamento Masturbatório", txt: "Masturbação em sala de aula.", ind: "Redirecionamento para privado.", enc: "Psicologia" },
+                    { label: "Mudanças Hormonais", txt: "TPM severa ou agressividade cíclica.", ind: "Avaliação hormonal.", enc: "Ginecologia/Endócrino" }
+                ]
+            },
+            {
+                nome: "Saúde Preventiva e Geral",
+                itens: [
+                    { label: "Saúde Bucal (Cáries)", txt: "Dentes em mau estado, dor ou halitose.", ind: "Tratamento odontológico.", enc: "CEO (Centro Odonto)" },
+                    { label: "Bruxismo", txt: "Ranger de dentes diurno ou noturno.", ind: "Avaliação de estresse/Placa.", enc: "Odontologia" },
+                    { label: "Parasitoses (Vermes)", txt: "Relato de coceira anal, barriga inchada.", ind: "Exame de fezes/Vermífugo.", enc: "Pediatria" },
+                    { label: "Dermatologia", txt: "Micoses, assaduras por fralda ou escaras.", ind: "Cuidado com a pele.", enc: "Enfermagem" },
+                    { label: "Obesidade/Sobrepeso", txt: "Ganho de peso excessivo.", ind: "Reeducação alimentar.", enc: "Nutrição" },
+                    { label: "Baixo Peso/Anemia", txt: "Palidez, fraqueza, recusa alimentar.", ind: "Suplementação vitamínica.", enc: "Pediatria/Nutrição" },
+                    { label: "Coluna/Postura", txt: "Postura curvada (cifose/lordose).", ind: "Reeducação postural (RPG).", enc: "Fisioterapia" },
+                    { label: "Pés e Pisada", txt: "Pé chato ou caminhar na ponta dos pés.", ind: "Palmilhas ou botox.", enc: "Ortopedia" },
+                    { label: "Constipação Intestinal", txt: "Fica dias sem evacuar, dor.", ind: "Aumento de fibras/água.", enc: "Gastroenterologista" },
+                    { label: "Hidratação", txt: "Não bebe água espontaneamente.", ind: "Oferta programada de água.", enc: "Escola/Família" }
+                ]
+            },
+            {
+                nome: "Saúde Mental (Sintomas Específicos)",
+                itens: [
+                    { label: "Fobia Específica", txt: "Medo paralisante (cachorro, escuro).", ind: "Dessensibilização.", enc: "Psicologia" },
+                    { label: "Transtorno de Pânico", txt: "Crises súbitas de taquicardia.", ind: "Manejo da ansiedade.", enc: "Psiquiatria" },
+                    { label: "Luto ou Perda", txt: "Mudança após perda de ente querido.", ind: "Acolhimento do luto.", enc: "Psicologia" },
+                    { label: "Tricotilomania", txt: "Arrancar cabelos ou sobrancelhas.", ind: "Terapia comportamental.", enc: "Psiquiatria" },
+                    { label: "Escoriação", txt: "Cutucar feridas até sangrar.", ind: "Tratamento dermato/psi.", enc: "Psicologia" },
+                    { label: "Humor Eufórico", txt: "Agitação extrema, não dorme.", ind: "Estabilização do humor.", enc: "Psiquiatria" },
+                    { label: "Mutismo Seletivo", txt: "Fala em casa, mas não na escola.", ind: "Não forçar a fala.", enc: "Psicologia/Fono" },
+                    { label: "Baixa Tolerância ao Erro", txt: "Rasga a tarefa se erra.", ind: "Trabalhar o erro como aprendizado.", enc: "Psicopedagogia" },
+                    { label: "Dependência de Telas", txt: "Agressivo se retirado o celular.", ind: "Desmame gradual.", enc: "Psicologia" },
+                    { label: "Alucinações", txt: "Fala sozinho/responde vozes.", ind: "Avaliação urgente.", enc: "CAPS Infantil" }
                 ]
             }
         ]
     },
     social: {
-        titulo: "1.4 Serviço Social e Direitos (Cidadania)",
+        titulo: "1.4 Serviço Social e Garantia de Direitos",
         grupos: [
             {
-                nome: "Acesso a Benefícios e Direitos",
+                nome: "Direitos, Benefícios e Cidadania",
                 itens: [
-                    { label: "BPC/LOAS", txt: "Família perfil BPC, mas benefício negado ou não solicitado.", ind: "Orientação para recurso/requerimento.", enc: "INSS/Defensoria" },
-                    { label: "Transporte Especial", txt: "Necessita de transporte adaptado (ambulância/van).", ind: "Solicitação de transporte sanitário.", enc: "Secretaria de Saúde" },
-                    { label: "Curatela/Tutela", txt: "Aluno maior de 18 anos sem curatela definida.", ind: "Orientação jurídica sobre interdição.", enc: "Ministério Público/Defensoria" },
-                    { label: "Documentação Civil", txt: "Falta de RG atualizado (necessário p/ benefícios).", ind: "Encaminhar para 2ª via.", enc: "Instituto de Identificação" },
-                    { label: "Carteira de Identificação", txt: "Não possui CIPTEA ou carteira da pessoa com deficiência.", ind: "Solicitar emissão.", enc: "Órgão Estadual/Municipal" }
+                    { label: "Benefício BPC/LOAS", txt: "Perfil elegível, mas benefício negado/não pedido.", ind: "Orientação para INSS.", enc: "Assistente Social" },
+                    { label: "Curatela/Interdição", txt: "Adulto com DI sem responsável legal oficial.", ind: "Ação de curatela.", enc: "Defensoria Pública" },
+                    { label: "Passe Livre", txt: "Sem recursos para transporte.", ind: "Cadastro Passe Livre.", enc: "CRAS/Transporte" },
+                    { label: "Documentação Civil", txt: "Falta RG, CPF ou está desatualizado.", ind: "Emissão de 2ª via.", enc: "Instituto de Identificação" },
+                    { label: "Carteira do Autista/PCD", txt: "Não possui CIPTEA ou identificação.", ind: "Solicitação do documento.", enc: "Órgão Competente" },
+                    { label: "Insumos do SUS", txt: "Necessita de fraldas, sonda ou leite.", ind: "Cadastro programa insumos.", enc: "Secretaria de Saúde" },
+                    { label: "TFD (Tratamento Fora)", txt: "Precisa de cirurgia em outra cidade.", ind: "Solicitação de TFD.", enc: "Secretaria de Saúde" },
+                    { label: "Isenção Tarifária", txt: "Conta de luz/água atrasada.", ind: "Cadastro Tarifa Social.", enc: "CRAS" },
+                    { label: "Cartão de Estacionamento", txt: "Direito a vaga especial não usufruído.", ind: "Solicitação ao trânsito.", enc: "Detran/Prefeitura" },
+                    { label: "Prioridade Legal", txt: "Não conhecimento sobre fila preferencial.", ind: "Orientação sobre Lei.", enc: "Serviço Social" }
                 ]
             },
             {
                 nome: "Contexto Familiar e Vulnerabilidade",
                 itens: [
-                    { label: "Sobrecarga do Cuidador", txt: "Cuidador principal exausto/doente (Burnout).", ind: "Suporte emocional/Grupos.", enc: "Psicologia/CAPS" },
-                    { label: "Negligência", txt: "Sinais de falta de higiene, fome ou roupas inadequadas.", ind: "Acompanhamento próximo.", enc: "CREAS/Conselho Tutelar" },
-                    { label: "Violência Intrafamiliar", txt: "Suspeita de violência física, psicológica ou sexual.", ind: "Notificação compulsória imediata.", enc: "Conselho Tutelar/Delegacia" },
-                    { label: "Uso de Substâncias", txt: "Responsáveis com histórico de drogadição/alcoolismo.", ind: "Redução de danos.", enc: "CAPS AD" },
-                    { label: "Rede de Apoio", txt: "Família monoparental sem apoio de parentes.", ind: "Fortalecimento de vínculos comunitários.", enc: "CRAS" }
+                    { label: "Sobrecarga do Cuidador", txt: "Cuidador com sinais de exaustão/depressão.", ind: "Acolhimento e suporte.", enc: "CAPS/Psicologia" },
+                    { label: "Segurança Alimentar", txt: "Relato de fome ou falta de alimentos.", ind: "Cesta básica emergencial.", enc: "CRAS/ONGs" },
+                    { label: "Habitabilidade", txt: "Moradia insalubre (umidade/risco).", ind: "Visita domiciliar técnica.", enc: "Defesa Civil" },
+                    { label: "Violência Doméstica", txt: "Suspeita de violência física/sexual.", ind: "Notificação compulsória.", enc: "Conselho Tutelar" },
+                    { label: "Negligência", txt: "Criança chega suja ou roupas inadequadas.", ind: "Acompanhamento familiar.", enc: "CREAS" },
+                    { label: "Uso de Drogas na Família", txt: "Responsáveis usuários de álcool/drogas.", ind: "Tratamento da dependência.", enc: "CAPS AD" },
+                    { label: "Analfabetismo dos Pais", txt: "Pais não conseguem ler bilhetes.", ind: "Comunicação por áudio/EJA.", enc: "Educação de Jovens" },
+                    { label: "Rede de Apoio Frágil", txt: "Família isolada, sem parentes.", ind: "Fortalecimento de vínculos.", enc: "CRAS" },
+                    { label: "Irmãos com Deficiência", txt: "Outros filhos com deficiência sem atendimento.", ind: "Busca ativa dos irmãos.", enc: "Saúde/Educação" },
+                    { label: "Acesso Digital", txt: "Sem celular/internet para contato.", ind: "Recados via vizinho.", enc: "Secretaria Escolar" }
                 ]
             },
             {
-                nome: "Habitação e Acessibilidade",
+                nome: "Preparação para o Trabalho e Vida Adulta",
                 itens: [
-                    { label: "Acessibilidade Domiciliar", txt: "Casa com escadas/barreiras para cadeira de rodas.", ind: "Orientações de adaptação simples.", enc: "Serviço Social/Habitação" },
-                    { label: "Insalubridade", txt: "Mofo, falta de ventilação (agravante respiratório).", ind: "Avaliação da moradia.", enc: "Vigilância Sanitária/Social" },
-                    { label: "Equipamentos (Órteses)", txt: "Necessita de cadeira de banho/rodas/óculos.", ind: "Prescrição e solicitação ao SUS.", enc: "Centro de Reabilitação (CER)" },
-                    { label: "Medicamentos de Alto Custo", txt: "Usa medicação não disponível na farmácia básica.", ind: "Processo administrativo de alto custo.", enc: "Farmácia Especial/MP" }
+                    { label: "Vocação/Habilidades", txt: "Sem projeto de vida profissional.", ind: "Teste vocacional adaptado.", enc: "Psicologia/T.O." },
+                    { label: "Programa Jovem Aprendiz", txt: "Idade elegível mas não inscrito.", ind: "Encaminhar para CIEE/Instituições.", enc: "Serviço Social" },
+                    { label: "Autonomia de Transporte", txt: "Não sabe pegar ônibus sozinho.", ind: "Treino de mobilidade urbana.", enc: "Família/T.O." },
+                    { label: "Uso de Celular Funcional", txt: "Usa celular só para jogos.", ind: "Treino de apps úteis.", enc: "Pedagogia" },
+                    { label: "Documentação Trabalhista", txt: "Não possui Carteira de Trabalho.", ind: "Emissão digital.", enc: "Poupatempo/Sine" },
+                    { label: "Comportamento Profissional", txt: "Não entende hierarquia.", ind: "Simulação de ambiente de trabalho.", enc: "Oficinas" },
+                    { label: "Manejo do Dinheiro", txt: "Não sabe conferir troco.", ind: "Educação financeira.", enc: "Pedagogia" },
+                    { label: "Assinatura", txt: "Não sabe assinar o nome.", ind: "Treino de assinatura.", enc: "Terapia Ocupacional" },
+                    { label: "Curatela Parcial", txt: "Avaliar necessidade para atos civis.", ind: "Orientação jurídica.", enc: "Defensoria" },
+                    { label: "Cursos Profissionalizantes", txt: "Interesse em culinária/info.", ind: "Matrícula em cursos adaptados.", enc: "Serviço Social" }
+                ]
+            },
+            {
+                nome: "Lazer, Cultura e Esporte",
+                itens: [
+                    { label: "Atividade Física Extra", txt: "Sedentarismo fora da escola.", ind: "Projetos esportivos inclusivos.", enc: "Esportes" },
+                    { label: "Convívio Comunitário", txt: "Frequenta apenas casa e escola.", ind: "Incentivo a ir em praças.", enc: "Família" },
+                    { label: "Acesso à Cultura", txt: "Nunca foi ao cinema ou teatro.", ind: "Carteirinha meia-entrada.", enc: "Cultura" },
+                    { label: "Férias e Finais de Semana", txt: "Passa feriados isolado.", ind: "Planejamento de lazer.", enc: "Família" },
+                    { label: "Amizades Fora da Escola", txt: "Não tem amigos no bairro.", ind: "Aproximação com vizinhos.", enc: "Família" },
+                    { label: "Habilidades Digitais", txt: "Não sabe buscar vídeos que gosta.", ind: "Ensino de navegação.", enc: "Informática" },
+                    { label: "Acampamentos/Passeios", txt: "Nunca dormiu fora de casa.", ind: "Incentivo à autonomia.", enc: "Família" },
+                    { label: "Talentos Especiais", txt: "Habilidade alta em arte/memória.", ind: "Investir no talento.", enc: "Arte/Cultura" },
+                    { label: "Brinquedos Adequados", txt: "Brinquedos não condizem com idade.", ind: "Adequação material.", enc: "Terapia Ocupacional" },
+                    { label: "Centros de Convivência", txt: "Necessita de espaço de socialização.", ind: "Inscrição no CCA.", enc: "CRAS" }
+                ]
+            },
+            {
+                nome: "Logística e Rotina Familiar",
+                itens: [
+                    { label: "Transporte Escolar", txt: "Dificuldade com horário da perua.", ind: "Ajuste de rotina matinal.", enc: "Transporte" },
+                    { label: "Retaguarda Familiar", txt: "Se a mãe adoece, ninguém cuida.", ind: "Mapeamento de rede.", enc: "Serviço Social" },
+                    { label: "Rotina de Sono (Casa)", txt: "Casa barulhenta/sem horário.", ind: "Higiene do sono familiar.", enc: "Orientação Parental" },
+                    { label: "Espaço de Estudo", txt: "Não tem mesa para lição.", ind: "Adaptação de canto de estudos.", enc: "Serviço Social" },
+                    { label: "Participação do Pai", txt: "Pai ausente dos cuidados.", ind: "Convite para reuniões.", enc: "Psicologia" },
+                    { label: "Uso de Telas em Casa", txt: "Pais usam telas como 'babá'.", ind: "Conscientização.", enc: "Pedagogia" },
+                    { label: "Organização Medicamentosa", txt: "Remédios ao alcance da criança.", ind: "Orientação de segurança.", enc: "Enfermagem" },
+                    { label: "Comparecimento Escolar", txt: "Faltas excessivas.", ind: "Termo de responsabilidade.", enc: "Secretaria" },
+                    { label: "Comunicação Escola", txt: "Agenda não é lida.", ind: "Reforço na comunicação.", enc: "Coordenação" },
+                    { label: "Expectativas Familiares", txt: "Família espera 'cura' milagrosa.", ind: "Alinhamento de expectativas.", enc: "Psicologia" }
                 ]
             }
         ]
     }
 };
 
-// --- 4. FUNÇÕES GLOBAIS (WINDOW) ---
+// --- 4. FUNÇÕES GLOBAIS (ESSENCIAIS PARA OS BOTÕES FUNCIONAREM) ---
 
-// Auto-Resize Textarea
+// Função auxiliar para textareas crescerem
 function autoResize(el) {
     el.style.height = 'auto';
     el.style.height = (el.scrollHeight) + 'px';
 }
-document.querySelectorAll('textarea').forEach(tx => {
-    tx.addEventListener('input', function() { autoResize(this); });
-});
 
-// Inicialização: Preenche selects de assinatura
+// Inicialização ao carregar a página
 window.addEventListener('load', () => {
+    // Vincula o auto-resize em todos os textareas
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.addEventListener('input', function() { autoResize(this); });
+    });
+
+    // Inicializa selects
     preencherSelect('selPedagogica', PERFIS.pedagogica);
     preencherSelect('selSocial', PERFIS.social);
-    // Define padrão
+
+    // Define valores padrão
     window.trocarAssinatura('pedagogica', '1');
     window.trocarAssinatura('social', '1');
     window.atualizarDataAssinatura();
@@ -179,6 +329,7 @@ window.addEventListener('load', () => {
 
 function preencherSelect(id, lista) {
     const sel = document.getElementById(id);
+    if(!sel) return;
     sel.innerHTML = "";
     lista.forEach(p => {
         const opt = document.createElement('option');
@@ -188,20 +339,7 @@ function preencherSelect(id, lista) {
     });
 }
 
-// Lógica de Assinatura (Troca Imagem, Nome e Cargo)
-window.trocarAssinatura = function(tipo, id) {
-    const lista = PERFIS[tipo];
-    const perfil = lista.find(p => p.id === id);
-    if(perfil) {
-        // Ex: imgPedagogica, nomePedagogica, cargoPedagogica
-        const T = tipo.charAt(0).toUpperCase() + tipo.slice(1); // "pedagogica" -> "Pedagogica"
-        document.getElementById(`img${T}`).src = perfil.img;
-        document.getElementById(`nome${T}`).innerText = perfil.nome;
-        document.getElementById(`cargo${T}`).innerText = perfil.cargo;
-        // Atualiza o select caso tenha sido chamado via código
-        document.getElementById(`sel${T}`).value = id;
-    }
-};
+// *** EXPOSIÇÃO DAS FUNÇÕES PARA O HTML (O SEGREDO PARA OS BOTÕES FUNCIONAREM) ***
 
 window.calcularIdade = function() {
     const d = document.getElementById('dataNascimento').value;
@@ -209,7 +347,10 @@ window.calcularIdade = function() {
     const nasc = new Date(d);
     const hoje = new Date();
     let idade = hoje.getFullYear() - nasc.getFullYear();
-    if(hoje < new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate())) idade--;
+    const m = hoje.getMonth() - nasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
+        idade--;
+    }
     document.getElementById('idade').value = `${idade} anos`;
 };
 
@@ -220,19 +361,39 @@ window.atualizarDataAssinatura = function() {
         p.innerText = "Londrina/PR, ____ de __________________ de _______.";
         return;
     }
-    const d = new Date(dtInput);
-    // Ajuste de fuso horário simples
-    const userTimezoneOffset = d.getTimezoneOffset() * 60000;
-    const dataCorreta = new Date(d.getTime() + userTimezoneOffset);
+    // Cria data ajustando timezone para não dar erro de dia anterior
+    const d = new Date(dtInput + 'T12:00:00'); 
     
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    p.innerText = `Londrina/PR, ${dataCorreta.toLocaleDateString('pt-BR', options)}.`;
+    p.innerText = `Londrina/PR, ${d.toLocaleDateString('pt-BR', options)}.`;
 };
 
-// --- MODAIS ---
+window.trocarAssinatura = function(tipo, id) {
+    const lista = PERFIS[tipo];
+    const perfil = lista.find(p => p.id === id);
+    if(perfil) {
+        // Capitaliza a primeira letra (pedagogica -> Pedagogica)
+        const T = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+        
+        const imgEl = document.getElementById(`img${T}`);
+        const nomeEl = document.getElementById(`nome${T}`);
+        const cargoEl = document.getElementById(`cargo${T}`);
+        const selEl = document.getElementById(`sel${T}`);
+
+        if(imgEl) imgEl.src = perfil.img;
+        if(nomeEl) nomeEl.innerText = perfil.nome;
+        if(cargoEl) cargoEl.innerText = perfil.cargo;
+        if(selEl) selEl.value = id;
+    }
+};
+
+// --- FUNÇÕES DOS MODAIS ---
+
 window.abrirModal = function(area) {
     areaAtual = area;
     const dados = CHECKLIST[area];
+    if(!dados) return;
+
     document.getElementById('tituloModal').innerText = dados.titulo;
     const corpo = document.getElementById('corpoChecklist');
     corpo.innerHTML = "";
@@ -254,7 +415,9 @@ window.abrirModal = function(area) {
     document.getElementById('modalChecklist').style.display = 'flex';
 };
 
-window.fecharModal = function(id) { document.getElementById(id).style.display = 'none'; };
+window.fecharModal = function(id) {
+    document.getElementById(id).style.display = 'none';
+};
 
 window.processarChecklist = function() {
     const checks = document.querySelectorAll('#corpoChecklist input:checked');
@@ -269,12 +432,14 @@ window.processarChecklist = function() {
     const idArea = areaAtual === 'pedagogica' ? 'txtPedagogica' : 
                    areaAtual === 'clinica' ? 'txtClinica' : 'txtSocial';
     
-    // Insere texto na área
+    // Insere texto na área específica
     const elArea = document.getElementById(idArea);
-    elArea.value = txt;
-    autoResize(elArea);
+    if(elArea) {
+        elArea.value = txt;
+        autoResize(elArea);
+    }
 
-    // Insere nos globais
+    // Insere nos campos globais (Conclusão, Indicações, Encaminhamentos)
     if(txt) {
         const c = document.getElementById('txtConclusao');
         c.value += (c.value ? "\n" : "") + txt;
@@ -293,10 +458,16 @@ window.processarChecklist = function() {
     window.fecharModal('modalChecklist');
 };
 
-// --- FIREBASE (CRUD) ---
+window.abrirBusca = function() {
+    document.getElementById('modalBusca').style.display = 'flex';
+};
+
+// --- FUNÇÕES DE BANCO DE DADOS (SALVAR/BUSCAR) ---
+
 window.salvarRelatorio = async function() {
     const btn = document.querySelector('.verde');
-    btn.innerHTML = '...';
+    const iconeOriginal = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; // Loading
     
     try {
         const dados = {
@@ -316,7 +487,6 @@ window.salvarRelatorio = async function() {
             txtEncaminhamentos: document.getElementById('txtEncaminhamentos').value,
             txtObservacoes: document.getElementById('txtObservacoes').value,
             
-            // Salva os IDs das assinaturas escolhidas
             idAssPedagogica: document.getElementById('selPedagogica').value,
             idAssSocial: document.getElementById('selSocial').value,
             
@@ -324,46 +494,63 @@ window.salvarRelatorio = async function() {
         };
 
         const idDoc = document.getElementById('docId').value;
+        
         if(idDoc) {
+            // Atualizar existente
             await updateDoc(doc(tabelaRelatorios, idDoc), dados);
-            alert("Atualizado com sucesso!");
+            alert("Relatório atualizado com sucesso!");
         } else {
+            // Criar novo
             const ref = await addDoc(tabelaRelatorios, dados);
             document.getElementById('docId').value = ref.id;
-            alert("Salvo com sucesso!");
+            alert("Relatório salvo com sucesso!");
         }
     } catch(e) {
-        console.error(e);
-        alert("Erro ao salvar.");
+        console.error("Erro ao salvar:", e);
+        alert("Erro ao salvar: " + e.message);
     } finally {
-        btn.innerHTML = '<i class="fas fa-save"></i>';
+        btn.innerHTML = '<i class="fas fa-save"></i>'; // Restaura ícone
     }
 };
-
-window.abrirBusca = function() { document.getElementById('modalBusca').style.display = 'flex'; };
 
 window.executarBusca = async function() {
     const termo = document.getElementById('buscaInput').value.toLowerCase();
     const lista = document.getElementById('listaResultados');
     lista.innerHTML = "Carregando...";
     
-    const q = query(tabelaRelatorios, orderBy('timestamp', 'desc'));
-    const snap = await getDocs(q);
-    
-    lista.innerHTML = "";
-    if(snap.empty) { lista.innerHTML = "Nada encontrado."; return; }
+    try {
+        const q = query(tabelaRelatorios, orderBy('timestamp', 'desc'));
+        const snap = await getDocs(q);
+        
+        lista.innerHTML = "";
+        if(snap.empty) { lista.innerHTML = "Nada encontrado."; return; }
 
-    snap.forEach(d => {
-        const data = d.data();
-        if(data.estudante.toLowerCase().includes(termo)) {
-            lista.innerHTML += `
-                <div style="padding:10px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between;">
-                    <span><b>${data.estudante}</b></span>
-                    <button onclick="window.carregar('${d.id}')" style="color:blue; cursor:pointer;">Abrir</button>
-                </div>
-            `;
-        }
-    });
+        let encontrou = false;
+        snap.forEach(d => {
+            const data = d.data();
+            // Filtro local simples (pode ser melhorado para filtro no banco depois)
+            if(data.estudante && data.estudante.toLowerCase().includes(termo)) {
+                encontrou = true;
+                const dataF = data.timestamp ? new Date(data.timestamp.seconds*1000).toLocaleDateString() : "-";
+                
+                lista.innerHTML += `
+                    <div style="padding:10px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <b>${data.estudante}</b><br>
+                            <small>${dataF}</small>
+                        </div>
+                        <button onclick="window.carregar('${d.id}')" style="background:var(--azul-claro); color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Abrir</button>
+                    </div>
+                `;
+            }
+        });
+
+        if(!encontrou) lista.innerHTML = "Nenhum aluno com esse nome.";
+
+    } catch (e) {
+        console.error(e);
+        lista.innerHTML = "Erro na busca.";
+    }
 };
 
 window.carregar = async function(id) {
@@ -373,20 +560,26 @@ window.carregar = async function(id) {
         const d = snap.data();
         document.getElementById('docId').value = id;
         
-        // Campos simples
+        // Preenche campos
         const campos = ['escola','nomeEstudante','dataNascimento','idade','filiacao','dataAvaliacao',
                         'txtPedagogica','txtClinica','txtSocial','txtConclusao','txtIndicacoes',
                         'txtEncaminhamentos','txtObservacoes'];
+        
         campos.forEach(k => {
             const el = document.getElementById(k);
-            if(el) { el.value = d[k] || ""; autoResize(el); }
+            if(el) { 
+                el.value = d[k] || ""; 
+                autoResize(el); // Ajusta altura do textarea
+            }
         });
 
-        // Assinaturas
+        // Carrega assinaturas
         if(d.idAssPedagogica) window.trocarAssinatura('pedagogica', d.idAssPedagogica);
         if(d.idAssSocial) window.trocarAssinatura('social', d.idAssSocial);
         
         window.atualizarDataAssinatura();
         window.fecharModal('modalBusca');
+    } else {
+        alert("Relatório não encontrado.");
     }
 };
