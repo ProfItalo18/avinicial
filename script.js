@@ -359,6 +359,7 @@ function gerarCamposAutomaticosGerais() {
         if (dados.itens.length > 0) {
             const rotulos = dados.itens.map(id => getLabelById(area, id)).filter(l => l !== "");
             if (rotulos.length > 0) {
+                // Título sem numeração
                 textoConclusao += `Na ${tituloArea}, observou-se: ${rotulos.join(", ")}.\n`;
             }
         } 
@@ -557,6 +558,21 @@ window.limparTudo = function() {
         idRelatorioAtual = null; 
         location.reload();
     }
+}
+
+// FUNÇÃO ESPECIAL DE IMPRESSÃO
+window.imprimirRelatorio = function() {
+    // 1. Força a expansão de todos os textareas para o tamanho do conteúdo
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(el => {
+        el.style.height = 'auto'; 
+        el.style.height = el.scrollHeight + 'px';
+    });
+
+    // 2. Pequeno delay para o navegador renderizar
+    setTimeout(() => {
+        window.print();
+    }, 100);
 }
 
 window.onload = function() {

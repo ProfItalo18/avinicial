@@ -24,7 +24,7 @@
     <div id="toast">Operação realizada com sucesso!</div>
 
     <div class="fab-container no-print">
-        <button onclick="window.print()" class="fab-btn btn-print" title="Imprimir"><i class="fas fa-print"></i></button>
+        <button onclick="imprimirRelatorio()" class="fab-btn btn-print" title="Imprimir"><i class="fas fa-print"></i></button>
         <button onclick="salvarNovoRelatorioNoBanco()" class="fab-btn btn-save" title="Salvar na Nuvem"><i class="fas fa-save"></i></button>
         <button onclick="abrirModalBusca()" class="fab-btn btn-search" title="Buscar Relatórios"><i class="fas fa-search"></i></button>
         <button onclick="limparTudo()" class="fab-btn btn-reset" title="Novo / Limpar"><i class="fas fa-file"></i></button>
@@ -94,17 +94,17 @@
                             </div>
 
                             <div class="input-group full-width" style="margin-top: 20px;">
-                                <label>Avaliação Pedagógica</label>
+                                <label>2.1 Avaliação Pedagógica</label>
                                 <textarea id="sintesePedagogica" rows="6" placeholder="Texto gerado automaticamente..."></textarea>
                             </div>
                             
                             <div class="input-group full-width" style="margin-top: 15px;">
-                                <label>Avaliação Clínica</label>
+                                <label>2.2 Avaliação Clínica</label>
                                 <textarea id="sinteseClinica" rows="6" placeholder="Texto gerado automaticamente..."></textarea>
                             </div>
 
                             <div class="input-group full-width" style="margin-top: 15px;">
-                                <label>Serviço Social</label>
+                                <label>2.3 Serviço Social</label>
                                 <textarea id="sinteseSocial" rows="6" placeholder="Texto gerado automaticamente..."></textarea>
                             </div>
                         </section>
