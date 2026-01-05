@@ -29,59 +29,28 @@
         
         <h2 class="titulo-documento">RELATÓRIO DE AVALIAÇÃO DE INGRESSO NA ESCOLA ESPECIALIZADA</h2>
         
-        <input type="hidden" id="docId"> <section class="secao">
+        <input type="hidden" id="docId">
+
+        <section class="secao">
             <h3 class="titulo-secao">1. DADOS DE IDENTIFICAÇÃO:</h3>
             
             <div class="grid-form">
                 <div class="linha">
                     <div class="campo">
-                        <span class="label">Município:</span>
-                        <span class="valor-fixo">Londrina/PR</span>
+                        <span class="label">Município:</span><span class="valor-fixo">Londrina/PR</span>
                     </div>
                     <div class="campo">
-                        <span class="label">NRE:</span>
-                        <span class="valor-fixo">Londrina/PR</span>
+                        <span class="label">NRE:</span><span class="valor-fixo">Londrina/PR</span>
                     </div>
                 </div>
-
+                <div class="linha"><div class="campo-full"><span class="label">Escola:</span><input type="text" id="escola" value="Escola Manain" class="input-linha"></div></div>
+                <div class="linha"><div class="campo-full"><span class="label">Estudante:</span><input type="text" id="nomeEstudante" placeholder="Nome completo" class="input-linha"></div></div>
                 <div class="linha">
-                    <div class="campo-full">
-                        <span class="label">Escola:</span>
-                        <input type="text" id="escola" value="Escola Manain" class="input-linha">
-                    </div>
+                    <div class="campo" style="flex: 2;"><span class="label">Data de Nascimento:</span><input type="date" id="dataNascimento" class="input-linha" onchange="window.calcularIdade()"></div>
+                    <div class="campo" style="flex: 1;"><span class="label">Idade:</span><input type="text" id="idade" readonly class="input-linha"></div>
                 </div>
-
-                <div class="linha">
-                    <div class="campo-full">
-                        <span class="label">Estudante:</span>
-                        <input type="text" id="nomeEstudante" placeholder="Nome completo" class="input-linha">
-                    </div>
-                </div>
-
-                <div class="linha">
-                    <div class="campo" style="flex: 2;">
-                        <span class="label">Data de Nascimento:</span>
-                        <input type="date" id="dataNascimento" class="input-linha" onchange="window.calcularIdade()">
-                    </div>
-                    <div class="campo" style="flex: 1;">
-                        <span class="label">Idade:</span>
-                        <input type="text" id="idade" readonly class="input-linha">
-                    </div>
-                </div>
-
-                <div class="linha">
-                    <div class="campo-full">
-                        <span class="label">Filiação:</span>
-                        <input type="text" id="filiacao" placeholder="Mãe e Pai" class="input-linha">
-                    </div>
-                </div>
-
-                <div class="linha">
-                    <div class="campo-full">
-                        <span class="label">Data da Avaliação:</span>
-                        <input type="date" id="dataAvaliacao" class="input-linha" onchange="window.atualizarDataAssinatura()">
-                    </div>
-                </div>
+                <div class="linha"><div class="campo-full"><span class="label">Filiação:</span><input type="text" id="filiacao" placeholder="Mãe e Pai" class="input-linha"></div></div>
+                <div class="linha"><div class="campo-full"><span class="label">Data da Avaliação:</span><input type="date" id="dataAvaliacao" class="input-linha" onchange="window.atualizarDataAssinatura()"></div></div>
             </div>
         </section>
 
@@ -101,6 +70,10 @@
                     <h4>2.2 Avaliação Clínica</h4>
                     <button class="btn-acao no-print" onclick="window.abrirModal('clinica')"><i class="fas fa-user-md"></i> Checklist</button>
                 </div>
+                <div class="linha-clinica no-print">
+                    <input type="text" id="inputCid" placeholder="CID (Ex: F84.0)" class="input-border">
+                    <input type="text" id="inputMedicacao" placeholder="Medicação (Ex: Risperidona 1mg)" class="input-border">
+                </div>
                 <textarea id="txtClinica" class="auto-expand" rows="4"></textarea>
             </div>
 
@@ -115,22 +88,22 @@
 
         <section class="secao">
             <h3 class="titulo-secao">3. CONCLUSÃO DIAGNÓSTICA</h3>
-            <textarea id="txtConclusao" class="auto-expand" rows="5"></textarea>
+            <textarea id="txtConclusao" class="auto-expand" rows="5" placeholder="Gerado automaticamente após avaliação clínica..."></textarea>
         </section>
 
         <section class="secao">
             <h3 class="titulo-secao">4. INDICAÇÕES PEDAGÓGICAS</h3>
-            <textarea id="txtIndicacoes" class="auto-expand" rows="6"></textarea>
+            <textarea id="txtIndicacoes" class="auto-expand" rows="6" placeholder="Gerado automaticamente a partir dos checklists..."></textarea>
         </section>
 
         <section class="secao">
             <h3 class="titulo-secao">5. ENCAMINHAMENTOS</h3>
-            <textarea id="txtEncaminhamentos" class="auto-expand" rows="4"></textarea>
+            <textarea id="txtEncaminhamentos" class="auto-expand" rows="4" placeholder="Gerado automaticamente a partir dos checklists..."></textarea>
         </section>
 
         <section class="secao">
             <h3 class="titulo-secao">6. OBSERVAÇÕES COMPLEMENTARES</h3>
-            <textarea id="txtObservacoes" class="auto-expand" rows="3"></textarea>            
+            <textarea id="txtObservacoes" class="auto-expand" rows="5">A Escola Manain, mantida pelo Centro Ocupacional de Londrina, reafirma seu compromisso com a Lei de Diretrizes e Bases da Educação Nacional (LDB nº 9.394/96), o Estatuto da Pessoa com Deficiência (Lei nº 13.146/2015) e as normativas do Conselho Estadual de Educação do Paraná (CEE/PR), garantindo o atendimento educacional especializado, inclusivo e de qualidade, respeitando as especificidades e direitos de cada estudante no processo de ensino-aprendizagem.</textarea>
         </section>
 
         <div class="local-data-container">
@@ -139,31 +112,23 @@
 
         <div class="assinaturas-wrapper">
             <div class="assinatura-item">
-                <div class="img-ass-container">
-                    <img id="imgPedagogica" src="" alt="Assinatura" style="display:none;">
-                </div>
+                <div class="img-ass-container"><img id="imgPedagogica" src="" style="display:none;"></div>
                 <div class="linha-ass"></div>
                 <p id="nomePedagogica" class="nome-assinatura">Nome</p>
                 <p id="cargoPedagogica" class="cargo-assinatura">Cargo</p>
                 <p id="regPedagogica" class="reg-assinatura">Registro</p>
                 <select id="selPedagogica" class="sel-ass no-print" onchange="window.trocarAssinatura('pedagogia', this.value)"></select>
             </div>
-
             <div class="assinatura-item">
-                <div class="img-ass-container">
-                    <img id="imgPsicologia" src="" alt="Assinatura" style="display:none;">
-                </div>
+                <div class="img-ass-container"><img id="imgPsicologia" src="" style="display:none;"></div>
                 <div class="linha-ass"></div>
                 <p id="nomePsicologia" class="nome-assinatura">Nome</p>
                 <p id="cargoPsicologia" class="cargo-assinatura">Cargo</p>
                 <p id="regPsicologia" class="reg-assinatura">Registro</p>
                 <select id="selPsicologia" class="sel-ass no-print" onchange="window.trocarAssinatura('psicologia', this.value)"></select>
             </div>
-
             <div class="assinatura-item">
-                <div class="img-ass-container">
-                    <img id="imgSocial" src="" alt="Assinatura" style="display:none;">
-                </div>
+                <div class="img-ass-container"><img id="imgSocial" src="" style="display:none;"></div>
                 <div class="linha-ass"></div>
                 <p id="nomeSocial" class="nome-assinatura">Nome</p>
                 <p id="cargoSocial" class="cargo-assinatura">Cargo</p>
@@ -173,25 +138,54 @@
         </div>
     </main>
 
+
     <div class="fab-menu no-print">
+        <button onclick="window.abrirBusca()" class="btn-fab azul" title="Banco de Dados"><i class="fas fa-database"></i></button>
+        <button onclick="window.salvarRelatorio()" class="btn-fab verde" title="Salvar e Limpar"><i class="fas fa-save"></i></button>
         <button onclick="window.print()" class="btn-fab laranja" title="Imprimir"><i class="fas fa-print"></i></button>
     </div>
 
     <div id="modalChecklist" class="modal-overlay">
         <div class="modal-card modal-split">
             <div class="modal-header">
-                <h3 id="tituloModal">Checklist</h3>
+                <h3 id="tituloModal">Avaliação</h3>
                 <button onclick="window.fecharModal('modalChecklist')">&times;</button>
             </div>
             <div class="modal-split-body">
-                <div class="split-left" id="corpoChecklist"></div>
+                <div class="split-left">
+                    <h4 class="split-title">Itens para Seleção</h4>
+                    <div id="corpoChecklist"></div>
+                </div>
                 <div class="split-right">
-                    <h4>Pré-visualização</h4>
+                    <h4 class="split-title">Pré-visualização do Texto</h4>
+                    <p class="hint">O texto abaixo vai para o relatório. Você pode editá-lo.</p>
                     <textarea id="textoAoVivo" class="textarea-preview"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button onclick="window.confirmarChecklist()" class="btn-confirmar">Inserir no Relatório</button>
+                <button onclick="window.confirmarChecklist()" class="btn-confirmar">Confirmar e Transferir Dados</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalBusca" class="modal-overlay">
+        <div class="modal-card modal-large">
+            <div class="modal-header">
+                <h3><i class="fas fa-server"></i> Banco de Dados</h3>
+                <button onclick="window.fecharModal('modalBusca')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="toolbar-dados">
+                    <div class="search-group">
+                        <input type="text" id="buscaInput" placeholder="Buscar aluno..." class="input-full">
+                        <button onclick="window.executarBusca()" class="btn-buscar"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="actions-group">
+                        <button onclick="window.exportarDados()" class="btn-action btn-export"><i class="fas fa-file-export"></i> Backup</button>
+                        <button onclick="window.gerarRelatorioLista()" class="btn-action btn-report"><i class="fas fa-list"></i> Lista</button>
+                    </div>
+                </div>
+                <div id="listaResultados" class="lista-res-moderna"></div>
             </div>
         </div>
     </div>

@@ -6,34 +6,44 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+body { background: var(--bg-tela); padding-bottom: 120px; }
 
-body { background: var(--bg-tela); padding-bottom: 100px; }
-
-/* --- A4 Paper --- */
+/* A4 */
 .folha-a4 {
     width: 210mm; min-height: 297mm; background: white;
     margin: 30px auto; padding: 20mm 15mm;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative;
 }
 
-/* --- Layout Básico --- */
+/* Header/Footer */
 .header-oficial { display: block; background: white; border-bottom: 3px solid var(--azul-escuro); padding: 10px 0; text-align: center; margin-bottom: 20px; }
 .header-content { display: flex; justify-content: center; align-items: center; gap: 15px; }
 .logo-topo { height: 75px; }
-.header-texto h1 { font-size: 14pt; color: var(--azul-escuro); }
+.header-texto h1 { font-size: 14pt; color: var(--azul-escuro); margin: 0; }
 .header-texto p { font-size: 10pt; margin: 2px 0; }
+.sub-texto { font-size: 9pt; font-style: italic; }
 
+.footer-oficial { background: white; text-align: center; margin-top: 30px; width: 100%; }
+.dados-rodape p { font-size: 9pt; margin: 2px 0; color: #444; }
+.barra-final { height: 8px; background: var(--azul-escuro); width: 100%; margin-top: 5px; }
+
+/* Layout */
 .titulo-documento { text-align: center; font-size: 14pt; font-weight: bold; text-decoration: underline; margin-bottom: 25px; }
 .titulo-secao { font-size: 11pt; font-weight: bold; background: #f8f9fa; padding: 5px; margin-bottom: 15px; border-left: 5px solid var(--azul-escuro); }
 
-.linha { display: flex; gap: 15px; margin-bottom: 10px; }
+.grid-form { display: flex; flex-direction: column; gap: 10px; }
+.linha { display: flex; gap: 15px; align-items: flex-end; }
 .campo-full { width: 100%; }
+.label { font-weight: bold; font-size: 10pt; margin-right: 5px; color: var(--azul-escuro); }
+.valor-fixo { font-weight: bold; font-size: 11pt; }
 .input-linha { border: none; border-bottom: 1px solid #ccc; width: 100%; font-family: 'Times New Roman'; font-size: 11pt; }
-.label { font-weight: bold; margin-right: 5px; font-size: 10pt; }
 
-textarea { width: 100%; border: 1px solid #ddd; padding: 10px; font-family: 'Times New Roman'; font-size: 11pt; min-height: 80px; resize: vertical; }
+/* Textarea & Inputs Clínicos */
+textarea { width: 100%; border: 1px solid #ddd; padding: 10px; font-family: 'Times New Roman'; font-size: 11pt; min-height: 80px; resize: vertical; background: #fafafa; }
+.linha-clinica { display: flex; gap: 10px; margin-bottom: 10px; }
+.input-border { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 10pt; }
 
-/* --- ASSINATURAS --- */
+/* Assinaturas */
 .assinaturas-wrapper { display: flex; justify-content: space-between; margin-top: 40px; gap: 10px; page-break-inside: avoid; }
 .assinatura-item { text-align: center; width: 32%; display: flex; flex-direction: column; align-items: center; }
 .img-ass-container { height: 70px; display: flex; align-items: flex-end; justify-content: center; width: 100%; margin-bottom: 5px; }
@@ -43,43 +53,57 @@ textarea { width: 100%; border: 1px solid #ddd; padding: 10px; font-family: 'Tim
 .cargo-assinatura, .reg-assinatura { font-size: 9pt; margin: 0; }
 .sel-ass { margin-top: 5px; font-size: 8pt; max-width: 100%; }
 
-/* --- RODAPÉ --- */
-.footer-oficial { background: white; text-align: center; margin-top: 20px; width: 100%; padding-bottom: 10px; }
-.dados-rodape p { font-size: 9pt; margin: 2px 0; color: #444; }
-.barra-final { height: 8px; background: var(--azul-escuro); width: 100%; margin-top: 5px; }
+/* Botões */
+.fab-menu { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column-reverse; gap: 10px; }
+.btn-fab { width: 60px; height: 60px; border-radius: 50%; border: none; color: white; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+.azul { background: var(--azul-claro); }
+.verde { background: var(--verde); }
+.laranja { background: #e67e22; }
+.btn-acao { background: var(--azul-claro); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 9pt; display: flex; align-items: center; gap: 5px; }
 
-/* --- MODAL --- */
-.modal-overlay { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: rgba(0,0,0,0.6); display: none; /* Começa escondido */
-    justify-content: center; align-items: center; z-index: 2000; 
-}
-.modal-split { width: 90%; max-width: 1200px; height: 80vh; background: white; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; }
+/* Modais */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(4px); }
+.modal-split { width: 90%; max-width: 1300px; height: 85vh; background: white; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
 .modal-header { padding: 15px; background: var(--azul-escuro); color: white; display: flex; justify-content: space-between; }
-.modal-header button { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
 .modal-split-body { display: flex; flex: 1; overflow: hidden; }
 .split-left { width: 40%; padding: 20px; overflow-y: auto; background: #f9f9f9; border-right: 1px solid #ddd; }
 .split-right { width: 60%; padding: 20px; display: flex; flex-direction: column; }
-.textarea-preview { flex: 1; resize: none; margin-top: 10px; }
+.textarea-preview { flex: 1; resize: none; margin-top: 10px; font-family: 'Times New Roman'; }
 .modal-footer { padding: 15px; background: #eee; text-align: right; }
-.btn-confirmar { padding: 10px 20px; background: var(--verde); color: white; border: none; cursor: pointer; border-radius: 4px; }
+.btn-confirmar { padding: 10px 20px; background: var(--verde); color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
 
-/* Botão Flutuante */
-.fab-menu { position: fixed; bottom: 20px; right: 20px; }
-.btn-fab { width: 60px; height: 60px; border-radius: 50%; border: none; color: white; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-.laranja { background: #e67e22; }
+/* Modal Banco de Dados */
+.modal-large { width: 90%; max-width: 1000px; height: 85vh; background: white; border-radius: 8px; display: flex; flex-direction: column; }
+.modal-body { padding: 20px; flex: 1; overflow-y: auto; }
+.toolbar-dados { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+.search-group { display: flex; flex: 1; gap: 5px; }
+.input-full { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+.btn-buscar { background: var(--azul-escuro); color: white; border: none; padding: 0 20px; border-radius: 4px; cursor: pointer; }
+.btn-action { padding: 10px 15px; background: #ddd; border: none; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; text-decoration: none; color: #333; }
+.lista-res-moderna { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.result-card { border: 1px solid #eee; padding: 15px; border-radius: 8px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.card-header h4 { margin: 0 0 5px 0; color: var(--azul-escuro); }
+.card-actions { margin-top: 10px; display: flex; justify-content: flex-end; gap: 5px; }
+.btn-card { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; color: white; }
+.btn-open { background: var(--azul-claro); }
+.btn-del { background: #c0392b; }
 
-/* IMPRESSÃO */
+/* Checklist Items */
+.check-grupo h5 { background: #e3f2fd; padding: 8px; margin: 10px 0; border-radius: 4px; color: var(--azul-escuro); font-weight: bold; }
+.check-item { display: flex; align-items: flex-start; padding: 5px; cursor: pointer; transition: 0.2s; }
+.check-item:hover { background: #e8f0fe; }
+.check-item input { margin-top: 3px; margin-right: 10px; transform: scale(1.2); }
+.check-item label { cursor: pointer; line-height: 1.4; }
+
 @media print {
     @page { margin: 0; size: A4; }
     body { background: white; padding: 0; }
     .no-print, .sel-ass { display: none !important; }
-    .folha-a4 { box-shadow: none; margin: 0; width: 100%; padding: 0 15mm; margin-top: 130px; margin-bottom: 80px; }
-    
     .header-oficial { position: fixed; top: 0; left: 0; width: 100%; height: 120px; z-index: 9999; }
     .footer-oficial { position: fixed; bottom: 0; left: 0; width: 100%; height: auto; z-index: 9999; }
-    .barra-final { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    
+    .folha-a4 { box-shadow: none; margin: 0; width: 100%; padding: 0 15mm; margin-top: 130px; margin-bottom: 80px; }
     textarea { border: none; resize: none; padding: 0; }
     .input-linha { border-bottom: none; }
+    .barra-final { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .secao, .assinaturas-wrapper { page-break-inside: avoid; }
 }
