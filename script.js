@@ -1,20 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  doc,
-  deleteDoc,
-  updateDoc,
-  getDoc,
-  query,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* =========================================================
-   1) FIREBASE
-   ========================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyAuyLoRREleZ9hA2JFBJhUk0oysY0AV_Zw",
   authDomain: "relatoriosescolamanain.firebaseapp.com",
@@ -26,774 +12,556 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const relatoriosRef = collection(db, "relatorios");
+const tabelaRelatorios = collection(db, "relatorios");
 
 let idRelatorioAtual = null;
 
-/* =========================================================
-   2) MAPEAMENTO DA EQUIPE (ASSINATURAS)
-   ========================================================= */
 const EQUIPE = {
-  pedagogia: {
-    ped1: {
-      nome: "Jheniffer Cavalheiro André",
-      cargo: "Pedagoga",
-      registro: "RG 9.727.432-0 / Ata nº 15/2018",
-      img: "asspedagoda.png"
+    pedagogia: {
+        'ped1': { nome: "Jheniffer Cavalheiro André", cargo: "Coord. Pedagógica", registro: "RG 9.727.432-0 / Ata nº 15/2018", img: "asspedagoda.png" },
+        'ped2': { nome: "Isabella Floripes Sanches", cargo: "Coord. Pedagógica", registro: "RG 10.617.697-3 / Ata nº 17/2021", img: "asspedagoda2.png" }
     },
-    ped2: {
-      nome: "Isabella Floripes Sanches",
-      cargo: "Pedagoga",
-      registro: "RG 10.617.697-3 / Ata nº 17/2021",
-      img: "asspedagoda2.png"
+    psicologia: {
+        'psi1': { nome: "Jaqueline Gonçalves Malaquim", cargo: "Psicóloga Escolar", registro: "CRP 08/30548", img: "asspsicologa.png" },
+        'psi2': { nome: "", cargo: "Psicóloga", registro: "", img: "" }
+    },
+    social: {
+        'soc1': { nome: "Andrea Cristina Santos", cargo: "Assistente Social", registro: "CRESS/PR 9794", img: "asssocial.png" },
+        'soc2': { nome: "", cargo: "Assistente Social", registro: "", img: "" }
     }
-  },
-  clinica: {
-    psi1: {
-      nome: "Jaqueline Gonçalves Malaquim",
-      cargo: "Psicóloga",
-      registro: "CRP 08/30518",
-      img: "asspsicologa.png"
+};
+
+const CHECKLIST_DB = {
+    pedagogica: {
+        titulo: "Avaliação Pedagógica",
+        targetId: "sintesePedagogica",
+        itens: [
+            { tipo: 'titulo', texto: '1. Cognição e Aprendizagem' },
+            { id: 'ped01', label: "Atenção sustentada preservada", texto: "Demonstra boa capacidade de manter o foco em atividades propostas.", ind: "Ampliar gradativamente o tempo de atividade.", enc: "" },
+            { id: 'ped02', label: "Atenção lábil/dispersa", texto: "Apresenta labilidade na atenção, dispersando-se com estímulos visuais ou sonoros.", ind: "Sentar próximo ao professor; reduzir distratores.", enc: "Avaliação Neuropsicológica." },
+            { id: 'ped03', label: "Memória de curto prazo frágil", texto: "Demonstra dificuldade em reter comandos recentes ou sequências.", ind: "Uso de pistas visuais e fragmentação de tarefas.", enc: "" },
+            { id: 'ped04', label: "Raciocínio Lógico-Matemático", texto: "Realiza correspondência, classificação e seriação de objetos.", ind: "Jogos de regras e contagem concreta.", enc: "" },
+            { id: 'ped05', label: "Compreensão de tempo/espaço", texto: "Ainda não domina conceitos temporais (ontem/hoje) ou espaciais.", ind: "Uso de rotina visual e calendário diário.", enc: "" },
+            { id: 'ped06', label: "Resolução de Problemas", texto: "Manifesta iniciativa na busca por soluções diante de pequenos obstáculos práticos.", ind: "Estimular desafios de lógica e jogos de construção.", enc: "" },
+            { id: 'ped07', label: "Reconhecimento de Símbolos", texto: "Identifica visualmente letras e números, associando-os a seus contextos.", ind: "Atividades lúdicas de letramento e numeramento.", enc: "" },
+            { id: 'ped08', label: "Planejamento e Organização", texto: "Necessita de apoio constante para organizar seus materiais e iniciar as tarefas.", ind: "Uso de checklists visuais e rotinas estruturadas.", enc: "" },
+            { id: 'ped09', label: "Compreensão de Comandos", texto: "Compreende instruções simples, mas apresenta dificuldade com comandos de múltiplas etapas.", ind: "Fracionar as ordens verbais e solicitar feedback do aluno.", enc: "" },
+            { id: 'ped10', label: "Generalização do Aprendizado", texto: "Demonstra dificuldade em aplicar conceitos aprendidos em novas situações ou contextos.", ind: "Variar os contextos de aplicação do mesmo conteúdo.", enc: "Acompanhamento Psicopedagógico." },
+            
+            { tipo: 'titulo', texto: '2. Linguagem e Comunicação' },
+            { id: 'ped11', label: "Comunicação verbal fluente", texto: "Expressa-se verbalmente com clareza e vocabulário adequado.", ind: "Rodas de conversa e relato de experiências.", enc: "" },
+            { id: 'ped12', label: "Atraso na fala / Dislalia", texto: "Apresenta trocas fonéticas ou fala ininteligível para estranhos.", ind: "Modelagem da fala correta sem infantilização.", enc: "Fonoaudiologia." },
+            { id: 'ped13', label: "Não verbal / Gestual", texto: "Utiliza gestos, apontamentos ou puxa o interlocutor para comunicar desejos.", ind: "Introdução de Comunicação Aumentativa e Alternativa (PECS/Pranchas).", enc: "Fonoaudiologia." },
+            { id: 'ped14', label: "Ecolalia (Repetição)", texto: "Apresenta ecolalia imediata ou tardia (repetição de frases de desenhos/pessoas).", ind: "Dar função comunicativa à fala repetida.", enc: "" },
+            { id: 'ped15', label: "Intenção comunicativa baixa", texto: "Raramente inicia interação ou solicita algo.", ind: "Criar situações de necessidade de comunicação.", enc: "" },
+            { id: 'ped16', label: "Compreensão de Ordens", texto: "Compreende e executa comandos verbais simples, mas necessita de apoio para instruções complexas.", ind: "Segmentar instruções e solicitar confirmação do entendimento.", enc: "" },
+            { id: 'ped17', label: "Vocabulário Restrito", texto: "Comunica-se preferencialmente por palavras isoladas ou frases telegráficas, omitindo conectivos.", ind: "Atividades de nomeação e expansão de frases.", enc: "Fonoaudiologia." },
+            { id: 'ped18', label: "Capacidade Narrativa", texto: "Consegue relatar pequenos fatos do cotidiano mantendo uma sequência lógica mínima.", ind: "Estimular o relato de eventos passados e histórias curtas.", enc: "" },
+            { id: 'ped19', label: "Pragmática Social", texto: "Mantém contato visual e demonstra interesse na escuta durante diálogos dirigidos.", ind: "Jogos que envolvam turnos de fala e escuta.", enc: "" },
+            { id: 'ped20', label: "Expressão de Necessidades", texto: "Manifesta verbalmente ou por gestos suas necessidades básicas (fome, sede, banheiro, dor).", ind: "Reforçar positivamente a iniciativa de comunicar desconforto.", enc: "" },
+
+            { tipo: 'titulo', texto: '3. Leitura e Escrita (Psicogênese)' },
+            { id: 'ped21', label: "Pré-Silábico", texto: "Encontra-se na hipótese pré-silábica (diferencia desenho de escrita).", ind: "Trabalhar letras do nome e alfabeto móvel.", enc: "" },
+            { id: 'ped22', label: "Silábico (com/sem valor)", texto: "Encontra-se na hipótese silábica, associando grafia ao som (uma letra por sílaba).", ind: "Bingo de letras e completude de palavras.", enc: "" },
+            { id: 'ped23', label: "Alfabético", texto: "Lê e escreve palavras simples e pequenos textos.", ind: "Produção textual e interpretação.", enc: "" },
+            { id: 'ped24', label: "Grafismo/Coordenação Fina", texto: "Apresenta preensão do lápis imatura ou traçado trêmulo.", ind: "Atividades de alinhavo, massinha e rasgadura.", enc: "Terapia Ocupacional." },
+            { id: 'ped25', label: "Reconhece o próprio nome", texto: "Identifica seu nome dentre outros.", ind: "Escrita do nome sem apoio.", enc: "" },
+            { id: 'ped26', label: "Silábico-Alfabético", texto: "Encontra-se em transição: ora utiliza uma letra por sílaba, ora escreve a sílaba completa.", ind: "Análise fonológica de palavras e escrita espontânea.", enc: "" },
+            { id: 'ped27', label: "Leitura Visual/Contextual", texto: "Realiza leitura de imagens, rótulos e logomarcas conhecidas, atribuindo significado ao contexto visual.", ind: "Exploração de livros de imagem e rotulagem do ambiente.", enc: "" },
+            { id: 'ped28', label: "Orientação Espacial no Papel", texto: "Ainda não respeita a orientação convencional da escrita (esquerda para direita / cima para baixo) ou margens.", ind: "Uso de guias visuais, margens coloridas e pautas ampliadas.", enc: "Psicomotricidade." },
+            { id: 'ped29', label: "Cópia Mecânica", texto: "Realiza cópia de palavras ou frases curtas do modelo, porém sem demonstrar compreensão do que escreveu.", ind: "Associar a escrita à leitura e ao significado da palavra.", enc: "" },
+            { id: 'ped30', label: "Consciência Fonológica", texto: "Demonstra dificuldade em identificar rimas, aliterações ou segmentar palavras em sílabas oralmente.", ind: "Brincadeiras cantadas, rimas e contagem de sílabas com palmas.", enc: "Fonoaudiologia." },
+            
+            { tipo: 'titulo', texto: '4. Comportamento e Socialização' },
+            { id: 'ped31', label: "Interação social adequada", texto: "Busca o outro para brincar e compartilha objetos.", ind: "Trabalhos em duplas.", enc: "" },
+            { id: 'ped32', label: "Isolamento/Brincar solitário", texto: "Tende a isolar-se, preferindo objetos a pessoas.", ind: "Mediação de brincadeiras dirigidas.", enc: "Psicologia." },
+            { id: 'ped33', label: "Comportamentos estereotipados", texto: "Apresenta movimentos repetitivos (flapping, balançar tronco) em momentos de ansiedade.", ind: "Oferecer reguladores sensoriais.", enc: "" },
+            { id: 'ped34', label: "Baixa tolerância à frustração", texto: "Reage com desorganização comportamental diante do 'não'.", ind: "Trabalhar espera e regras claras.", enc: "Orientação Familiar." },
+            { id: 'ped35', label: "Heteroagressividade", texto: "Apresenta episódios de agressividade física com pares ou adultos.", ind: "Manejo comportamental e registro de antecedentes.", enc: "Psiquiatria Infantil." },
+            { id: 'ped36', label: "Agitação Psicomotora", texto: "Demonstra inquietude constante, dificuldade em permanecer sentado e impulsividade motora.", ind: "Atividades de gasto energético e intervalos ativos.", enc: "Neurologia Infantil." },
+            { id: 'ped37', label: "Autoagressividade", texto: "Em momentos de crise, direciona a agressividade contra si próprio (morder-se, bater a cabeça).", ind: "Proteção física e identificação de gatilhos emocionais.", enc: "Psicologia / Psiquiatria." },
+            { id: 'ped38', label: "Rigidez Cognitiva", texto: "Apresenta resistência intensa a mudanças na rotina ou na disposição do ambiente escolar.", ind: "Uso de antecipação visual e manutenção da rotina.", enc: "" },
+            { id: 'ped39', label: "Hiperfoco/Interesse Restrito", texto: "Manifesta interesse excessivo e exclusivo por temas ou objetos específicos, dificultando a troca de assunto.", ind: "Utilizar o interesse como motivador para outras atividades.", enc: "" },
+            { id: 'ped40', label: "Respeito às Regras", texto: "Demonstra dificuldade em compreender e acatar as normas de convivência coletiva.", ind: "Construção coletiva de combinados e reforço positivo.", enc: "" }
+        ]
+    },
+    clinica: {
+        titulo: "Avaliação Clínica",
+        targetId: "sinteseClinica",
+        itens: [
+            { tipo: 'titulo', texto: '1. Saúde Neurológica e Geral' },
+            { id: 'cli01', label: "Saúde Estável", texto: "Não apresenta queixas de saúde agudas no momento.", ind: "", enc: "" },
+            { id: 'cli02', label: "Epilepsia/Convulsões", texto: "Diagnóstico de epilepsia com uso de anticonvulsivantes.", ind: "Observação constante de sinais de crise.", enc: "Neuropediatria." },
+            { id: 'cli03', label: "Transtorno do Sono", texto: "Relato familiar de sono agitado ou insônia.", ind: "Avaliar impacto na sonolência diurna.", enc: "" },
+            { id: 'cli04', label: "Alergias Alimentares/Respiratórias", texto: "Possui restrições alimentares ou alergias severas.", ind: "Controle rigoroso da merenda escolar.", enc: "Nutricionista." },
+            { id: 'cli05', label: "Uso de Medicação Controlada", texto: "Faz uso contínuo de medicação psicotrópica que pode alterar o estado de alerta.", ind: "Monitorar possíveis efeitos colaterais em sala.", enc: "Psiquiatria Infantil." },
+            { id: 'cli06', label: "Controle Esfincteriano Ausente", texto: "Ainda não adquiriu controle dos esfíncteres, necessitando de uso de fraldas.", ind: "Auxílio na higiene e trocas regulares.", enc: "" },
+            { id: 'cli07', label: "Comprometimento Motor", texto: "Apresenta alterações no tônus muscular ou mobilidade reduzida.", ind: "Adaptação de mobiliário e auxílio nos deslocamentos.", enc: "Fisioterapia." },
+            { id: 'cli08', label: "Deficiência Sensorial (Visão/Audição)", texto: "Apresenta diagnóstico ou sinais de baixa visão ou hipoacusia.", ind: "Posicionamento estratégico em sala e recursos adaptados.", enc: "Oftalmologia / Otorrino." },
+            { id: 'cli09', label: "Disfagia / Risco de Engasgo", texto: "Apresenta dificuldade de deglutição com risco de broncoaspiração.", ind: "Supervisão total e consistência pastosa na alimentação.", enc: "Fonoaudiologia." },
+            { id: 'cli10', label: "Seletividade Alimentar", texto: "Restrição severa a determinados grupos alimentares ou texturas.", ind: "Dessensibilização gradual sem forçar a ingestão.", enc: "Terapia Ocupacional / Nutrição." },
+
+            { tipo: 'titulo', texto: '2. Integração Sensorial' },
+            { id: 'cli11', label: "Hipersensibilidade Auditiva", texto: "Tapa os ouvidos ou desorganiza-se com sons altos (sinal, música).", ind: "Uso de abafadores em momentos críticos.", enc: "TO (Integração Sensorial)." },
+            { id: 'cli12', label: "Busca Sensorial Tátil", texto: "Toca tudo excessivamente ou coloca objetos na boca.", ind: "Ofertar mordedores ou objetos de textura.", enc: "" },
+            { id: 'cli13', label: "Seletividade Alimentar (Sensorial)", texto: "Recusa texturas ou cores específicas de alimentos.", ind: "Aproximação lúdica com alimentos.", enc: "Fonoaudiologia/Nutrição." },
+            { id: 'cli14', label: "Hipersensibilidade Tátil", texto: "Demonstra aversão a texturas molhadas, grudentas (cola, tinta) ou toque leve.", ind: "Respeitar limites e introduzir texturas secas gradualmente.", enc: "Terapia Ocupacional." },
+            { id: 'cli15', label: "Busca por Pressão Profunda", texto: "Procura abraços fortes, aperta-se em cantos ou busca contato físico intenso para se acalmar.", ind: "Atividades de compressão com almofadas ou colchonetes.", enc: "" },
+            { id: 'cli16', label: "Busca Vestibular/Agitação", texto: "Necessita de movimento constante (girar, balançar, correr) para manter o alerta.", ind: "Pausas ativas e uso funcional do movimento.", enc: "" },
+            { id: 'cli17', label: "Insegurança Gravitacional", texto: "Demonstra medo excessivo de tirar os pés do chão, subir degraus ou usar brinquedos de parque.", ind: "Oferecer apoio firme e não forçar o movimento.", enc: "Terapia Ocupacional." },
+            { id: 'cli18', label: "Hipersensibilidade Visual", texto: "Irrita-se com excesso de luz ou poluição visual na sala, apertando os olhos.", ind: "Reduzir estímulos visuais na mesa de trabalho.", enc: "Oftalmologia." },
+            { id: 'cli19', label: "Busca Olfativa", texto: "Tende a cheirar objetos, materiais escolares ou pessoas antes de interagir.", ind: "Direcionar para estímulos olfativos apropriados.", enc: "" },
+            { id: 'cli20', label: "Hiporesponsividade à Dor", texto: "Parece não notar machucados ou não reage a estímulos dolorosos comuns.", ind: "Inspeção física regular após quedas ou impactos.", enc: "Pediatria." },
+
+            { tipo: 'titulo', texto: '3. Autonomia (AVDs)' },
+            { id: 'cli21', label: "Controle Esfincteriano Total", texto: "Utiliza o banheiro com total autonomia.", ind: "", enc: "" },
+            { id: 'cli22', label: "Uso de Fraldas", texto: "Não possui controle de esfíncteres, fazendo uso de fraldas.", ind: "Trocas regulares e treino de toalete se houver prontidão.", enc: "" },
+            { id: 'cli23', label: "Dependência na Alimentação", texto: "Necessita ser alimentado por um adulto.", ind: "Treino com colher adaptada.", enc: "" },
+            { id: 'cli24', label: "Higiene Pessoal Assistida", texto: "Realiza lavagem de mãos e rosto apenas com supervisão.", ind: "Apoio visual no espelho do banheiro.", enc: "" },
+            { id: 'cli25', label: "Desfralde em Processo", texto: "Encontra-se em fase de transição (retirada de fraldas), ocorrendo escapes ocasionais.", ind: "Rotina fixa de idas ao banheiro e reforço positivo.", enc: "" },
+            { id: 'cli26', label: "Vestuário (Botões/Zíperes)", texto: "Apresenta dificuldade motora para abrir/fechar calças ou manusear roupas no banheiro.", ind: "Incentivar uso de roupas com elástico ou velcro.", enc: "Terapia Ocupacional." },
+            { id: 'cli27', label: "Uso de Talheres", texto: "Alimenta-se sozinho, mas apresenta preensão inadequada ou dificuldade em cortar alimentos.", ind: "Uso de engrossadores ou adaptações de talher.", enc: "Terapia Ocupacional." },
+            { id: 'cli28', label: "Organização de Pertences", texto: "Não gerencia seus materiais, esquecendo ou perdendo itens (mochila, casaco) com frequência.", ind: "Checklist visual de materiais na entrada e saída.", enc: "" },
+            { id: 'cli29', label: "Mobilidade e Deslocamento", texto: "Necessita de guia para transitar entre ambientes escolares (sala/pátio) para não se perder.", ind: "Treino de orientação espacial e rotas fixas.", enc: "" },
+            { id: 'cli30', label: "Autocuidado (Nariz/Boca)", texto: "Não percebe a necessidade de limpar o nariz ou a boca (sialorreia) espontaneamente.", ind: "Treino em frente ao espelho e disponibilização de lenços.", enc: "" },
+
+            { tipo: 'titulo', texto: '4. Mobilidade e Tônus' },
+            { id: 'cli31', label: "Marcha independente", texto: "Deambula sem apoio.", ind: "", enc: "" },
+            { id: 'cli32', label: "Cadeirante", texto: "Usuário de cadeira de rodas.", ind: "Garantir acessibilidade e mudanças de decúbito.", enc: "Fisioterapia." },
+            { id: 'cli33', label: "Hipotonia Global", texto: "Apresenta baixo tônus muscular (corpo 'mole'), dificultando postura sentada.", ind: "Mobiliário adaptado.", enc: "" },
+            { id: 'cli34', label: "Hemiparesia/Paralisia", texto: "Comprometimento motor em um dos lados do corpo.", ind: "Estimular o lado funcional.", enc: "" },
+            { id: 'cli35', label: "Hipertonia/Espasticidade", texto: "Apresenta rigidez muscular excessiva, limitando a amplitude de movimentos.", ind: "Posicionamento adequado e recursos de tecnologia assistiva.", enc: "Fisioterapia." },
+            { id: 'cli36', label: "Instabilidade/Equilíbrio", texto: "Demonstra desequilíbrio postural com quedas frequentes ou tropeços.", ind: "Supervisão em escadas e terrenos irregulares.", enc: "Psicomotricidade." },
+            { id: 'cli37', label: "Marcha em Equino", texto: "Deambula apoiando-se predominantemente na ponta dos pés.", ind: "Atividades sensoriais plantares e alongamento.", enc: "Ortopedia." },
+            { id: 'cli38', label: "Uso de Andador/Muletas", texto: "Utiliza dispositivos de auxílio para realizar a marcha com segurança.", ind: "Manter vias de circulação desobstruídas.", enc: "" },
+            { id: 'cli39', label: "Dispraxia Motora", texto: "Dificuldade no planejamento e execução de movimentos globais (correr, pular, chutar bola).", ind: "Circuitos motores e decomposição de movimentos.", enc: "Terapia Ocupacional." },
+            { id: 'cli40', label: "Baixa Resistência Física", texto: "Apresenta fadiga rápida durante esforços físicos leves ou brincadeiras.", ind: "Alternar atividades de movimento com repouso.", enc: "" }
+        ]
+    },
+    social: {
+        titulo: "Serviço Social",
+        targetId: "sinteseSocial",
+        itens: [
+            { tipo: 'titulo', texto: '1. Estrutura e Dinâmica Familiar' },
+            { id: 'soc01', label: "Família Nuclear", texto: "Convive com pai, mãe e irmãos em ambiente estável.", ind: "Manter vínculo escola-família.", enc: "" },
+            { id: 'soc02', label: "Monoparental (Mãe solo)", texto: "Responsabilidade financeira e afetiva centrada na figura materna.", ind: "Acolhimento e flexibilidade.", enc: "" },
+            { id: 'soc03', label: "Família Extensa (Avós)", texto: "Sob cuidados legais ou informais dos avós.", ind: "", enc: "" },
+            { id: 'soc04', label: "Conflitos Familiares", texto: "Relatos de brigas ou ambiente doméstico instável.", ind: "Escuta qualificada.", enc: "Psicologia/Assistência Social." },
+            { id: 'soc05', label: "Negligência/Risco", texto: "Sinais de negligência nos cuidados básicos (higiene, saúde).", ind: "Acompanhamento rigoroso.", enc: "Conselho Tutelar (se grave)." },
+            { id: 'soc06', label: "Guarda Compartilhada", texto: "Alternância de residência entre os genitores, exigindo adaptação da criança a duas rotinas distintas.", ind: "Uso de agenda de comunicação efetiva entre as casas.", enc: "" },
+            { id: 'soc07', label: "Acolhimento Institucional", texto: "Reside em abrigo ou casa-lar sob tutela do Estado (medida protetiva).", ind: "Articulação frequente com a equipe técnica da instituição.", enc: "Vara da Infância e Juventude." },
+            { id: 'soc08', label: "Resistência ao Diagnóstico", texto: "Família demonstra dificuldade em aceitar as limitações, laudos ou necessidades educativas especiais.", ind: "Reuniões de sensibilização focadas nas potencialidades.", enc: "Psicologia Escolar." },
+            { id: 'soc09', label: "Vulnerabilidade Social (Risco)", texto: "Família em situação de precariedade socioeconômica, impactando acesso a materiais, alimentação ou terapias.", ind: "Verificar programas de auxílio estudantil.", enc: "Assistência Social / CRAS." },
+            { id: 'soc10', label: "Família Participativa", texto: "Demonstra alto engajamento, seguindo orientações e mantendo terapias externas em dia.", ind: "Reforçar a parceria e alinhar estratégias casa-escola.", enc: "" },
+
+            { tipo: 'titulo', texto: '2. Situação Socioeconômica' },
+            { id: 'soc11', label: "Renda Estável", texto: "Família com renda compatível com as necessidades básicas.", ind: "", enc: "" },
+            { id: 'soc12', label: "Situação de Pobreza", texto: "Família em situação de pobreza ou risco social.", ind: "Verificar cestas básicas.", enc: "CRAS." },
+            { id: 'soc13', label: "Beneficiário BPC/LOAS", texto: "Estudante recebe Benefício de Prestação Continuada.", ind: "Manter Cadastro Único atualizado.", enc: "" },
+            { id: 'soc14', label: "Beneficiário Bolsa Família", texto: "Família inserida em programas de transferência de renda.", ind: "Acompanhamento da frequência escolar.", enc: "" },
+            { id: 'soc15', label: "Habitação Precária", texto: "Reside em moradia com condições insalubres ou de risco.", ind: "", enc: "COHAB/Serviço Social Habitação." },
+            { id: 'soc16', label: "Desemprego na Família", texto: "Responsáveis legais encontram-se atualmente sem vínculo empregatício formal.", ind: "Isenção de taxas (se aplicável) e apoio com materiais.", enc: "Agência do Trabalhador / SINE." },
+            { id: 'soc17', label: "Trabalho Informal/Instável", texto: "Sustento familiar provém de trabalhos temporários ('bicos'), gerando instabilidade financeira.", ind: "Flexibilidade nos prazos de solicitações de materiais.", enc: "" },
+            { id: 'soc18', label: "Insegurança Alimentar", texto: "Relatos de escassez de alimentos ou falta de regularidade nas refeições em casa.", ind: "Priorizar a alimentação na escola; verificar programas de doação.", enc: "Banco de Alimentos / Assistência Social." },
+            { id: 'soc19', label: "Dificuldade de Transporte (Financeira)", texto: "Falta de recursos financeiros para custear o deslocamento até a escola ou terapias.", ind: "Verificar elegibilidade para transporte escolar gratuito ou passe livre.", enc: "" },
+            { id: 'soc20', label: "Exclusão Digital", texto: "Não possui acesso à internet ou equipamentos (computador/celular) para atividades remotas.", ind: "Fornecimento de atividades impressas ou uso do laboratório escolar.", enc: "" },
+
+            { tipo: 'titulo', texto: '3. Rede de Apoio e Direitos' },
+            { id: 'soc21', label: "Acesso ao SUS", texto: "Realiza acompanhamento regular na UBS de referência.", ind: "", enc: "" },
+            { id: 'soc22', label: "Sem terapias externas", texto: "Não realiza atendimentos clínicos fora da escola, apesar da necessidade.", ind: "Reforçar importância das terapias.", enc: "Encaminhar para regulação municipal." },
+            { id: 'soc23', label: "Transporte Público/Passe Livre", texto: "Utiliza transporte coletivo com isenção tarifária.", ind: "", enc: "" },
+            { id: 'soc24', label: "Dificuldade de Transporte (Logística)", texto: "Família relata dificuldade financeira ou logística para levar à escola.", ind: "", enc: "Transporte Especial (se elegível)." },
+            { id: 'soc25', label: "Terapias em Andamento", texto: "Frequenta regularmente atendimentos especializados (Fono/Psico/TO) na rede pública ou privada.", ind: "Solicitar relatórios de evolução aos terapeutas.", enc: "" },
+            { id: 'soc26', label: "Convênio Médico Privado", texto: "Possui plano de saúde particular, não dependendo exclusivamente da rede pública.", ind: "", enc: "" },
+            { id: 'soc27', label: "Apoio de ONGs/Instituições", texto: "Participa de atividades em instituições do terceiro setor (APAE, Pestalozzi, ONGs) no contraturno.", ind: "Estabelecer canal de comunicação com a instituição.", enc: "" },
+            { id: 'soc28', label: "Farmácia de Alto Custo", texto: "Necessita de medicação controlada fornecida pelo Estado (Farmácia Especial).", ind: "Auxiliar a família no controle de receitas e processos administrativos.", enc: "Regional de Saúde." },
+            { id: 'soc29', label: "Documentação PCD/CIPTEA", texto: "Possui Carteira de Identificação da Pessoa com Transtorno do Espectro Autista ou PCD.", ind: "Garantia de prioridade e direitos legais.", enc: "" },
+            { id: 'soc30', label: "Acompanhamento Jurídico", texto: "Família assistida pela Defensoria Pública ou Ministério Público em questões de direitos da criança.", ind: "Manter registros escolares organizados para eventuais solicitações.", enc: "Defensoria Pública." },
+
+            { tipo: 'titulo', texto: '4. Barreiras Sociais Identificadas' },
+            { id: 'soc31', label: "Preconceito e estigmatização", texto: "Relatos de situações de discriminação ou exclusão social vivenciadas pela família ou estudante devido à deficiência.", ind: "Acolhimento familiar e projetos de conscientização na comunidade.", enc: "Psicologia / Assistência Social." },
+            { id: 'soc32', label: "Falta de acessibilidade", texto: "Enfrenta barreiras arquitetônicas, comunicacionais ou atitudinais que impedem a plena participação na cidade.", ind: "Orientação sobre leis de acessibilidade e mobilidade.", enc: "Ministério Público (se recorrente)." },
+            { id: 'soc33', label: "Negligência institucional", texto: "Histórico de omissão ou falta de atendimento adequado por parte de serviços públicos essenciais.", ind: "Empoderamento da família sobre seus direitos.", enc: "Defensoria Pública." },
+            { id: 'soc34', label: "Dificuldade de acesso a serviços", texto: "Barreiras burocráticas, filas excessivas ou falta de vagas impedem o acesso à saúde ou assistência.", ind: "Articulação de rede para prioridade no atendimento.", enc: "CRAS / CREAS." },
+            { id: 'soc35', label: "Violação de direitos", texto: "Indícios de desrespeito aos direitos fundamentais previstos no ECA ou na Lei Brasileira de Inclusão.", ind: "Registro formal e notificação imediata aos órgãos de proteção.", enc: "Conselho Tutelar." },
+            { id: 'soc36', label: "Bullying ou Exclusão por Pares", texto: "Sofre violência física ou psicológica sistemática, ou isolamento deliberado por parte de colegas.", ind: "Mediação de conflitos e projetos de cultura de paz.", enc: "Orientação Educacional / Psicologia." },
+            { id: 'soc37', label: "Barreiras Informacionais", texto: "Família desconhece a rede de proteção, direitos básicos ou trâmites burocráticos necessários.", ind: "Letramento em direitos e simplificação das orientações.", enc: "Serviço Social." },
+            { id: 'soc38', label: "Vulnerabilidade Territorial", texto: "Residência em área de risco ou conflito que impede a livre circulação, visitas domiciliares ou frequência escolar.", ind: "Estratégias de busca ativa e flexibilidade.", enc: "CRAS." },
+            { id: 'soc39', label: "Sobrecarga do Cuidador", texto: "Ausência de rede de apoio familiar, gerando exaustão no responsável principal e afetando o cuidado.", ind: "Encaminhamento para grupos de apoio e fortalecimento de vínculos.", enc: "Saúde da Família / CAPS." },
+            { id: 'soc40', label: "Barreiras Comunicacionais", texto: "Falta de intérpretes (Libras), recursos em Braille ou comunicação acessível nos serviços públicos.", ind: "Solicitação formal de acessibilidade comunicacional.", enc: "Ministério Público." }
+        ]
     }
-  },
-  social: {
-    soc1: {
-      nome: "Andrea Cristina Santos",
-      cargo: "Assistente Social",
-      registro: "CRESS/PR 9794",
-      img: "asssocial.png"
+};
+
+let dadosSelecionados = {
+    pedagogica: { manual: "", itens: [], textoGerado: "", indicacoes: [], encaminhamentos: [] },
+    clinica: { manual: "", itens: [], textoGerado: "", indicacoes: [], encaminhamentos: [] },
+    social: { manual: "", itens: [], textoGerado: "", indicacoes: [], encaminhamentos: [] }
+};
+let areaAtual = '';
+
+function showToast(msg = "Operação realizada com sucesso!") {
+    const toast = document.getElementById("toast");
+    if(toast) {
+        toast.innerText = msg;
+        toast.className = "show";
+        setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
-  }
-};
-
-/* =========================================================
-   3) CHECKLIST (COM 3 ESTADOS)
-   - "nao" = não observado
-   - "completo", "parcial", "recusou"
-   ========================================================= */
-const CHECKLIST = {
-  pedagogica: [
-    "Demonstra interesse nas atividades propostas",
-    "Segue rotinas com previsibilidade e boa adaptação",
-    "Compreende comandos simples e instruções diretas",
-    "Mantém atenção sustentada durante tarefas",
-    "Apresenta organização de materiais e autonomia",
-    "Reconhece letras/números conforme a etapa escolar",
-    "Realiza registro gráfico/escrita com apoio necessário",
-    "Interage com colegas e adultos com adequação"
-  ],
-  clinica: [
-    "Mantém contato visual funcional durante interação",
-    "Atende pelo nome e responde a chamadas",
-    "Comunica necessidades básicas (verbal ou alternativa)",
-    "Apresenta estereotipias/rituais que interferem na rotina",
-    "Demonstra hipersensibilidade/hipossensibilidade sensorial",
-    "Tolera frustrações e mudanças graduais de rotina",
-    "Realiza autorregulação com apoio (estratégias)",
-    "Apresenta coordenação motora fina/grossa compatível"
-  ],
-  social: [
-    "Família participa ativamente do processo escolar",
-    "Há acesso a serviços da rede (CRAS/CREAS/UBS etc.)",
-    "Situação econômica interfere na permanência/rotina",
-    "Há rede de apoio (familiares, comunidade, serviços)",
-    "Comparece às reuniões e responde aos encaminhamentos",
-    "Apresenta necessidade de benefícios/auxílios (quando aplicável)",
-    "Há rotina estruturada em casa para estudos e cuidados",
-    "Transporte/locomoção é adequado e regular"
-  ]
-};
-
-const STATUS_LABEL = {
-  nao: "Não observado",
-  completo: "Completo",
-  parcial: "Parcial",
-  recusou: "Recusou"
-};
-
-/* =========================================================
-   4) ESTADO POR ÁREA (salvo e carregado)
-   ========================================================= */
-const estado = {
-  pedagogica: { obsManual: "", status: {} },
-  clinica: { obsManual: "", status: {} },
-  social: { obsManual: "", status: {} }
-};
-
-let areaAtual = null;
-
-/* =========================================================
-   5) HELPERS (DOM)
-   ========================================================= */
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => document.querySelectorAll(sel);
-
-function toast(msg) {
-  const t = $("#toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2800);
 }
 
 function autoResize(el) {
-  if (!el || el.tagName !== "TEXTAREA") return;
-  el.style.height = "auto";
-  el.style.height = `${el.scrollHeight}px`;
-}
-
-function autoResizeAll() {
-  $$("textarea").forEach(autoResize);
-}
-
-/* =========================================================
-   6) IDADE
-   ========================================================= */
-function calcularIdade() {
-  const dn = $("#dataNascimento").value;
-  if (!dn) return;
-
-  const nasc = new Date(dn);
-  const hoje = new Date();
-  let idade = hoje.getFullYear() - nasc.getFullYear();
-  const m = hoje.getMonth() - nasc.getMonth();
-  if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
-
-  $("#idade").value = String(Math.max(0, idade));
-}
-
-/* =========================================================
-   7) ASSINATURAS
-   ========================================================= */
-function aplicarAssinatura(area, key) {
-  const map = EQUIPE[area];
-  const prof = map?.[key];
-
-  const ids = {
-    pedagogia: {
-      img: "#sigImgPedagogia", nome: "#sigNomePedagogia",
-      cargo: "#sigCargoPedagogia", reg: "#sigRegPedagogia"
-    },
-    clinica: {
-      img: "#sigImgClinica", nome: "#sigNomeClinica",
-      cargo: "#sigCargoClinica", reg: "#sigRegClinica"
-    },
-    social: {
-      img: "#sigImgSocial", nome: "#sigNomeSocial",
-      cargo: "#sigCargoSocial", reg: "#sigRegSocial"
+    if(el) {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
     }
-  };
-
-  const ref = ids[area];
-  if (!ref) return;
-
-  if (!prof) {
-    $(ref.img).src = "";
-    $(ref.nome).textContent = "—";
-    $(ref.cargo).textContent = "—";
-    $(ref.reg).textContent = "—";
-    return;
-  }
-
-  $(ref.img).src = prof.img;
-  $(ref.nome).textContent = prof.nome;
-  $(ref.cargo).textContent = prof.cargo;
-  $(ref.reg).textContent = prof.registro;
 }
 
-/* =========================================================
-   8) MODAL ÁREA (CHECKLIST + GERAÇÃO)
-   ========================================================= */
-function abrirModalArea(area) {
-  areaAtual = area;
-  $("#modalTitulo").textContent =
-    area === "pedagogica" ? "Avaliação Pedagógica" :
-    area === "clinica" ? "Avaliação Clínica" :
-    "Serviço Social";
-
-  // Preenche manual
-  $("#modalObsManual").value = estado[area].obsManual || "";
-
-  // Render checklist
-  const container = $("#modalChecklist");
-  container.innerHTML = "";
-
-  const itens = CHECKLIST[area];
-  itens.forEach((txt, idx) => {
-    const key = `i${idx}`;
-    const current = estado[area].status[key] || "nao";
-
-    const row = document.createElement("div");
-    row.className = "check-row";
-    row.innerHTML = `
-      <div class="check-text">${txt}</div>
-      <div class="check-select">
-        <select data-item="${key}">
-          <option value="nao">Não observado</option>
-          <option value="completo">Completo</option>
-          <option value="parcial">Parcial</option>
-          <option value="recusou">Recusou</option>
-        </select>
-      </div>
-    `;
-    container.appendChild(row);
-
-    row.querySelector("select").value = current;
-  });
-
-  // Texto automático e prévia
-  atualizarTextoAutomatico();
-  atualizarPreviewFinal();
-
-  // Abrir modal
-  $("#modalArea").classList.add("open");
-  $("#modalArea").setAttribute("aria-hidden", "false");
-
-  // Auto-resize
-  autoResize($("#modalObsManual"));
-  autoResize($("#modalTextoAuto"));
+function resizeAllTextareas() {
+    document.querySelectorAll('textarea').forEach(el => autoResize(el));
 }
 
-function fecharModalArea() {
-  $("#modalArea").classList.remove("open");
-  $("#modalArea").setAttribute("aria-hidden", "true");
-  areaAtual = null;
+function getLabelById(area, id) {
+    const itens = CHECKLIST_DB[area].itens;
+    const itemEncontrado = itens.find(i => i.id === id);
+    return itemEncontrado ? itemEncontrado.label : "";
 }
 
-function lerChecklistModal() {
-  const status = {};
-  $$("#modalChecklist select").forEach(sel => {
-    const k = sel.getAttribute("data-item");
-    status[k] = sel.value;
-  });
-  return status;
+window.calcularIdade = function() {
+    const dataNascInput = document.getElementById('dataNascimento');
+    if (!dataNascInput.value) return;
+
+    const nascimento = new Date(dataNascInput.value);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) idade--;
+    document.getElementById('idade').value = idade + " anos";
 }
 
-function atualizarTextoAutomatico() {
-  if (!areaAtual) return;
+window.trocarAssinatura = function(area, idProfissional) {
+    if (!idProfissional) return;
 
-  const status = lerChecklistModal();
-  const itens = CHECKLIST[areaAtual];
+    const dados = EQUIPE[area][idProfissional];
+    
+    const imgEl = document.getElementById(`img_${area}`);
+    if (imgEl && dados.img) imgEl.src = dados.img;
 
-  const completos = [];
-  const parciais = [];
-  const recusou = [];
+    const nomeEl = document.getElementById(`nome_${area}`);
+    if (nomeEl) nomeEl.innerText = dados.nome;
 
-  itens.forEach((txt, idx) => {
-    const key = `i${idx}`;
-    const st = status[key] || "nao";
-    if (st === "completo") completos.push(txt);
-    if (st === "parcial") parciais.push(txt);
-    if (st === "recusou") recusou.push(txt);
-  });
-
-  const partes = [];
-
-  if (completos.length) {
-    partes.push(`Evidenciou desempenho satisfatório/consistente em: ${lista(completos)}.`);
-  }
-  if (parciais.length) {
-    partes.push(`Apresentou realização parcial/necessidade de mediação em: ${lista(parciais)}.`);
-  }
-  if (recusou.length) {
-    partes.push(`Houve recusa ou resistência significativa em: ${lista(recusou)}.`);
-  }
-
-  const base =
-    partes.length
-      ? `Durante a observação nesta área, registrou-se que o(a) estudante ${partes.join(" ")}`
-      : `Durante a observação nesta área, não foram registrados itens suficientes para compor uma síntese automática.`;
-
-  $("#modalTextoAuto").value = base;
-  autoResize($("#modalTextoAuto"));
+    const cargoEl = document.getElementById(`cargo_${area}`);
+    if (cargoEl) cargoEl.innerText = `${dados.cargo} - ${dados.registro}`;
 }
 
-function atualizarPreviewFinal() {
-  const manual = $("#modalObsManual").value.trim();
-  const autoTxt = $("#modalTextoAuto").value.trim();
+window.abrirModal = function(area) {
+    areaAtual = area;
+    const dadosArea = CHECKLIST_DB[area];
+    const memoria = dadosSelecionados[area];
+    
+    document.getElementById('modalTitulo').innerText = dadosArea.titulo;
+    document.getElementById('obsManualInput').value = memoria.manual || "";
 
-  const final = [autoTxt, manual].filter(Boolean).join("\n\n");
-  $("#modalPreviewFinal").textContent = final || "—";
-}
-
-function lista(arr) {
-  if (arr.length === 1) return arr[0].toLowerCase();
-  const last = arr[arr.length - 1].toLowerCase();
-  const head = arr.slice(0, -1).map(s => s.toLowerCase());
-  return `${head.join(", ")} e ${last}`;
-}
-
-function limparAreaAtual() {
-  if (!areaAtual) return;
-  if (!confirm("Deseja limpar os dados desta área?")) return;
-
-  estado[areaAtual] = { obsManual: "", status: {} };
-  $("#modalObsManual").value = "";
-
-  // Reset selects
-  $$("#modalChecklist select").forEach(sel => (sel.value = "nao"));
-
-  atualizarTextoAutomatico();
-  atualizarPreviewFinal();
-  toast("Área limpa.");
-}
-
-/* Confirmar e gerar */
-function confirmarArea() {
-  if (!areaAtual) return;
-
-  // salva no estado
-  estado[areaAtual].obsManual = $("#modalObsManual").value;
-  estado[areaAtual].status = lerChecklistModal();
-
-  // Gera síntese no documento
-  const sinteseId =
-    areaAtual === "pedagogica" ? "#sintesePedagogica" :
-    areaAtual === "clinica" ? "#sinteseClinica" :
-    "#sinteseSocial";
-
-  const textoFinal = [$("#modalTextoAuto").value.trim(), $("#modalObsManual").value.trim()]
-    .filter(Boolean)
-    .join("\n\n");
-
-  $(sinteseId).value = textoFinal;
-  autoResize($(sinteseId));
-
-  // Gera indicações (com base em parciais/recusas)
-  gerarIndicacoesPedagogicas();
-
-  // Recalcula conclusão
-  gerarConclusao();
-
-  toast("Texto gerado com sucesso!");
-  fecharModalArea();
-}
-
-/* =========================================================
-   9) GERAÇÃO AUTOMÁTICA: INDICAÇÕES + CONCLUSÃO
-   ========================================================= */
-function gerarIndicacoesPedagogicas() {
-  // Aqui usamos principalmente o que foi "parcial" ou "recusou" nas áreas
-  const coletarPontos = (area) => {
-    const itens = CHECKLIST[area];
-    const st = estado[area].status || {};
-    const pontos = [];
-
-    itens.forEach((txt, idx) => {
-      const k = `i${idx}`;
-      if (st[k] === "parcial") pontos.push({ tipo: "parcial", txt });
-      if (st[k] === "recusou") pontos.push({ tipo: "recusou", txt });
+    const container = document.getElementById('modalChecklistContent');
+    let html = '';
+    
+    dadosArea.itens.forEach(item => {
+        if (item.tipo === 'titulo') {
+            html += `<h4 class="checklist-section-title">${item.texto}</h4>`;
+        } else {
+            const checked = memoria.itens.includes(item.id) ? 'checked' : '';
+            html += `
+                <div class="check-item">
+                    <input type="checkbox" id="${item.id}" 
+                           data-texto="${item.texto}" 
+                           data-ind="${item.ind || ''}" 
+                           data-enc="${item.enc || ''}"
+                           onchange="atualizarPreview()" ${checked}>
+                    <label for="${item.id}">${item.label}</label>
+                </div>`;
+        }
     });
-    return pontos;
-  };
-
-  const pontos = [
-    ...coletarPontos("pedagogica"),
-    ...coletarPontos("clinica"),
-    ...coletarPontos("social")
-  ];
-
-  if (!pontos.length) return;
-
-  const linhas = [];
-  const parciais = pontos.filter(p => p.tipo === "parcial").map(p => p.txt);
-  const recusas = pontos.filter(p => p.tipo === "recusou").map(p => p.txt);
-
-  if (parciais.length) {
-    linhas.push(
-      `- Intensificar mediações graduais e previsíveis para favorecer: ${lista(parciais)}.`
-    );
-  }
-  if (recusas.length) {
-    linhas.push(
-      `- Planejar estratégias de engajamento (rotina visual, escolha guiada, reforço positivo) para: ${lista(recusas)}.`
-    );
-  }
-
-  linhas.push(`- Manter registro contínuo de evolução, com metas de curto prazo e reavaliações periódicas.`);
-
-  const atual = $("#indicacoesPedagogicas").value.trim();
-  const novo = linhas.join("\n");
-
-  $("#indicacoesPedagogicas").value = atual ? `${atual}\n\n${novo}` : novo;
-  autoResize($("#indicacoesPedagogicas"));
+    container.innerHTML = html;
+    atualizarPreview();
+    document.getElementById('modalUniversal').style.display = 'flex';
 }
 
-function gerarConclusao() {
-  const ped = $("#sintesePedagogica").value.trim();
-  const cli = $("#sinteseClinica").value.trim();
-  const soc = $("#sinteseSocial").value.trim();
-
-  const partes = [];
-  if (ped) partes.push("No campo pedagógico, " + resumir(ped));
-  if (cli) partes.push("No campo clínico/funcional, " + resumir(cli));
-  if (soc) partes.push("No campo social/familiar, " + resumir(soc));
-
-  const conclusao =
-    partes.length
-      ? partes.join("\n\n") + "\n\nRecomenda-se acompanhamento multiprofissional contínuo, alinhamento com a família e adequações pedagógicas individualizadas conforme necessidade observada."
-      : "A conclusão diagnóstica será gerada automaticamente após o preenchimento das sínteses das áreas avaliadas.";
-
-  $("#conclusaoDiagnostica").value = conclusao;
-  autoResize($("#conclusaoDiagnostica"));
+window.fecharModal = function() {
+    document.getElementById('modalUniversal').style.display = 'none';
 }
 
-function resumir(texto) {
-  // heurística simples: pega a primeira frase “forte”
-  const limpo = texto.replace(/\s+/g, " ").trim();
-  const cortes = limpo.split(/(?<=[.!?])\s+/);
-  return (cortes[0] || limpo).trim();
+window.atualizarPreview = function() {
+    const manual = document.getElementById('obsManualInput').value;
+    const checkboxes = document.querySelectorAll('#modalChecklistContent input[type="checkbox"]:checked');
+    let textoAuto = "";
+    
+    checkboxes.forEach(chk => {
+        if(chk.dataset.texto) {
+            let trecho = chk.dataset.texto.trim();
+            if(trecho.slice(-1) !== '.') trecho += '.';
+            textoAuto += trecho + " ";
+        }
+    });
+
+    document.getElementById('previewAutomatico').value = textoAuto;
+    
+    let final = "";
+    if(manual.trim()) final += manual.trim() + (manual.trim().slice(-1) !== '.' ? '. ' : ' ');
+    final += textoAuto.trim();
+    
+    const elPreview = document.getElementById('previewFinal');
+    if(elPreview) elPreview.innerText = final || "(Vazio - Selecione itens ou digite)";
 }
 
-/* =========================================================
-   10) IMPRESSÃO SEM CORTES (substitutos)
-   ========================================================= */
-window.onbeforeprint = () => {
-  const fields = document.querySelectorAll("textarea, input, select");
-  fields.forEach(el => {
-    const div = document.createElement("div");
-    div.className = "print-substitute";
-    div.setAttribute("data-print-temp", "true");
+window.confirmarModal = function() {
+    const manual = document.getElementById('obsManualInput').value;
+    const checkboxes = document.querySelectorAll('#modalChecklistContent input[type="checkbox"]:checked');
+    const textoGerado = document.getElementById('previewAutomatico').value;
+    
+    const ids = [];
+    const inds = [];
+    const encs = [];
 
-    let txt = "";
-    if (el.tagName === "SELECT") {
-      const opt = el.options[el.selectedIndex];
-      txt = opt ? opt.text : "";
-      if (/Selecione/i.test(txt)) txt = "";
-    } else {
-      txt = el.value || el.getAttribute("value") || "";
+    checkboxes.forEach(chk => {
+        ids.push(chk.id);
+        if(chk.dataset.ind) inds.push(chk.dataset.ind);
+        if(chk.dataset.enc) encs.push(chk.dataset.enc);
+    });
+
+    dadosSelecionados[areaAtual] = { manual, itens: ids, textoGerado, indicacoes: inds, encaminhamentos: encs };
+
+    const targetId = CHECKLIST_DB[areaAtual].targetId;
+    const elSintese = document.getElementById(targetId);
+    
+    let textoFinalArea = "";
+    if(manual.trim()) textoFinalArea += manual.trim() + "\n";
+    textoFinalArea += textoGerado.trim();
+    
+    elSintese.value = textoFinalArea;
+    
+    gerarCamposAutomaticosGerais();
+    fecharModal();
+    setTimeout(() => autoResize(elSintese), 50);
+}
+
+function gerarCamposAutomaticosGerais() {
+    let textoConclusao = "";
+    let textoIndPed = "";
+    let listaEnc = [];
+
+    ['pedagogica', 'clinica', 'social'].forEach(area => {
+        const dados = dadosSelecionados[area];
+        const tituloArea = CHECKLIST_DB[area].titulo;
+
+        if (dados.itens.length > 0) {
+            const rotulos = dados.itens.map(id => getLabelById(area, id)).filter(l => l !== "");
+            if (rotulos.length > 0) {
+                // Título sem numeração
+                textoConclusao += `Na ${tituloArea}, observou-se: ${rotulos.join(", ")}.\n`;
+            }
+        } 
+
+        if (area === 'pedagogica' && dados.indicacoes.length > 0) {
+            const unicos = [...new Set(dados.indicacoes)];
+            textoIndPed += unicos.join(" ") + " ";
+        }
+
+        if (dados.encaminhamentos.length > 0) {
+            listaEnc = listaEnc.concat(dados.encaminhamentos);
+        }
+    });
+
+    const elConclusao = document.getElementById('conclusaoDiagnostica');
+    elConclusao.value = textoConclusao.trim();
+    autoResize(elConclusao);
+
+    const elIndPed = document.getElementById('indicacoesPedagogicas');
+    elIndPed.value = textoIndPed.trim();
+    autoResize(elIndPed);
+
+    const elEnc = document.getElementById('encaminhamentos');
+    const unicosEnc = [...new Set(listaEnc.filter(e => e !== ""))];
+    elEnc.value = unicosEnc.join(" / ");
+    autoResize(elEnc);
+}
+
+window.salvarNovoRelatorioNoBanco = async function() {
+    const nomeEstudante = document.getElementById('nomeEstudante').value;
+    
+    if(!nomeEstudante) {
+        alert("Por favor, preencha o nome do estudante antes de salvar.");
+        return;
     }
 
-    div.textContent = txt ? txt : " ";
-    el.parentNode.insertBefore(div, el);
-  });
-};
+    const btn = document.querySelector('.btn-save');
+    const originalIcon = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; 
 
-window.onafterprint = () => {
-  document.querySelectorAll('[data-print-temp="true"]').forEach(n => n.remove());
-};
+    const relatorioData = {
+        nome: nomeEstudante,
+        dataSalvo: new Date().toLocaleDateString('pt-BR'),
+        timestamp: Date.now(),
+        header: {
+            escola: document.getElementById('escola').value,
+            nome: nomeEstudante,
+            nasc: document.getElementById('dataNascimento').value,
+            filiacao: document.getElementById('filiacao').value,
+            dataAv: document.getElementById('dataAvaliacao').value
+        },
+        dados: dadosSelecionados
+    };
 
-function imprimir() {
-  autoResizeAll();
-  setTimeout(() => window.print(), 200);
-}
-
-/* =========================================================
-   11) CRUD FIREBASE (salvar/atualizar/listar/abrir/excluir)
-   ========================================================= */
-function coletarFormulario() {
-  const data = {};
-  document.querySelectorAll("input, textarea, select").forEach(el => {
-    if (!el.id) return;
-    data[el.id] = el.value;
-  });
-
-  // estado das áreas e assinaturas
-  data.__estadoAreas = JSON.stringify(estado);
-  return data;
-}
-
-function aplicarFormulario(form) {
-  for (const key in form) {
-    const el = document.getElementById(key);
-    if (!el) continue;
-
-    el.value = form[key];
-
-    // assinatura: atualizar na tela
-    if (key === "sigSelectPedagogia") aplicarAssinatura("pedagogia", el.value);
-    if (key === "sigSelectClinica") aplicarAssinatura("clinica", el.value);
-    if (key === "sigSelectSocial") aplicarAssinatura("social", el.value);
-  }
-
-  // Restaurar estado
-  if (form.__estadoAreas) {
     try {
-      const parsed = JSON.parse(form.__estadoAreas);
-      ["pedagogica", "clinica", "social"].forEach(a => {
-        if (parsed?.[a]) estado[a] = parsed[a];
-      });
-    } catch {}
-  }
-
-  autoResizeAll();
-  gerarConclusao();
+        if (idRelatorioAtual) {
+            const docRef = doc(db, "relatorios", idRelatorioAtual);
+            await updateDoc(docRef, relatorioData);
+            showToast("Relatório ATUALIZADO na nuvem!");
+        } else {
+            const docRef = await addDoc(tabelaRelatorios, relatorioData);
+            idRelatorioAtual = docRef.id;
+            showToast("Novo relatório SALVO na nuvem!");
+        }
+    } catch (e) {
+        console.error("Erro ao salvar: ", e);
+        alert("Erro ao salvar no banco de dados. Verifique sua conexão.");
+    } finally {
+        btn.innerHTML = originalIcon;
+    }
 }
 
-async function salvar() {
-  const nomeAluno = $("#nomeAluno").value.trim();
-  if (!nomeAluno) {
-    toast("Preencha o nome do estudante.");
-    $("#nomeAluno").focus();
-    return;
-  }
+window.abrirModalBusca = async function() {
+    document.getElementById('modalBusca').style.display = 'flex';
+    const listaDiv = document.getElementById('listaRelatorios');
+    listaDiv.innerHTML = '<p style="text-align:center; margin-top:20px;"><i class="fas fa-spinner fa-spin"></i> Carregando da nuvem...</p>';
+    
+    try {
+        const querySnapshot = await getDocs(tabelaRelatorios);
+        const relatorios = [];
+        querySnapshot.forEach((doc) => {
+            relatorios.push({ id: doc.id, ...doc.data() });
+        });
+        
+        relatorios.sort((a, b) => b.timestamp - a.timestamp);
+        
+        renderizarLista(relatorios);
+        window.todosRelatoriosCache = relatorios;
 
-  const payload = {
-    nomeAluno,
-    dataCriacao: new Date().toISOString(),
-    formulario: coletarFormulario()
-  };
-
-  try {
-    if (idRelatorioAtual) {
-      await updateDoc(doc(db, "relatorios", idRelatorioAtual), payload);
-      toast("Relatório atualizado com sucesso!");
-    } else {
-      const ref = await addDoc(relatoriosRef, payload);
-      idRelatorioAtual = ref.id;
-      toast("Novo relatório salvo com sucesso!");
+    } catch (e) {
+        console.error("Erro ao buscar: ", e);
+        listaDiv.innerHTML = '<p style="text-align:center; color:red;">Erro ao buscar dados.</p>';
     }
-  } catch (e) {
-    console.error(e);
-    toast("Erro ao salvar. Verifique o console.");
-  }
 }
 
-async function listarRelatorios() {
-  const box = $("#listaRelatorios");
-  box.innerHTML = `<div class="hint">Carregando...</div>`;
+window.filtrarRelatorios = function() {
+    const termo = document.getElementById('inputBusca').value.toLowerCase();
+    const filtrados = (window.todosRelatoriosCache || []).filter(r => r.nome.toLowerCase().includes(termo));
+    renderizarLista(filtrados);
+}
 
-  try {
-    const q = query(relatoriosRef, orderBy("dataCriacao", "desc"));
-    const snap = await getDocs(q);
+function renderizarLista(lista) {
+    const listaDiv = document.getElementById('listaRelatorios');
+    listaDiv.innerHTML = '';
 
-    if (snap.empty) {
-      box.innerHTML = `<div class="hint">Nenhum relatório encontrado.</div>`;
-      return;
+    if (lista.length === 0) {
+        listaDiv.innerHTML = '<p style="text-align:center; color:#999; margin-top:20px;">Nenhum relatório encontrado.</p>';
+        return;
     }
 
-    box.innerHTML = "";
-    snap.forEach(docSnap => {
-      const d = docSnap.data();
-      const el = document.createElement("div");
-      el.className = "item result-item";
-      el.setAttribute("data-name", (d.nomeAluno || "").toLowerCase());
-
-      const dataFmt = d.dataCriacao ? new Date(d.dataCriacao).toLocaleDateString() : "";
-
-      el.innerHTML = `
-        <div>
-          <strong>${escapeHtml(d.nomeAluno || "Sem nome")}</strong>
-          <small>${escapeHtml(dataFmt)}</small>
-        </div>
-        <div class="actions">
-          <button class="action open" data-open="${docSnap.id}">
-            <i class="fa-solid fa-folder-open"></i> Abrir
-          </button>
-          <button class="action del" data-del="${docSnap.id}">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
-      `;
-      box.appendChild(el);
+    lista.forEach(relatorio => {
+        const item = document.createElement('div');
+        item.className = 'report-item';
+        
+        item.innerHTML = `
+            <div class="report-info">
+                <span class="report-name">${relatorio.nome}</span>
+                <span class="report-date">Salvo em: ${relatorio.dataSalvo}</span>
+            </div>
+            <div class="report-actions">
+                <button onclick="carregarRelatorioDoBanco('${relatorio.id}')" class="btn-action btn-load" title="Carregar">
+                    <i class="fas fa-folder-open"></i> Carregar
+                </button>
+                <button onclick="excluirRelatorioDoBanco('${relatorio.id}')" class="btn-action btn-delete" title="Excluir">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        listaDiv.appendChild(item);
     });
-
-  } catch (e) {
-    console.error(e);
-    box.innerHTML = `<div class="hint">Erro ao listar relatórios.</div>`;
-  }
 }
 
-async function abrirRelatorio(id) {
-  try {
-    const ref = doc(db, "relatorios", id);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      toast("Relatório não encontrado.");
-      return;
+window.fecharModalBusca = function() {
+    document.getElementById('modalBusca').style.display = 'none';
+}
+
+window.carregarRelatorioDoBanco = function(id) {
+    const relatorio = window.todosRelatoriosCache.find(r => r.id === id);
+
+    if (relatorio) {
+        if(confirm(`Deseja carregar o relatório de "${relatorio.nome}"?`)) {
+            idRelatorioAtual = id;
+
+            document.getElementById('escola').value = relatorio.header.escola || "";
+            document.getElementById('nomeEstudante').value = relatorio.header.nome || "";
+            document.getElementById('dataNascimento').value = relatorio.header.nasc || "";
+            document.getElementById('filiacao').value = relatorio.header.filiacao || "";
+            document.getElementById('dataAvaliacao').value = relatorio.header.dataAv || "";
+            calcularIdade();
+
+            dadosSelecionados = relatorio.dados;
+            
+            ['pedagogica', 'clinica', 'social'].forEach(area => {
+                const d = dadosSelecionados[area];
+                const targetId = CHECKLIST_DB[area].targetId;
+                const elSintese = document.getElementById(targetId);
+                
+                if(elSintese) {
+                    let txt = "";
+                    if(d.manual) txt += d.manual + "\n";
+                    if(d.textoGerado) txt += d.textoGerado;
+                    elSintese.value = txt.trim();
+                    autoResize(elSintese);
+                }
+            });
+
+            gerarCamposAutomaticosGerais();
+            fecharModalBusca();
+            showToast("Relatório carregado com sucesso!");
+        }
     }
-
-    idRelatorioAtual = id;
-    const data = snap.data();
-    aplicarFormulario(data.formulario || {});
-    toast("Relatório carregado!");
-    fecharBusca();
-  } catch (e) {
-    console.error(e);
-    toast("Erro ao abrir relatório.");
-  }
 }
 
-async function excluirRelatorio(id) {
-  if (!confirm("Deseja excluir este relatório permanentemente?")) return;
-  try {
-    await deleteDoc(doc(db, "relatorios", id));
-    toast("Relatório excluído.");
-    await listarRelatorios();
-  } catch (e) {
-    console.error(e);
-    toast("Erro ao excluir.");
-  }
-}
-
-/* =========================================================
-   12) BUSCA UI
-   ========================================================= */
-function abrirBusca() {
-  $("#modalBusca").classList.add("open");
-  $("#modalBusca").setAttribute("aria-hidden", "false");
-  listarRelatorios();
-  $("#inputBusca").value = "";
-  $("#inputBusca").focus();
-}
-
-function fecharBusca() {
-  $("#modalBusca").classList.remove("open");
-  $("#modalBusca").setAttribute("aria-hidden", "true");
-}
-
-function filtrarLista() {
-  const termo = $("#inputBusca").value.toLowerCase().trim();
-  $$(".result-item").forEach(item => {
-    const name = item.getAttribute("data-name") || "";
-    item.style.display = name.includes(termo) ? "flex" : "none";
-  });
-}
-
-/* =========================================================
-   13) LIMPAR
-   ========================================================= */
-function novoRelatorio() {
-  if (!confirm("Deseja iniciar um NOVO relatório? Dados não salvos serão perdidos.")) return;
-
-  idRelatorioAtual = null;
-
-  // limpa campos
-  $$("input, textarea").forEach(el => {
-    if (el.id === "municipio" || el.id === "nre") return;
-    if (el.hasAttribute("readonly")) {
-      if (el.id === "idade") el.value = "";
-      return;
+window.excluirRelatorioDoBanco = async function(id) {
+    if(confirm("Tem certeza que deseja excluir este relatório permanentemente da nuvem?")) {
+        try {
+            await deleteDoc(doc(db, "relatorios", id));
+            showToast("Relatório excluído.");
+            abrirModalBusca();
+            if(idRelatorioAtual === id) idRelatorioAtual = null;
+        } catch (e) {
+            console.error(e);
+            alert("Erro ao excluir.");
+        }
     }
-    el.value = "";
-  });
-  $$("select").forEach(el => (el.value = ""));
-
-  // reseta estado
-  ["pedagogica","clinica","social"].forEach(a => {
-    estado[a] = { obsManual:"", status:{} };
-  });
-
-  // limpa assinaturas
-  aplicarAssinatura("pedagogia", "");
-  aplicarAssinatura("clinica", "");
-  aplicarAssinatura("social", "");
-
-  autoResizeAll();
-  gerarConclusao();
-  toast("Novo relatório pronto.");
 }
 
-/* =========================================================
-   14) SEGURANÇA DE STRING
-   ========================================================= */
-function escapeHtml(s) {
-  return String(s)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-/* =========================================================
-   15) EVENTOS
-   ========================================================= */
-function bind() {
-  // auto-resize para todas textareas
-  $$("textarea").forEach(t => {
-    autoResize(t);
-    t.addEventListener("input", () => autoResize(t));
-  });
-
-  // idade
-  $("#dataNascimento").addEventListener("change", () => {
-    calcularIdade();
-    gerarConclusao();
-  });
-
-  // botões área
-  $$("[data-open-area]").forEach(btn => {
-    btn.addEventListener("click", () => abrirModalArea(btn.getAttribute("data-open-area")));
-  });
-
-  // modal área
-  $("#btnCloseModal").addEventListener("click", fecharModalArea);
-  $("#btnResetArea").addEventListener("click", limparAreaAtual);
-  $("#btnConfirmArea").addEventListener("click", confirmarArea);
-
-  $("#modalObsManual").addEventListener("input", () => {
-    autoResize($("#modalObsManual"));
-    atualizarPreviewFinal();
-  });
-
-  $("#modalChecklist").addEventListener("change", (e) => {
-    if (e.target && e.target.tagName === "SELECT") {
-      atualizarTextoAutomatico();
-      atualizarPreviewFinal();
+window.limparTudo = function() {
+    if(confirm("Deseja limpar a tela para um NOVO relatório?")) {
+        document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+        dadosSelecionados = {
+            pedagogica: { manual: "", itens: [], textoGerado: "", indicacoes: [], encaminhamentos: [] },
+            clinica: { manual: "", itens: [], textoGerado: "", indicacoes: [], encaminhamentos: [] },
+            social: { manual: "", itens: [], textoGerado: "", indicacoes: [], encaminhamentos: [] }
+        };
+        idRelatorioAtual = null; 
+        location.reload();
     }
-  });
-
-  // assinaturas
-  $("#sigSelectPedagogia").addEventListener("change", (e) => aplicarAssinatura("pedagogia", e.target.value));
-  $("#sigSelectClinica").addEventListener("change", (e) => aplicarAssinatura("clinica", e.target.value));
-  $("#sigSelectSocial").addEventListener("change", (e) => aplicarAssinatura("social", e.target.value));
-
-  // fab
-  $("#btnPrint").addEventListener("click", imprimir);
-  $("#btnSave").addEventListener("click", salvar);
-  $("#btnSearch").addEventListener("click", abrirBusca);
-  $("#btnNew").addEventListener("click", novoRelatorio);
-
-  // busca
-  $("#btnCloseBusca").addEventListener("click", fecharBusca);
-  $("#btnCloseBusca2").addEventListener("click", fecharBusca);
-  $("#btnRefreshList").addEventListener("click", listarRelatorios);
-  $("#inputBusca").addEventListener("input", filtrarLista);
-
-  $("#listaRelatorios").addEventListener("click", (e) => {
-    const openId = e.target.closest("[data-open]")?.getAttribute("data-open");
-    const delId = e.target.closest("[data-del]")?.getAttribute("data-del");
-    if (openId) abrirRelatorio(openId);
-    if (delId) excluirRelatorio(delId);
-  });
-
-  // recalcula conclusão quando sínteses forem editadas manualmente
-  ["#sintesePedagogica","#sinteseClinica","#sinteseSocial"].forEach(id => {
-    $(id).addEventListener("input", () => {
-      autoResize($(id));
-      gerarConclusao();
-    });
-  });
 }
 
-/* =========================================================
-   INIT
-   ========================================================= */
-window.addEventListener("load", () => {
-  bind();
-  gerarConclusao();
-  toast("Sistema iniciado.");
-});
+window.onload = function() {
+    resizeAllTextareas();
+};
 
-function atualizarLocalDataAssinatura(){
-  const campoData = document.getElementById("dataAvaliacao");
-  const box = document.getElementById("sigLocalData");
-  if(!campoData || !box) return;
-
-  if(!campoData.value){
-    box.textContent = "Londrina/PR";
-    return;
-  }
-
-  const data = new Date(campoData.value + "T00:00:00");
-  const formato = data.toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric"
-  });
-
-  box.textContent = `Londrina/PR, ${formato}`;
+window.onclick = function(e) {
+    if(e.target == document.getElementById('modalUniversal')) fecharModal();
+    if(e.target == document.getElementById('modalBusca')) fecharModalBusca();
 }
-
-document.getElementById("dataAvaliacao")?.addEventListener("change", atualizarLocalDataAssinatura);
-window.addEventListener("load", atualizarLocalDataAssinatura);
