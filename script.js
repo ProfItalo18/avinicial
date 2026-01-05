@@ -200,6 +200,7 @@ let dadosSelecionados = {
 };
 let areaAtual = '';
 
+// ================= FUNÇÕES UTILITÁRIAS =================
 function showToast(msg = "Operação realizada com sucesso!") {
     const toast = document.getElementById("toast");
     if(toast) {
@@ -226,6 +227,7 @@ function getLabelById(area, id) {
     return itemEncontrado ? itemEncontrado.label : "";
 }
 
+// ================= LÓGICA DE NEGÓCIO =================
 window.calcularIdade = function() {
     const dataNascInput = document.getElementById('dataNascimento');
     if (!dataNascInput.value) return;
@@ -254,6 +256,7 @@ window.trocarAssinatura = function(area, idProfissional) {
     if (cargoEl) cargoEl.innerText = `${dados.cargo} - ${dados.registro}`;
 }
 
+// ================= MODAL E TEXTOS =================
 window.abrirModal = function(area) {
     areaAtual = area;
     const dadosArea = CHECKLIST_DB[area];
@@ -557,6 +560,21 @@ window.limparTudo = function() {
     }
 }
 
+// FUNÇÃO ESPECIAL DE IMPRESSÃO
+window.imprimirRelatorio = function() {
+    // 1. Força a expansão de todos os textareas para o tamanho do conteúdo
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(el => {
+        el.style.height = 'auto'; 
+        el.style.height = el.scrollHeight + 'px';
+    });
+
+    // 2. Pequeno delay para o navegador renderizar
+    setTimeout(() => {
+        window.print();
+    }, 100);
+}
+
 window.onload = function() {
     resizeAllTextareas();
 };
@@ -565,3 +583,55 @@ window.onclick = function(e) {
     if(e.target == document.getElementById('modalUniversal')) fecharModal();
     if(e.target == document.getElementById('modalBusca')) fecharModalBusca();
 }
+
+/* ==========================================================================
+   SISTEMA DE IMPRESSÃO INTELIGENTE (ADICIONAR AO FINAL DO ARQUIVO)
+   ========================================================================== */
+
+// Antes de imprimir: Troca Textareas por Texto Puro (Divs)
+window.onbeforeprint = function() {
+    console.log("Preparando layout de impressão...");
+    
+    // Seleciona todos os campos de entrada visíveis
+    const inputs = document.querySelectorAll('textarea, input[type="text"], input[type="date"], select');
+
+    inputs.forEach(el => {
+        // 1. Cria o elemento substituto (DIV)
+        const div = document.createElement('div');
+        
+        // 2. Pega o valor. Se for SELECT, pega o texto da opção, senão pega o valor digitado
+        let valorTexto = "";
+        if (el.tagName === 'SELECT') {
+            valorTexto = el.options[el.selectedIndex] ? el.options[el.selectedIndex].text : "";
+        } else {
+            valorTexto = el.value;
+        }
+
+        // Se estiver vazio, coloca um espaço para não sumir do layout
+        div.textContent = valorTexto || " ";
+        
+        // 3. Adiciona a classe CSS especial que criamos
+        div.classList.add('print-substitute');
+
+        // 4. Copia estilos críticos (como negrito ou alinhamento se houver classes na textarea)
+        if (el.classList.contains('negrito')) div.style.fontWeight = 'bold';
+        if (el.style.textAlign) div.style.textAlign = el.style.textAlign;
+
+        // 5. Marca para remoção posterior
+        div.setAttribute('data-print-temp', 'true');
+
+        // 6. Insere a DIV logo antes do Input/Textarea original
+        el.parentNode.insertBefore(div, el);
+    });
+};
+
+// Depois de imprimir (ou cancelar): Restaura a tela original
+window.onafterprint = function() {
+    console.log("Restaurando modo de edição...");
+    
+    // Remove todos os elementos temporários
+    const temps = document.querySelectorAll('[data-print-temp="true"]');
+    temps.forEach(el => el.remove());
+    
+    // Os inputs originais voltam a aparecer automaticamente (controle via CSS)
+};
